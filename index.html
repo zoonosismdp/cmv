@@ -254,6 +254,33 @@
         </div>
         <div class="modal-body">
           <p id="warning-message" class="modal-text-lg"></p>
+          
+          <div id="pppContainer" style="display: none;" class="mt-3">
+            <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#listaRazasPPP" aria-expanded="false">
+              Ver listado de razas (Ordenanza 22031)
+            </button>
+            <div class="collapse mt-2" id="listaRazasPPP">
+              <div class="card card-body" style="font-size: 0.9rem;">
+                <ul class="row list-unstyled">
+                  <li class="col-md-6">Airedale Terrier</li><li class="col-md-6">Akita Inu</li>
+                  <li class="col-md-6">American Staffordshire Terrier</li><li class="col-md-6">Pitbull American Terrier</li>
+                  <li class="col-md-6">Boyero de berna</li><li class="col-md-6">Bóxer</li>
+                  <li class="col-md-6">Bullmastif</li><li class="col-md-6">Bull Terrier</li>
+                  <li class="col-md-6">Cané corso</li><li class="col-md-6">Doberman</li>
+                  <li class="col-md-6">Dogo Argentino</li><li class="col-md-6">Dogo Alemán</li>
+                  <li class="col-md-6">Gran Danés</li><li class="col-md-6">Dogo Canario</li>
+                  <li class="col-md-6">Presa Canario</li><li class="col-md-6">Dogo de burdeos</li>
+                  <li class="col-md-6">Fila Brasileño</li><li class="col-md-6">Gran perro Japonés</li>
+                  <li class="col-md-6">Kuvas</li><li class="col-md-6">Mastiff (Mastín Inglés)</li>
+                  <li class="col-md-6">Mastín Napolitano</li><li class="col-md-6">Ovejero Alemán</li>
+                  <li class="col-md-6">Ovejero Belga</li><li class="col-md-6">Pastor del Cáucaso</li>
+                  <li class="col-md-6">Rottweiler</li><li class="col-md-6">San Bernardo</li>
+                  <li class="col-md-6">Schnauzer Gigante</li><li class="col-md-6">Staffordshire Bull Terrier</li>
+                  <li class="col-md-6">Viejo Pastor Inglés</li><li class="col-md-6">Mestizos de las cruzas anteriores</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
@@ -290,14 +317,26 @@
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
     fechaElemento.textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-
-    /**
+/**
      * Muestra el modal de advertencia con un mensaje específico.
      * @param {string} mensaje El texto a mostrar en el modal.
+     * @param {boolean} mostrarPPP Si se debe mostrar el botón de razas peligrosas.
      */
-    function deshabilitarFormulario(mensaje) {
+    function deshabilitarFormulario(mensaje, mostrarPPP = false) {
       const modalMessage = document.getElementById("warning-message");
+      const pppContainer = document.getElementById("pppContainer");
+      
       modalMessage.textContent = mensaje;
+      
+      // Si mostrarPPP es true, mostramos el botón del listado
+      pppContainer.style.display = mostrarPPP ? "block" : "none";
+      
+      // Reiniciamos el colapsable por si quedó abierto de antes
+      const listaRazas = document.getElementById("listaRazasPPP");
+      if (listaRazas.classList.contains('show')) {
+          listaRazas.classList.remove('show');
+      }
+
       const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
       warningModal.show();
     }
@@ -455,8 +494,11 @@
             deshabilitarFormulario(data.error); // Usa el mensaje específico de documento o cupo agotado
           } else {
             // Mostrar el mensaje de advertencia aquí, después de verificar que no hay errores.
-            const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado solo una vez y que además es un animal por persona.";
-            deshabilitarFormulario(mensajeAlerta); 
+            
+                
+            
+const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";          
+deshabilitarFormulario(mensajeAlerta, true)
 
             continueBtn.style.display = "none";
             formContent.style.display = "block";
