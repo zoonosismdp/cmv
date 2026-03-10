@@ -655,61 +655,61 @@
       // Función de restauración común
       // Función de restauración completa
       const restaurarFormulario = () => {
-    console.log("Restaurando formulario...");
-    const form = document.getElementById("miForm");
-    if (form) form.reset();
+        console.log("Restaurando formulario...");
+        const form = document.getElementById("miForm");
+        if (form) form.reset();
 
-    // 1. Reset visual del Escáner
-    const scannerBtnContainer = document.getElementById('scannerButtonContainer');
-    const docDisplayContainer = document.getElementById('documentoDisplayContainer');
-    if (scannerBtnContainer) scannerBtnContainer.style.display = 'grid';
-    if (docDisplayContainer) docDisplayContainer.style.display = 'none';
+        // 1. Reset visual del Escáner
+        const scannerBtnContainer = document.getElementById('scannerButtonContainer');
+        const docDisplayContainer = document.getElementById('documentoDisplayContainer');
+        if (scannerBtnContainer) scannerBtnContainer.style.display = 'grid';
+        if (docDisplayContainer) docDisplayContainer.style.display = 'none';
 
-    // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
-    const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
+        // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
+        const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
-    camposAResetear.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
+        camposAResetear.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
             el.readOnly = false;
             el.classList.remove("readonly-field");
-            el.value = ""; 
+            el.value = "";
+          }
+        });
+
+        // 3. Reset de visibilidad de secciones dinámicas
+        const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
+        secciones.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = "none";
+        });
+
+        // 4. Reset de Labels
+        document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
+
+        // 5. Reset de botones
+        const btnAcepto = document.getElementById("btnAcepto");
+        if (btnAcepto) {
+          btnAcepto.classList.remove("btn-accepted");
+          btnAcepto.parentNode.style.display = "flex";
         }
-    });
 
-    // 3. Reset de visibilidad de secciones dinámicas
-    const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
-    secciones.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = "none";
-    });
+        const submitBtn = document.getElementById("submitBtn");
+        if (submitBtn) {
+          submitBtn.textContent = 'Enviar datos';
+          submitBtn.disabled = true;
+        }
 
-    // 4. Reset de Labels
-    document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
+        const continueBtn = document.getElementById("continueBtn");
+        if (continueBtn) {
+          continueBtn.style.display = "block";
+          continueBtn.disabled = false;
+        }
 
-    // 5. Reset de botones
-    const btnAcepto = document.getElementById("btnAcepto");
-    if (btnAcepto) {
-        btnAcepto.classList.remove("btn-accepted");
-        btnAcepto.parentNode.style.display = "flex";
-    }
-
-    const submitBtn = document.getElementById("submitBtn");
-    if (submitBtn) {
-        submitBtn.textContent = 'Enviar datos';
-        submitBtn.disabled = true;
-    }
-
-    const continueBtn = document.getElementById("continueBtn");
-    if (continueBtn) {
-        continueBtn.style.display = "block";
-        continueBtn.disabled = false;
-    }
-
-    if (typeof verificarValidezFormulario === "function") {
-        verificarValidezFormulario();
-    }
-};
+        if (typeof verificarValidezFormulario === "function") {
+          verificarValidezFormulario();
+        }
+      };
 
 
       // ** 1. PRIMER PASO: VERIFICAR DUPLICIDAD FINAL (INMEDIATO) **
@@ -843,7 +843,7 @@
         qrbox: { width: 250, height: 150 },
         aspectRatio: 1.777778,
         // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
-        formatsToSupport: [ Html5QrcodeSupportedFormats.PDF_417 ] 
+        formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
       };
 
       html5QrCode.start(
@@ -854,26 +854,19 @@
           console.log("Datos escaneados:", partes); // Para debug en consola
 
           if (partes.length > 4) {
-            const apellido = partes[1].trim();
-            const nombre = partes[2].trim();
             const dni = partes[4].trim().replace(/\D/g, "");
 
             // CORRECCIÓN: Respetamos la "I" mayúscula tal cual está en el HTML
             const inputDoc = document.getElementById('documentoInput');
-            const inputApe = document.getElementById('apellidoInput'); 
-            const inputNom = document.getElementById('nombreInput');   
 
             // Ahora sí los va a encontrar y va a entrar en el if
-            if (inputDoc && inputApe && inputNom) {
+            if (inputDoc) {
               inputDoc.value = dni;
-              inputApe.value = apellido;
-              inputNom.value = nombre;
+
 
               // Bloquear para que no editen lo escaneado
-              [inputDoc, inputApe, inputNom].forEach(campo => {
-                campo.readOnly = true;
-                campo.classList.add("readonly-field");
-              });
+              inputDoc.readOnly = true;
+              inputDoc.classList.add("readonly-field");
 
               // Cambiar vista de botones
               document.getElementById('scannerButtonContainer').style.display = 'none';
@@ -884,17 +877,16 @@
 
               // Avisar al sistema que los campos cambiaron
               inputDoc.dispatchEvent(new Event('input'));
-              inputApe.dispatchEvent(new Event('input'));
-              inputNom.dispatchEvent(new Event('input'));
+
             } else {
-              console.error("Che, no encontré los inputs en el HTML, revisá los IDs.");
+              console.error("Verificar");
             }
           }
         },
         (errorMessage) => { /* Silencioso mientras busca */ }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
-        alert("No se pudo acceder a la cámara. Verificá los permisos y que el sitio use HTTPS.");
+        alert("No se pudo acceder a la cámara. Verificá los permisos o consultar en Administración.");
         scannerModal.hide();
       });
 
