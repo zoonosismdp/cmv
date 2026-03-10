@@ -660,12 +660,11 @@
         const form = document.getElementById("miForm");
         if (form) form.reset();
 
-        /*// 1. Reset visual del Escáner
         const scannerBtnContainer = document.getElementById('scannerButtonContainer');
         const docDisplayContainer = document.getElementById('documentoDisplayContainer');
-        if (scannerBtnContainer) scannerBtnContainer.style.display = 'grid';
-        if (docDisplayContainer) docDisplayContainer.style.display = 'none';
-*/
+        if (scannerBtnContainer) scannerBtnContainer.style.display = 'none';
+        if (docDisplayContainer) docDisplayContainer.style.display = 'block';
+
         // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
