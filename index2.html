@@ -848,39 +848,49 @@
         { facingMode: "environment" },
         config,
         (decodedText) => {
-          const partes = decodedText.split('@');
-          console.log("Datos escaneados:", partes); // Para debug en consola
+  // El DNI argentino usa @ como separador
+  const partes = decodedText.split('@');
+  console.log("Datos brutos escaneados:", partes); 
 
-          if (partes.length > 4) {
-            const dni = partes[4].trim().replace(/\D/g, "");
+  if (partes.length > 4) {
+    // En la mayoría de los DNI es la posición 4, 
+    // pero verificamos que sea un número de entre 7 y 9 dígitos
+    let dni = "";
+    
+    // Buscamos en las posiciones donde suele estar el DNI (índices 4 o 1)
+    if (/^\d{7,9}$/.test(partes[4].trim())) {
+        dni = partes[4].trim();
+    } else if (/^\d{7,9}$/.test(partes[1].trim())) {
+        dni = partes[1].trim();
+    } else {
+        // Si no está en los lugares fijos, buscamos el primer elemento que sea puramente numérico
+        dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
+    }
 
-            // CORRECCIÓN: Respetamos la "I" mayúscula tal cual está en el HTML
-            const inputDoc = document.getElementById('documentoInput');
+    const inputDoc = document.getElementById('documentoInput');
 
-            // Ahora sí los va a encontrar y va a entrar en el if
-            if (inputDoc) {
-              inputDoc.value = dni;
+    if (inputDoc && dni !== "") {
+      inputDoc.value = dni;
 
+      // Bloquear para que no editen lo escaneado
+      inputDoc.readOnly = true;
+      inputDoc.classList.add("readonly-field");
 
-              // Bloquear para que no editen lo escaneado
-              inputDoc.readOnly = true;
-              inputDoc.classList.add("readonly-field");
+      // Cambiar vista de botones
+      document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
+      document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-              // Cambiar vista de botones
-              document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
-              document.getElementById('documentoDisplayContainer').style.display = 'block';
+      detenerScanner();
+      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+      if(modalInstance) modalInstance.hide();
 
-              detenerScanner();
-              bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
-
-              // Avisar al sistema que los campos cambiaron
-              inputDoc.dispatchEvent(new Event('input'));
-
-            } else {
-              console.error("Verificar");
-            }
-          }
-        },
+      // Avisar al sistema que los campos cambiaron para habilitar "Continuar"
+      inputDoc.dispatchEvent(new Event('input'));
+    } else {
+      console.warn("No se encontró un número de DNI válido en el código escaneado.");
+    }
+  }
+},
         (errorMessage) => { /* Silencioso mientras busca */ }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
