@@ -655,63 +655,76 @@
       // Función de restauración común
       // Función de restauración completa
       const restaurarFormulario = () => {
-          // 1. Reset general del formulario (limpia inputs nativos)
-          const form = document.getElementById("miForm");
-          form.reset();
+    // 1. Reset general del formulario (limpia todos los inputs nativos)
+    const form = document.getElementById("miForm");
+    form.reset();
 
-          // 2. Lógica del Escáner: Volver al estado inicial
-          document.getElementById('scannerButtonContainer').style.display = 'grid';
-          document.getElementById('documentoDisplayContainer').style.display = 'none';
-          document.getElementById('documentoInput').value = '';
-          document.getElementById('documentoInput').readOnly = true; // Refuerzo de seguridad
+    // 2. Lógica del Escáner: Volver al estado inicial (botón visible, campo de resultado oculto)
+    document.getElementById('scannerButtonContainer').style.display = 'grid';
+    document.getElementById('documentoDisplayContainer').style.display = 'none';
 
-          // 3. Ocultar el contenido expandible del formulario
-          document.getElementById("formContent").style.display = "none";
-          
-          // 4. Limpiar campos condicionales y sus etiquetas
-          document.getElementById("razaDefinida").style.display = "none";
-          document.getElementById("fechaAntirrabica").style.display = "none";
-          document.querySelector("label[for='razaDefinida']").style.display = "none";
-          document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
-          
-          // 5. Reset de la sección de vacunación
-          document.getElementById("vacunarDiv").style.display = "none";
-          document.getElementById("vacunarAnimal").removeAttribute("required");
+    // 3. Referencias a los campos que el escáner bloquea
+    const camposPrincipales = [
+        document.getElementById("documentoInput"),
+        document.getElementById("apellidoInput"),
+        document.getElementById("nombreInput"),
+        document.getElementById("domicilioInput"),
+        document.getElementById("telefonoInput")
+    ];
 
-          // 6. Reset visual del botón de Consentimiento (CMV)
-          const btnAcepto = document.getElementById("btnAcepto");
-          btnAcepto.classList.remove("btn-accepted");
-          btnAcepto.parentNode.style.display = "flex";
-          
-          // 7. Reset del botón de envío y botón Continuar
-          const submitBtn = document.getElementById("submitBtn");
-          const continueBtn = document.getElementById("continueBtn");
-          
-          submitBtn.textContent = 'Enviar datos';
-          submitBtn.disabled = true;
+    // 4. Desbloquear edición y quitar el estilo gris (readonly-field)
+    camposPrincipales.forEach(campo => {
+        if (campo) {
+            campo.readOnly = false;
+            campo.classList.remove("readonly-field");
+        }
+    });
 
-          continueBtn.style.display = "block";
-          continueBtn.textContent = 'Continuar';
-          continueBtn.disabled = false;
-          
-          // 8. Habilitar campos que pudieron quedar en ReadOnly y quitarles el estilo gris
-          const camposPrincipales = [
-            document.getElementById("apellidoInput"), 
-            document.getElementById("nombreInput"), 
-            document.getElementById("domicilioInput"), 
-            document.getElementById("telefonoInput")
-          ];
+    // 5. Ocultar el contenido expandible del formulario (la parte de especie, raza, etc.)
+    document.getElementById("formContent").style.display = "none";
+    
+    // 6. Limpiar y ocultar campos condicionales (Raza y Vacunación)
+    document.getElementById("razaDefinida").style.display = "none";
+    document.getElementById("fechaAntirrabica").style.display = "none";
+    document.querySelector("label[for='razaDefinida']").style.display = "none";
+    document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
+    
+    // 7. Reset de la sección de vacunación
+    document.getElementById("vacunarDiv").style.display = "none";
+    const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+    if (vacunarAnimalSelect) {
+        vacunarAnimalSelect.removeAttribute("required");
+    }
 
-          camposPrincipales.forEach(campo => {
-            if (campo) {
-              campo.readOnly = false;
-              campo.classList.remove("readonly-field");
-            }
-          });
+    // 8. Reset visual del botón de Consentimiento Médico (CMV)
+    const btnAcepto = document.getElementById("btnAcepto");
+    if (btnAcepto) {
+        btnAcepto.classList.remove("btn-accepted");
+        btnAcepto.parentNode.style.display = "flex";
+        btnAcepto.disabled = true;
+    }
+    
+    // 9. Reset de botones de acción (Enviar y Continuar)
+    const submitBtn = document.getElementById("submitBtn");
+    if (submitBtn) {
+        submitBtn.textContent = 'Enviar datos';
+        submitBtn.disabled = true;
+    }
 
-          // 9. Ejecutar validación final para dejar los botones en estado correcto
-          verificarValidezFormulario();
-      }
+    const continueBtn = document.getElementById("continueBtn");
+    if (continueBtn) {
+        continueBtn.style.display = "block";
+        continueBtn.textContent = 'Continuar';
+        continueBtn.disabled = false;
+    }
+
+    // 10. Forzar re-validación de los botones para que queden en el estado correcto
+    if (typeof verificarValidezFormulario === "function") {
+        verificarValidezFormulario();
+    }
+    
+    console.log("Formulario restaurado a su estado inicial.");
+};
 
 
       // ** 1. PRIMER PASO: VERIFICAR DUPLICIDAD FINAL (INMEDIATO) **
@@ -821,88 +834,99 @@
 
     // ... (mantené la lógica de inicialización de html5QrCode que pasamos antes)
 
-// --- LÓGICA DEL ESCÁNER DNI ---
-let html5QrCode; // Declaramos la variable globalmente
+    // --- LÓGICA DEL ESCÁNER DNI ---
+    // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
+    let html5QrCode;
 
-// Función para detener la cámara de forma segura
-function detenerScanner() {
-    if (html5QrCode && (html5QrCode.getState() === 2 || html5QrCode.getState() === 3)) { // 2 = SCANNING, 3 = PAUSED
+    function detenerScanner() {
+      if (html5QrCode && (html5QrCode.getState() === 2 || html5QrCode.getState() === 3)) {
         html5QrCode.stop().then(() => {
-            html5QrCode.clear();
+          html5QrCode.clear();
         }).catch(err => console.error("Error al detener cámara:", err));
+      }
     }
-}
 
-// Vinculamos el botón al evento click
-document.getElementById('btnAbrirScanner').addEventListener('click', function() {
-    // 1. Creamos y mostramos el modal (si no existe, lo creamos)
-    const modalElement = document.getElementById('scannerModal');
-    const scannerModal = new bootstrap.Modal(modalElement);
-    scannerModal.show();
+    document.getElementById('btnAbrirScanner').addEventListener('click', function () {
+      const modalElement = document.getElementById('scannerModal');
+      const scannerModal = new bootstrap.Modal(modalElement);
+      scannerModal.show();
 
-    // 2. Inicializamos el objeto del escáner en el div 'reader'
-    html5QrCode = new Html5Qrcode("reader");
-    
-    const config = { 
-        fps: 10, 
+      html5QrCode = new Html5Qrcode("reader");
+
+      const config = {
+        fps: 10,
         qrbox: { width: 250, height: 150 },
-        aspectRatio: 1.777778 // Formato panorámico para códigos PDF417
-    };
+        aspectRatio: 1.777778
+      };
 
-    // 3. Arrancamos la cámara
-    html5QrCode.start(
-        { facingMode: "environment" }, // Cámara trasera
+      html5QrCode.start(
+        { facingMode: "environment" },
         config,
         (decodedText) => {
-            // Lógica de parseo del DNI Argentino
-            const partes = decodedText.split('@');
-            
-            if (partes.length > 4) {
-                let dniExtraido = partes[4].trim().replace(/\D/g, "");
+          // El formato del DNI Argentino es: Tramite@Apellido@Nombre@Sexo@DNI@...
+          const partes = decodedText.split('@');
 
-                const inputDoc = document.getElementById('documentoInput');
-                inputDoc.value = dniExtraido;
+          if (partes.length > 4) {
+            // 1. Extracción de datos según la posición en el código de barras
+            const apellidoExtraido = partes[1].trim();
+            const nombreExtraido = partes[2].trim();
+            const dniExtraido = partes[4].trim().replace(/\D/g, "");
 
-                // Cambios visuales: ocultar botón, mostrar campo readonly
-                document.getElementById('scannerButtonContainer').style.display = 'none';
-                document.getElementById('documentoDisplayContainer').style.display = 'block';
+            // 2. Referencias a los inputs del formulario
+            const inputDoc = document.getElementById('documentoInput');
+            const inputApellido = document.getElementById('apellidoInput');
+            const inputNombre = document.getElementById('nombreInput');
 
-                // Cerrar todo
-                detenerScanner();
-                scannerModal.hide();
-                
-                // Notificar al formulario que el valor cambió
-                inputDoc.dispatchEvent(new Event('input'));
-            }
+            // 3. Asignación de valores
+            inputDoc.value = dniExtraido;
+            inputApellido.value = apellidoExtraido;
+            inputNombre.value = nombreExtraido;
+
+            // 4. Bloqueo de campos y estética de "solo lectura"
+            [inputDoc, inputApellido, inputNombre].forEach(campo => {
+              campo.readOnly = true;
+              campo.classList.add("readonly-field");
+            });
+
+            // 5. Interfaz: Ocultamos el botón de inicio y mostramos el DNI verificado
+            document.getElementById('scannerButtonContainer').style.display = 'none';
+            document.getElementById('documentoDisplayContainer').style.display = 'block';
+
+            // 6. Cierre de limpieza
+            detenerScanner();
+            scannerModal.hide();
+
+            // 7. Disparamos eventos para que las validaciones de tu script se enteren del cambio
+            inputDoc.dispatchEvent(new Event('input'));
+            inputApellido.dispatchEvent(new Event('input'));
+            inputNombre.dispatchEvent(new Event('input'));
+          }
         },
-        (errorMessage) => {
-            // Error de lectura silencioso mientras busca el código
-        }
-    ).catch((err) => {
+        (errorMessage) => { /* Silencioso mientras busca */ }
+      ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
-        alert("No se pudo acceder a la cámara. Asegurate de estar en HTTPS y dar permisos.");
+        alert("No se pudo acceder a la cámara. Verificá los permisos y que el sitio use HTTPS.");
         scannerModal.hide();
-    });
+      });
 
-    // Detener la cámara si el usuario cierra el modal manualmente
-    modalElement.addEventListener('hidden.bs.modal', detenerScanner);
-});
+      modalElement.addEventListener('hidden.bs.modal', detenerScanner);
+    });
   </script>
 
   <div class="modal fade" id="scannerModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Escaneá el código del DNI</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <div id="reader"></div>
-        <p class="mt-2 text-muted small">Apuntá al código de barras largo (PDF417)</p>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Escaneá el código del DNI</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="reader"></div>
+          <p class="mt-2 text-muted small">Apuntá al código de barras largo (PDF417)</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </body>
 
 </html>
