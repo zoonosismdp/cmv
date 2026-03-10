@@ -655,56 +655,58 @@
       // Función de restauración común
       // Función de restauración completa
       const restaurarFormulario = () => {
-    // 1. Reset general del formulario (limpia todos los inputs nativos)
+    console.log("Iniciando restauración del formulario...");
+    
+    // 1. Reset general del formulario
     const form = document.getElementById("miForm");
-    form.reset();
+    if (form) form.reset();
 
-    // 2. Lógica del Escáner: Volver al estado inicial (botón visible, campo de resultado oculto)
-    document.getElementById('scannerButtonContainer').style.display = 'grid';
-    document.getElementById('documentoDisplayContainer').style.display = 'none';
+    // 2. Reset visual del Escáner (Volver al botón)
+    const scannerBtn = document.getElementById('scannerButtonContainer');
+    const docDisplay = document.getElementById('documentoDisplayContainer');
+    if (scannerBtn) scannerBtn.style.display = 'grid';
+    if (docDisplay) docDisplay.style.display = 'none';
 
-    // 3. Referencias a los campos que el escáner bloquea
-    const camposPrincipales = [
-        document.getElementById("documentoInput"),
-        document.getElementById("apellidoInput"),
-        document.getElementById("nombreInput"),
-        document.getElementById("domicilioInput"),
-        document.getElementById("telefonoInput")
+    // 3. Lista de campos a desbloquear (IDs corregidos según tu HTML)
+    const camposAResetear = [
+        { id: "documentoInput", readOnly: false },
+        { id: "apellidoinput", readOnly: false }, // minúscula según tu archivo
+        { id: "nombreinput", readOnly: false },   // minúscula según tu archivo
+        { id: "domicilioInput", readOnly: false },
+        { id: "telefonoInput", readOnly: false }
     ];
 
-    // 4. Desbloquear edición y quitar el estilo gris (readonly-field)
-    camposPrincipales.forEach(campo => {
-        if (campo) {
-            campo.readOnly = false;
-            campo.classList.remove("readonly-field");
+    camposAResetear.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el) {
+            el.readOnly = item.readOnly;
+            el.classList.remove("readonly-field");
+            el.value = ""; // Limpiar valor explícitamente
         }
     });
 
-    // 5. Ocultar el contenido expandible del formulario (la parte de especie, raza, etc.)
-    document.getElementById("formContent").style.display = "none";
-    
-    // 6. Limpiar y ocultar campos condicionales (Raza y Vacunación)
-    document.getElementById("razaDefinida").style.display = "none";
-    document.getElementById("fechaAntirrabica").style.display = "none";
-    document.querySelector("label[for='razaDefinida']").style.display = "none";
-    document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
-    
-    // 7. Reset de la sección de vacunación
-    document.getElementById("vacunarDiv").style.display = "none";
-    const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
-    if (vacunarAnimalSelect) {
-        vacunarAnimalSelect.removeAttribute("required");
-    }
+    // 4. Reset de visibilidad de secciones dinámicas
+    const formContent = document.getElementById("formContent");
+    if (formContent) formContent.style.display = "none";
 
-    // 8. Reset visual del botón de Consentimiento Médico (CMV)
+    // 5. Reset de campos de raza y vacunas
+    const idsOcultar = ["razaDefinida", "fechaAntirrabica", "vacunarDiv"];
+    idsOcultar.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
+
+    // 6. Reset de etiquetas (labels)
+    const labels = document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']");
+    labels.forEach(l => l.style.display = "none");
+
+    // 7. Reset de botones
     const btnAcepto = document.getElementById("btnAcepto");
     if (btnAcepto) {
         btnAcepto.classList.remove("btn-accepted");
         btnAcepto.parentNode.style.display = "flex";
-        btnAcepto.disabled = true;
     }
-    
-    // 9. Reset de botones de acción (Enviar y Continuar)
+
     const submitBtn = document.getElementById("submitBtn");
     if (submitBtn) {
         submitBtn.textContent = 'Enviar datos';
@@ -714,16 +716,13 @@
     const continueBtn = document.getElementById("continueBtn");
     if (continueBtn) {
         continueBtn.style.display = "block";
-        continueBtn.textContent = 'Continuar';
         continueBtn.disabled = false;
     }
 
-    // 10. Forzar re-validación de los botones para que queden en el estado correcto
+    // 8. Re-validar estado general
     if (typeof verificarValidezFormulario === "function") {
         verificarValidezFormulario();
     }
-    
-    console.log("Formulario restaurado a su estado inicial.");
 };
 
 
@@ -862,46 +861,47 @@
       html5QrCode.start(
         { facingMode: "environment" },
         config,
-        (decodedText) => {
-          // El formato del DNI Argentino es: Tramite@Apellido@Nombre@Sexo@DNI@...
-          const partes = decodedText.split('@');
+// ... dentro de html5QrCode.start ...
+(decodedText) => {
+    const partes = decodedText.split('@');
+    console.log("Datos escaneados:", partes); // Para debug en consola
 
-          if (partes.length > 4) {
-            // 1. Extracción de datos según la posición en el código de barras
-            const apellidoExtraido = partes[1].trim();
-            const nombreExtraido = partes[2].trim();
-            const dniExtraido = partes[4].trim().replace(/\D/g, "");
+    if (partes.length > 4) {
+        // En DNI Argentino: 1=Apellido, 2=Nombre, 4=DNI
+        const apellido = partes[1].trim();
+        const nombre = partes[2].trim();
+        const dni = partes[4].trim().replace(/\D/g, "");
 
-            // 2. Referencias a los inputs del formulario
-            const inputDoc = document.getElementById('documentoInput');
-            const inputApellido = document.getElementById('apellidoInput');
-            const inputNombre = document.getElementById('nombreInput');
+        // REFERENCIAS CON IDs EXACTOS DE TU HTML
+        const inputDoc = document.getElementById('documentoInput');
+        const inputApe = document.getElementById('apellidoinput'); // corregido a minúscula
+        const inputNom = document.getElementById('nombreinput');   // corregido a minúscula
 
-            // 3. Asignación de valores
-            inputDoc.value = dniExtraido;
-            inputApellido.value = apellidoExtraido;
-            inputNombre.value = nombreExtraido;
+        if (inputDoc && inputApe && inputNom) {
+            inputDoc.value = dni;
+            inputApe.value = apellido;
+            inputNom.value = nombre;
 
-            // 4. Bloqueo de campos y estética de "solo lectura"
-            [inputDoc, inputApellido, inputNombre].forEach(campo => {
-              campo.readOnly = true;
-              campo.classList.add("readonly-field");
+            // Bloquear para que no editen lo escaneado
+            [inputDoc, inputApe, inputNom].forEach(campo => {
+                campo.readOnly = true;
+                campo.classList.add("readonly-field");
             });
 
-            // 5. Interfaz: Ocultamos el botón de inicio y mostramos el DNI verificado
+            // Cambiar vista de botones
             document.getElementById('scannerButtonContainer').style.display = 'none';
             document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-            // 6. Cierre de limpieza
             detenerScanner();
-            scannerModal.hide();
-
-            // 7. Disparamos eventos para que las validaciones de tu script se enteren del cambio
+            bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
+            
+            // Avisar al sistema que los campos cambiaron
             inputDoc.dispatchEvent(new Event('input'));
-            inputApellido.dispatchEvent(new Event('input'));
-            inputNombre.dispatchEvent(new Event('input'));
-          }
-        },
+            inputApe.dispatchEvent(new Event('input'));
+            inputNom.dispatchEvent(new Event('input'));
+        }
+    }
+},
         (errorMessage) => { /* Silencioso mientras busca */ }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
