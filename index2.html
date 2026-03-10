@@ -834,7 +834,7 @@
 
     // 1. Al tocar el botón rojo, abrimos el modal de aviso
     document.getElementById('btnAbrirScanner').addEventListener('click', function () {
-      const avisoModal = new bootstrap.Modal(document.getElementById('avisoCamaraModal'));
+      const avisoModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avisoCamaraModal'));
       avisoModal.show();
     });
 
@@ -843,19 +843,20 @@
       const avisoModalEl = document.getElementById('avisoCamaraModal');
       const scannerModalEl = document.getElementById('scannerModal');
       
-      // Cerramos el primer modal
-      const bsAviso = bootstrap.Modal.getInstance(avisoModalEl);
-      if (bsAviso) bsAviso.hide();
+      // Cerramos el primer modal forzando la recuperación de la instancia correcta
+      const bsAviso = bootstrap.Modal.getOrCreateInstance(avisoModalEl);
+      bsAviso.hide();
 
-      // Esperamos a que el primer modal desaparezca por completo (300ms)
+      // Esperamos a que el primer modal desaparezca por completo (350ms)
       setTimeout(() => {
-        const scannerModal = new bootstrap.Modal(scannerModalEl);
+        const scannerModal = bootstrap.Modal.getOrCreateInstance(scannerModalEl);
         scannerModal.show();
 
         // REGLA DE ORO: No iniciamos la cámara hasta que el modal del escáner esté TOTALMENTE visible
         scannerModalEl.addEventListener('shown.bs.modal', function handler() {
           html5QrCode = new Html5Qrcode("reader");
           
+   
           const config = {
             fps: 10,
             qrbox: { width: 250, height: 150 },
