@@ -533,7 +533,8 @@
           } else {
             // Mostrar el mensaje de advertencia aquí, después de verificar que no hay errores.
 
-
+            document.getElementById('scannerButtonContainer').style.display = 'none';
+            document.getElementById('documentoDisplayContainer').style.display = 'block';
 
             const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez por día y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";
             deshabilitarFormulario(mensajeAlerta, true)
@@ -893,19 +894,7 @@
       modalElement.addEventListener('hidden.bs.modal', detenerScanner);
     });
 
-    // Escucha cambios en el input de documento para ocultar el botón de escaneo
-    document.getElementById('documentoInput').addEventListener('input', function () {
-      const scannerBtn = document.getElementById('scannerButtonContainer');
-      const docDisplay = document.getElementById('documentoDisplayContainer');
 
-      if (this.value.trim() !== "") {
-        scannerBtn.style.display = 'none';
-        docDisplay.style.display = 'block';
-      } else {
-        scannerBtn.style.display = 'grid'; // O 'block' según tu diseño
-        docDisplay.style.display = 'none';
-      }
-    });
   </script>
 
   <div class="modal fade" id="scannerModal" tabindex="-1" aria-hidden="true">
