@@ -841,28 +841,29 @@
       const config = {
         fps: 10,
         qrbox: { width: 250, height: 150 },
-        aspectRatio: 1.777778
+        aspectRatio: 1.777778,
+        // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
+        formatsToSupport: [ Html5QrcodeSupportedFormats.PDF_417 ] 
       };
 
       html5QrCode.start(
         { facingMode: "environment" },
         config,
-        // ... dentro de html5QrCode.start ...
         (decodedText) => {
           const partes = decodedText.split('@');
           console.log("Datos escaneados:", partes); // Para debug en consola
 
           if (partes.length > 4) {
-            // En DNI Argentino: 1=Apellido, 2=Nombre, 4=DNI
             const apellido = partes[1].trim();
             const nombre = partes[2].trim();
             const dni = partes[4].trim().replace(/\D/g, "");
 
-            // REFERENCIAS CON IDs EXACTOS DE TU HTML
+            // CORRECCIÓN: Respetamos la "I" mayúscula tal cual está en el HTML
             const inputDoc = document.getElementById('documentoInput');
-            const inputApe = document.getElementById('apellidoinput'); // corregido a minúscula
-            const inputNom = document.getElementById('nombreinput');   // corregido a minúscula
+            const inputApe = document.getElementById('apellidoInput'); 
+            const inputNom = document.getElementById('nombreInput');   
 
+            // Ahora sí los va a encontrar y va a entrar en el if
             if (inputDoc && inputApe && inputNom) {
               inputDoc.value = dni;
               inputApe.value = apellido;
@@ -885,6 +886,8 @@
               inputDoc.dispatchEvent(new Event('input'));
               inputApe.dispatchEvent(new Event('input'));
               inputNom.dispatchEvent(new Event('input'));
+            } else {
+              console.error("Che, no encontré los inputs en el HTML, revisá los IDs.");
             }
           }
         },
