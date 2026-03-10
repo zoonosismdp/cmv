@@ -821,76 +821,76 @@
 
     // --- LÓGICA DEL ESCÁNER DNI ---
     // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
-    // --- LÓGICA DEL ESCÁNER DNI (SOLUCIÓN DEFINITIVA) ---
-   // --- LÓGICA DEL ESCÁNER DNI (SIN MODAL DE AVISO) ---
-    let html5QrCode = null;
+    let html5QrCode;
 
-    async function detenerScanner() {
-      if (html5QrCode) {
-        try {
-          if (html5QrCode.getState() === 2 || html5QrCode.getState() === 3) {
-            await html5QrCode.stop();
-          }
+    function detenerScanner() {
+      if (html5QrCode && (html5QrCode.getState() === 2 || html5QrCode.getState() === 3)) {
+        html5QrCode.stop().then(() => {
           html5QrCode.clear();
-          html5QrCode = null;
-        } catch (err) {
-          console.error("Error al detener cámara:", err);
-        }
+        }).catch(err => console.error("Error al detener cámara:", err));
       }
     }
 
-    // Al presionar el botón rojo, abrimos el escáner directamente
     document.getElementById('btnAbrirScanner').addEventListener('click', function () {
-      const scannerModalEl = document.getElementById('scannerModal');
-      const scannerModal = bootstrap.Modal.getOrCreateInstance(scannerModalEl);
-      
-      // Configuramos el evento para que la cámara inicie solo cuando el modal sea visible
-      scannerModalEl.addEventListener('shown.bs.modal', function handler() {
-        html5QrCode = new Html5Qrcode("reader");
-        
-        const config = {
-          fps: 10,
-          qrbox: { width: 250, height: 150 },
-          formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
-        };
+      const modalElement = document.getElementById('scannerModal');
+      const scannerModal = new bootstrap.Modal(modalElement);
+      scannerModal.show();
 
-        html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          (decodedText) => {
-            const partes = decodedText.split('@');
-            if (partes.length > 4) {
-              const dni = partes[4].trim().replace(/\D/g, "");
-              const inputDoc = document.getElementById('documentoInput');
+      html5QrCode = new Html5Qrcode("reader");
 
-              if (inputDoc) {
-                inputDoc.value = dni;
-                inputDoc.readOnly = true;
-                inputDoc.classList.add("readonly-field");
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 },
+        aspectRatio: 1.777778,
+        // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
+        formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
+      };
 
-                document.getElementById('scannerButtonContainer').style.display = 'none';
-                document.getElementById('documentoDisplayContainer').style.display = 'block';
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          const partes = decodedText.split('@');
+          console.log("Datos escaneados:", partes); // Para debug en consola
 
-                detenerScanner();
-                scannerModal.hide();
-                inputDoc.dispatchEvent(new Event('input'));
-              }
+          if (partes.length > 4) {
+            const dni = partes[4].trim().replace(/\D/g, "");
+
+            // CORRECCIÓN: Respetamos la "I" mayúscula tal cual está en el HTML
+            const inputDoc = document.getElementById('documentoInput');
+
+            // Ahora sí los va a encontrar y va a entrar en el if
+            if (inputDoc) {
+              inputDoc.value = dni;
+
+
+              // Bloquear para que no editen lo escaneado
+              inputDoc.readOnly = true;
+              inputDoc.classList.add("readonly-field");
+
+              // Cambiar vista de botones
+              document.getElementById('scannerButtonContainer').style.display = 'none';
+              document.getElementById('documentoDisplayContainer').style.display = 'block';
+
+              detenerScanner();
+              bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
+
+              // Avisar al sistema que los campos cambiaron
+              inputDoc.dispatchEvent(new Event('input'));
+
+            } else {
+              console.error("Verificar");
             }
           }
-        ).catch((err) => {
-          console.error("Error de cámara:", err);
-          alert("Asegúrese de dar permisos a la cámara.");
-          scannerModal.hide();
-        });
-        
-        // Importante: quitar el listener para que no se acumule
-        scannerModalEl.removeEventListener('shown.bs.modal', handler);
+        },
+        (errorMessage) => { /* Silencioso mientras busca */ }
+      ).catch((err) => {
+        console.error("Error al iniciar cámara: ", err);
+        alert("No se pudo acceder a la cámara. Verificá los permisos o consultar en Administración.");
+        scannerModal.hide();
       });
 
-      // Aseguramos la detención si se cierra el modal
-      scannerModalEl.addEventListener('hidden.bs.modal', detenerScanner);
-
-      scannerModal.show();
+      modalElement.addEventListener('hidden.bs.modal', detenerScanner);
     });
   </script>
 
@@ -908,8 +908,6 @@
       </div>
     </div>
   </div>
-
-  
 </body>
 
 </html>
