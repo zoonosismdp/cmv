@@ -10,6 +10,31 @@
     max-width: 400px;
     margin: 0 auto;
   }
+
+  /* Definimos el efecto de parpadeo */
+  @keyframes parpadeo-suave {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Creamos la clase que aplica la animación */
+  .btn-animado {
+    animation: parpadeo-suave 1.5s infinite ease-in-out;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    /* Un brillo azul sutil */
+  }
 </style>
 
 
@@ -105,8 +130,9 @@
 
       <div class="col-12 mb-3">
         <div id="scannerButtonContainer" class="d-grid gap-2">
-          <button class="btn btn-outline-danger btn-lg" type="button" id="btnAbrirScanner">
-            🪪 Escanear DNI para comenzar
+
+          <button type="button" class="btn btn-primary btn-animado" id="btnAbrirScanner">
+            🪪Escanear DNI para comenzar
           </button>
           <small class="text-muted text-center">Es necesario para iniciar el registro</small>
         </div>
@@ -848,49 +874,49 @@
         { facingMode: "environment" },
         config,
         (decodedText) => {
-  // El DNI argentino usa @ como separador
-  const partes = decodedText.split('@');
-  console.log("Datos brutos escaneados:", partes); 
+          // El DNI argentino usa @ como separador
+          const partes = decodedText.split('@');
+          console.log("Datos brutos escaneados:", partes);
 
-  if (partes.length > 4) {
-    // En la mayoría de los DNI es la posición 4, 
-    // pero verificamos que sea un número de entre 7 y 9 dígitos
-    let dni = "";
-    
-    // Buscamos en las posiciones donde suele estar el DNI (índices 4 o 1)
-    if (/^\d{7,9}$/.test(partes[4].trim())) {
-        dni = partes[4].trim();
-    } else if (/^\d{7,9}$/.test(partes[1].trim())) {
-        dni = partes[1].trim();
-    } else {
-        // Si no está en los lugares fijos, buscamos el primer elemento que sea puramente numérico
-        dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
-    }
+          if (partes.length > 4) {
+            // En la mayoría de los DNI es la posición 4, 
+            // pero verificamos que sea un número de entre 7 y 9 dígitos
+            let dni = "";
 
-    const inputDoc = document.getElementById('documentoInput');
+            // Buscamos en las posiciones donde suele estar el DNI (índices 4 o 1)
+            if (/^\d{7,9}$/.test(partes[4].trim())) {
+              dni = partes[4].trim();
+            } else if (/^\d{7,9}$/.test(partes[1].trim())) {
+              dni = partes[1].trim();
+            } else {
+              // Si no está en los lugares fijos, buscamos el primer elemento que sea puramente numérico
+              dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
+            }
 
-    if (inputDoc && dni !== "") {
-      inputDoc.value = dni;
+            const inputDoc = document.getElementById('documentoInput');
 
-      // Bloquear para que no editen lo escaneado
-      inputDoc.readOnly = true;
-      inputDoc.classList.add("readonly-field");
+            if (inputDoc && dni !== "") {
+              inputDoc.value = dni;
 
-      // Cambiar vista de botones
-      document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
-      document.getElementById('documentoDisplayContainer').style.display = 'block';
+              // Bloquear para que no editen lo escaneado
+              inputDoc.readOnly = true;
+              inputDoc.classList.add("readonly-field");
 
-      detenerScanner();
-      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
-      if(modalInstance) modalInstance.hide();
+              // Cambiar vista de botones
+              document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
+              document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-      // Avisar al sistema que los campos cambiaron para habilitar "Continuar"
-      inputDoc.dispatchEvent(new Event('input'));
-    } else {
-      console.warn("No se encontró un número de DNI válido en el código escaneado.");
-    }
-  }
-},
+              detenerScanner();
+              const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+              if (modalInstance) modalInstance.hide();
+
+              // Avisar al sistema que los campos cambiaron para habilitar "Continuar"
+              inputDoc.dispatchEvent(new Event('input'));
+            } else {
+              console.warn("No se encontró un número de DNI válido en el código escaneado.");
+            }
+          }
+        },
         (errorMessage) => { /* Silencioso mientras busca */ }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
@@ -908,7 +934,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Escaneá el código del DNI</h5>
+          <h5 class="modal-title">Escaneá el código del DNI.</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
