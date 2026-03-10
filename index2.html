@@ -821,6 +821,7 @@
 
     // --- LÓGICA DEL ESCÁNER DNI ---
     // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
+    // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
     let html5QrCode;
 
     function detenerScanner() {
@@ -831,7 +832,18 @@
       }
     }
 
+    // Al tocar el botón rojo original, primero mostramos el modal de aviso
     document.getElementById('btnAbrirScanner').addEventListener('click', function () {
+      const avisoModal = new bootstrap.Modal(document.getElementById('avisoCamaraModal'));
+      avisoModal.show();
+    });
+
+    // Cuando el usuario acepta el aviso, recién ahí abrimos la cámara
+    document.getElementById('confirmarEscaneo').addEventListener('click', function() {
+      // Cerramos el modal de aviso
+      bootstrap.Modal.getInstance(document.getElementById('avisoCamaraModal')).hide();
+      
+      // Abrimos el modal del escáner
       const modalElement = document.getElementById('scannerModal');
       const scannerModal = new bootstrap.Modal(modalElement);
       scannerModal.show();
@@ -842,7 +854,6 @@
         fps: 10,
         qrbox: { width: 250, height: 150 },
         aspectRatio: 1.777778,
-        // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
         formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
       };
 
@@ -860,24 +871,23 @@
               inputDoc.readOnly = true;
               inputDoc.classList.add("readonly-field");
 
-              // 1. Ocultamos el contenedor del botón de inicio
+              // 1. OCULTAMOS EL BOTÓN DEFINITIVAMENTE
               document.getElementById('scannerButtonContainer').style.display = 'none';
               
-              // 2. Mostramos el contenedor con el DNI cargado
+              // 2. MOSTRAMOS EL CAMPO CON EL DNI
               document.getElementById('documentoDisplayContainer').style.display = 'block';
 
               detenerScanner();
-              bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
+              bootstrap.Modal.getInstance(modalElement).hide();
 
-              // 3. Disparamos el evento para que el sistema valide el formulario
+              // Validamos el formulario
               inputDoc.dispatchEvent(new Event('input'));
             }
           }
         },
-        (errorMessage) => { /* Silencioso mientras busca */ }
+        (errorMessage) => { /* Silencioso */ }
       ).catch((err) => {
-        console.error("Error al iniciar cámara: ", err);
-        alert("No se pudo acceder a la cámara. Verificá los permisos o consultar en Administración.");
+        alert("Error de cámara. Verificá permisos.");
         scannerModal.hide();
       });
 
@@ -899,6 +909,24 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="avisoCamaraModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Aviso de Escaneo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="modal-text-lg">⚠️ Se procederá a escanear el número de documento.</p>
+        <p class="fw-bold text-danger">Por favor, seleccione y apunte al código de barras largo del DNI.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-primary btn-lg" id="confirmarEscaneo">Aceptar y abrir cámara</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>
