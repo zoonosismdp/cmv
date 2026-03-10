@@ -655,52 +655,39 @@
       // Función de restauración común
       // Función de restauración completa
       const restaurarFormulario = () => {
-    console.log("Iniciando restauración del formulario...");
-    
-    // 1. Reset general del formulario
+    console.log("Restaurando formulario...");
     const form = document.getElementById("miForm");
     if (form) form.reset();
 
-    // 2. Reset visual del Escáner (Volver al botón)
-    const scannerBtn = document.getElementById('scannerButtonContainer');
-    const docDisplay = document.getElementById('documentoDisplayContainer');
-    if (scannerBtn) scannerBtn.style.display = 'grid';
-    if (docDisplay) docDisplay.style.display = 'none';
+    // 1. Reset visual del Escáner
+    const scannerBtnContainer = document.getElementById('scannerButtonContainer');
+    const docDisplayContainer = document.getElementById('documentoDisplayContainer');
+    if (scannerBtnContainer) scannerBtnContainer.style.display = 'grid';
+    if (docDisplayContainer) docDisplayContainer.style.display = 'none';
 
-    // 3. Lista de campos a desbloquear (IDs corregidos según tu HTML)
-    const camposAResetear = [
-        { id: "documentoInput", readOnly: false },
-        { id: "apellidoinput", readOnly: false }, // minúscula según tu archivo
-        { id: "nombreinput", readOnly: false },   // minúscula según tu archivo
-        { id: "domicilioInput", readOnly: false },
-        { id: "telefonoInput", readOnly: false }
-    ];
+    // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
+    const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
-    camposAResetear.forEach(item => {
-        const el = document.getElementById(item.id);
+    camposAResetear.forEach(id => {
+        const el = document.getElementById(id);
         if (el) {
-            el.readOnly = item.readOnly;
+            el.readOnly = false;
             el.classList.remove("readonly-field");
-            el.value = ""; // Limpiar valor explícitamente
+            el.value = ""; 
         }
     });
 
-    // 4. Reset de visibilidad de secciones dinámicas
-    const formContent = document.getElementById("formContent");
-    if (formContent) formContent.style.display = "none";
-
-    // 5. Reset de campos de raza y vacunas
-    const idsOcultar = ["razaDefinida", "fechaAntirrabica", "vacunarDiv"];
-    idsOcultar.forEach(id => {
+    // 3. Reset de visibilidad de secciones dinámicas
+    const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
+    secciones.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = "none";
     });
 
-    // 6. Reset de etiquetas (labels)
-    const labels = document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']");
-    labels.forEach(l => l.style.display = "none");
+    // 4. Reset de Labels
+    document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
 
-    // 7. Reset de botones
+    // 5. Reset de botones
     const btnAcepto = document.getElementById("btnAcepto");
     if (btnAcepto) {
         btnAcepto.classList.remove("btn-accepted");
@@ -719,7 +706,6 @@
         continueBtn.disabled = false;
     }
 
-    // 8. Re-validar estado general
     if (typeof verificarValidezFormulario === "function") {
         verificarValidezFormulario();
     }
@@ -861,47 +847,47 @@
       html5QrCode.start(
         { facingMode: "environment" },
         config,
-// ... dentro de html5QrCode.start ...
-(decodedText) => {
-    const partes = decodedText.split('@');
-    console.log("Datos escaneados:", partes); // Para debug en consola
+        // ... dentro de html5QrCode.start ...
+        (decodedText) => {
+          const partes = decodedText.split('@');
+          console.log("Datos escaneados:", partes); // Para debug en consola
 
-    if (partes.length > 4) {
-        // En DNI Argentino: 1=Apellido, 2=Nombre, 4=DNI
-        const apellido = partes[1].trim();
-        const nombre = partes[2].trim();
-        const dni = partes[4].trim().replace(/\D/g, "");
+          if (partes.length > 4) {
+            // En DNI Argentino: 1=Apellido, 2=Nombre, 4=DNI
+            const apellido = partes[1].trim();
+            const nombre = partes[2].trim();
+            const dni = partes[4].trim().replace(/\D/g, "");
 
-        // REFERENCIAS CON IDs EXACTOS DE TU HTML
-        const inputDoc = document.getElementById('documentoInput');
-        const inputApe = document.getElementById('apellidoinput'); // corregido a minúscula
-        const inputNom = document.getElementById('nombreinput');   // corregido a minúscula
+            // REFERENCIAS CON IDs EXACTOS DE TU HTML
+            const inputDoc = document.getElementById('documentoInput');
+            const inputApe = document.getElementById('apellidoinput'); // corregido a minúscula
+            const inputNom = document.getElementById('nombreinput');   // corregido a minúscula
 
-        if (inputDoc && inputApe && inputNom) {
-            inputDoc.value = dni;
-            inputApe.value = apellido;
-            inputNom.value = nombre;
+            if (inputDoc && inputApe && inputNom) {
+              inputDoc.value = dni;
+              inputApe.value = apellido;
+              inputNom.value = nombre;
 
-            // Bloquear para que no editen lo escaneado
-            [inputDoc, inputApe, inputNom].forEach(campo => {
+              // Bloquear para que no editen lo escaneado
+              [inputDoc, inputApe, inputNom].forEach(campo => {
                 campo.readOnly = true;
                 campo.classList.add("readonly-field");
-            });
+              });
 
-            // Cambiar vista de botones
-            document.getElementById('scannerButtonContainer').style.display = 'none';
-            document.getElementById('documentoDisplayContainer').style.display = 'block';
+              // Cambiar vista de botones
+              document.getElementById('scannerButtonContainer').style.display = 'none';
+              document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-            detenerScanner();
-            bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
-            
-            // Avisar al sistema que los campos cambiaron
-            inputDoc.dispatchEvent(new Event('input'));
-            inputApe.dispatchEvent(new Event('input'));
-            inputNom.dispatchEvent(new Event('input'));
-        }
-    }
-},
+              detenerScanner();
+              bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
+
+              // Avisar al sistema que los campos cambiaron
+              inputDoc.dispatchEvent(new Event('input'));
+              inputApe.dispatchEvent(new Event('input'));
+              inputNom.dispatchEvent(new Event('input'));
+            }
+          }
+        },
         (errorMessage) => { /* Silencioso mientras busca */ }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
