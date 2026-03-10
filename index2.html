@@ -533,7 +533,7 @@
           } else {
             // Mostrar el mensaje de advertencia aquí, después de verificar que no hay errores.
 
-            document.getElementById('scannerButtonContainer').style.display = 'none';
+            document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
             document.getElementById('documentoDisplayContainer').style.display = 'block';
 
             const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez por día y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";
@@ -660,11 +660,9 @@
         const form = document.getElementById("miForm");
         if (form) form.reset();
 
-        const scannerBtnContainer = document.getElementById('scannerButtonContainer');
-        const docDisplayContainer = document.getElementById('documentoDisplayContainer');
-        if (scannerBtnContainer) scannerBtnContainer.style.display = 'none';
-        if (docDisplayContainer) docDisplayContainer.style.display = 'block';
-
+        // Ocultar botón de escaneo a la fuerza y mostrar el DNI
+        document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
+        document.getElementById('documentoDisplayContainer').style.display = 'block';
         // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
@@ -869,7 +867,7 @@
               inputDoc.classList.add("readonly-field");
 
               // Cambiar vista de botones
-              document.getElementById('scannerButtonContainer').style.display = 'none';
+              document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
               document.getElementById('documentoDisplayContainer').style.display = 'block';
 
               detenerScanner();
