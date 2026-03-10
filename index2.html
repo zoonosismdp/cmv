@@ -822,83 +822,75 @@
     // --- LÓGICA DEL ESCÁNER DNI ---
     // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
     // --- LÓGICA DEL ESCÁNER DNI (SOLUCIÓN DEFINITIVA) ---
-    let html5QrCode;
+   // --- LÓGICA DEL ESCÁNER DNI (SIN MODAL DE AVISO) ---
+    let html5QrCode = null;
 
-    function detenerScanner() {
-      if (html5QrCode && (html5QrCode.getState() === 2 || html5QrCode.getState() === 3)) {
-        html5QrCode.stop().then(() => {
+    async function detenerScanner() {
+      if (html5QrCode) {
+        try {
+          if (html5QrCode.getState() === 2 || html5QrCode.getState() === 3) {
+            await html5QrCode.stop();
+          }
           html5QrCode.clear();
-        }).catch(err => console.error("Error al detener cámara:", err));
+          html5QrCode = null;
+        } catch (err) {
+          console.error("Error al detener cámara:", err);
+        }
       }
     }
 
-    // 1. Al tocar el botón rojo, abrimos el modal de aviso
+    // Al presionar el botón rojo, abrimos el escáner directamente
     document.getElementById('btnAbrirScanner').addEventListener('click', function () {
-      const avisoModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avisoCamaraModal'));
-      avisoModal.show();
-    });
-
-    // 2. Al confirmar en el aviso, cerramos ese y abrimos el escáner con delay
-    document.getElementById('confirmarEscaneo').addEventListener('click', function() {
-      const avisoModalEl = document.getElementById('avisoCamaraModal');
       const scannerModalEl = document.getElementById('scannerModal');
+      const scannerModal = bootstrap.Modal.getOrCreateInstance(scannerModalEl);
       
-      // Cerramos el primer modal forzando la recuperación de la instancia correcta
-      const bsAviso = bootstrap.Modal.getOrCreateInstance(avisoModalEl);
-      bsAviso.hide();
+      // Configuramos el evento para que la cámara inicie solo cuando el modal sea visible
+      scannerModalEl.addEventListener('shown.bs.modal', function handler() {
+        html5QrCode = new Html5Qrcode("reader");
+        
+        const config = {
+          fps: 10,
+          qrbox: { width: 250, height: 150 },
+          formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
+        };
 
-      // Esperamos a que el primer modal desaparezca por completo (350ms)
-      setTimeout(() => {
-        const scannerModal = bootstrap.Modal.getOrCreateInstance(scannerModalEl);
-        scannerModal.show();
+        html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            const partes = decodedText.split('@');
+            if (partes.length > 4) {
+              const dni = partes[4].trim().replace(/\D/g, "");
+              const inputDoc = document.getElementById('documentoInput');
 
-        // REGLA DE ORO: No iniciamos la cámara hasta que el modal del escáner esté TOTALMENTE visible
-        scannerModalEl.addEventListener('shown.bs.modal', function handler() {
-          html5QrCode = new Html5Qrcode("reader");
-          
-   
-          const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 150 },
-            formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
-          };
+              if (inputDoc) {
+                inputDoc.value = dni;
+                inputDoc.readOnly = true;
+                inputDoc.classList.add("readonly-field");
 
-          html5QrCode.start(
-            { facingMode: "environment" },
-            config,
-            (decodedText) => {
-              const partes = decodedText.split('@');
-              if (partes.length > 4) {
-                const dni = partes[4].trim().replace(/\D/g, "");
-                const inputDoc = document.getElementById('documentoInput');
+                document.getElementById('scannerButtonContainer').style.display = 'none';
+                document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-                if (inputDoc) {
-                  inputDoc.value = dni;
-                  inputDoc.readOnly = true;
-                  inputDoc.classList.add("readonly-field");
-
-                  // OCULTAMOS EL BOTÓN ROJO DE INICIO
-                  document.getElementById('scannerButtonContainer').style.display = 'none';
-                  document.getElementById('documentoDisplayContainer').style.display = 'block';
-
-                  detenerScanner();
-                  scannerModal.hide();
-                  inputDoc.dispatchEvent(new Event('input'));
-                }
+                detenerScanner();
+                scannerModal.hide();
+                inputDoc.dispatchEvent(new Event('input'));
               }
             }
-          ).catch((err) => {
-            console.error("Error de cámara:", err);
-            alert("No se pudo iniciar la cámara. Asegurate de estar en un sitio seguro (HTTPS) y dar los permisos.");
-            scannerModal.hide();
-          });
-          
-          // Limpiamos el evento para que no se repita
-          scannerModalEl.removeEventListener('shown.bs.modal', handler);
+          }
+        ).catch((err) => {
+          console.error("Error de cámara:", err);
+          alert("Asegúrese de dar permisos a la cámara.");
+          scannerModal.hide();
         });
+        
+        // Importante: quitar el listener para que no se acumule
+        scannerModalEl.removeEventListener('shown.bs.modal', handler);
+      });
 
-        scannerModalEl.addEventListener('hidden.bs.modal', detenerScanner);
-      }, 1500); 
+      // Aseguramos la detención si se cierra el modal
+      scannerModalEl.addEventListener('hidden.bs.modal', detenerScanner);
+
+      scannerModal.show();
     });
   </script>
 
@@ -917,23 +909,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="avisoCamaraModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Aviso de Escaneo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <p class="modal-text-lg">⚠️ Se procederá a escanear el número de documento.</p>
-        <p class="fw-bold text-danger">Por favor, seleccione y apunte al código de barras largo del DNI.</p>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-primary btn-lg" id="confirmarEscaneo">Aceptar y abrir cámara</button>
-      </div>
-    </div>
-  </div>
-</div>
+  
 </body>
 
 </html>
