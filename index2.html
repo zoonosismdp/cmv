@@ -106,7 +106,7 @@
       <div class="col-12 mb-3">
         <div id="scannerButtonContainer" class="d-grid gap-2">
           <button class="btn btn-outline-danger btn-lg" type="button" id="btnAbrirScanner">
-            📷 Escanear DNI para comenzar
+            🪪 Escanear DNI para comenzar
           </button>
           <small class="text-muted text-center">Es necesario para iniciar el registro</small>
         </div>
@@ -851,35 +851,26 @@
         config,
         (decodedText) => {
           const partes = decodedText.split('@');
-          console.log("Datos escaneados:", partes); // Para debug en consola
-
           if (partes.length > 4) {
             const dni = partes[4].trim().replace(/\D/g, "");
-
-            // CORRECCIÓN: Respetamos la "I" mayúscula tal cual está en el HTML
             const inputDoc = document.getElementById('documentoInput');
 
-            // Ahora sí los va a encontrar y va a entrar en el if
             if (inputDoc) {
               inputDoc.value = dni;
-
-
-              // Bloquear para que no editen lo escaneado
               inputDoc.readOnly = true;
               inputDoc.classList.add("readonly-field");
 
-              // Cambiar vista de botones
+              // 1. Ocultamos el contenedor del botón de inicio
               document.getElementById('scannerButtonContainer').style.display = 'none';
+              
+              // 2. Mostramos el contenedor con el DNI cargado
               document.getElementById('documentoDisplayContainer').style.display = 'block';
 
               detenerScanner();
               bootstrap.Modal.getInstance(document.getElementById('scannerModal')).hide();
 
-              // Avisar al sistema que los campos cambiaron
+              // 3. Disparamos el evento para que el sistema valide el formulario
               inputDoc.dispatchEvent(new Event('input'));
-
-            } else {
-              console.error("Verificar");
             }
           }
         },
@@ -903,7 +894,7 @@
         </div>
         <div class="modal-body text-center">
           <div id="reader"></div>
-          <p class="mt-2 text-muted small">Apuntá al código de barras largo (PDF417)</p>
+          <p class="mt-2 text-muted small">Apuntá al código de barras largo de tu DNI. Verifica tener buena luz.</p>
         </div>
       </div>
     </div>
