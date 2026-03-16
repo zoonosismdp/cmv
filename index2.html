@@ -519,6 +519,7 @@ function emitirBeepExito() {
 
       btnAcepto.disabled = !formIsValid;
       
+      const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
       if (!btnAcepto.disabled) {
         btnAcepto.classList.add("btn-accept-parpadeando");
       } else {
