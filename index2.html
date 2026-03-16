@@ -458,24 +458,20 @@
       }
 
       // 2. NUEVA LÓGICA DE RAZA: Validación de Tipo de Raza y Selección
-      const tipoRaza = document.getElementById("tipoRazaSelect");
-      const razaSelect = document.getElementById("razaDefinidaSelect");
-      const razaDefinidaInput = document.getElementById("razaDefinida");
+      // Dentro de verificarValidezFormulario
+  const tipoRaza = document.getElementById("raza"); // ID actualizado
+  const razaSelect = document.getElementById("razaDefinidaSelect");
+  const razaDefinidaInput = document.getElementById("razaDefinida");
 
-      // Si no se seleccionó ni Mestizo ni Definido, el formulario no es válido
-      if (!tipoRaza.value) {
-        formIsValid = false;
-      }
-      // Si eligió Definido, debe seleccionar una raza de la lista
-      else if (tipoRaza.value === "Definido") {
-        if (!razaSelect.value) {
-          formIsValid = false;
-        }
-        // Si eligió "OTRA", el campo de texto manual no puede estar vacío
-        else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
-          formIsValid = false;
-        }
-      }
+  if (!tipoRaza.value) {
+    formIsValid = false;
+  } else if (tipoRaza.value === "Definido") {
+    if (!razaSelect.value) {
+      formIsValid = false;
+    } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+      formIsValid = false;
+    }
+  }
 
       // 3. Validación de Antirrábica y Vacunar Animal (Lógica original)
       const antirrabicaSelect = document.getElementById("antirrabica");
@@ -505,92 +501,52 @@
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    document.getElementById("tipoRazaSelect").addEventListener("change", function () {
+   // 1. Lógica para el selector principal (Mestizo / Definido)
+    document.getElementById("raza").addEventListener("change", function () {
       const valor = this.value;
       const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
       const contenedorManual = document.getElementById("contenedorRazaManual");
       const razaSelect = document.getElementById("razaDefinidaSelect");
-      const razaInput = document.getElementById("razaDefinida");
-      const etiquetaManual = document.querySelector("label[for='razaDefinida']");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
 
       if (valor === "Mestizo") {
+        // Si es Mestizo, ocultamos todo y limpiamos el nombre específico
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
-        if(etiquetaManual) etiquetaManual.style.display = "none";
         razaSelect.value = "";
-        razaSelect.removeAttribute("required");
-        razaInput.value = "Mestizo";
+        razaDefinidaInput.value = ""; 
+        razaDefinidaInput.removeAttribute("required");
       } else if (valor === "Definido") {
+        // Si es Definido, mostramos el listado
         contenedorEspecial.style.display = "block";
-        razaSelect.setAttribute("required", "true");
-        razaInput.value = ""; 
+        contenedorManual.style.display = "none";
+        razaDefinidaInput.value = ""; 
       } else {
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
-        if(etiquetaManual) etiquetaManual.style.display = "none";
-        razaInput.value = "";
       }
       verificarValidezFormulario();
     });
 
-    // Lógica para el selector de razas específicas
+    // 2. Lógica para el listado de razas
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
       const contenedorManual = document.getElementById("contenedorRazaManual");
-      const etiquetaManual = document.querySelector("label[for='razaDefinida']");
 
       if (this.value === "OTRA") {
+        // Si elige "OTRA", mostramos el input manual
         contenedorManual.style.display = "block";
-        if(etiquetaManual) etiquetaManual.style.display = "block"; // Mostrar etiqueta
-        razaDefinidaInput.style.display = "block"; // Asegurar que el input sea visible
+        razaDefinidaInput.value = ""; 
         razaDefinidaInput.setAttribute("required", "true");
-        razaDefinidaInput.value = "";
+        razaDefinidaInput.style.display = "block";
+      } else if (this.value !== "") {
+        // Si elige una raza del listado, la guardamos en el input (aunque esté oculto)
+        contenedorManual.style.display = "none";
+        razaDefinidaInput.value = this.value; 
+        razaDefinidaInput.removeAttribute("required");
       } else {
         contenedorManual.style.display = "none";
-        if(etiquetaManual) etiquetaManual.style.display = "none";
-        razaDefinidaInput.removeAttribute("required");
-        razaDefinidaInput.value = this.value; 
-      }
-      verificarValidezFormulario();
-    });
-
-    // Nueva escucha para el campo manual para que valide mientras escriben
-    document.getElementById("razaDefinida").addEventListener("input", verificarValidezFormulario);
-
-    document.getElementById("antirrabica").addEventListener("change", function () {
-      const fechaVacuna = document.getElementById("fechaAntirrabica");
-      const fechaVacunaLabel = document.querySelector("label[for='fechaAntirrabica']");
-
-      const vacunarDiv = document.getElementById("vacunarDiv");
-      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
-
-      if (this.value === "Sí") {
-        fechaVacuna.style.display = "block";
-        fechaVacunaLabel.style.display = "block";
-        fechaVacuna.setAttribute("required", "true");
-
-        vacunarDiv.style.display = "none";
-        vacunarAnimalSelect.removeAttribute("required");
-        vacunarAnimalSelect.value = "";
-      } else if (this.value === "No") {
-        fechaVacuna.style.display = "none";
-        fechaVacunaLabel.style.display = "none";
-        fechaVacuna.removeAttribute("required");
-        fechaVacuna.value = "";
-
-        vacunarDiv.style.display = "block";
-        vacunarAnimalSelect.setAttribute("required", "true");
-
-      } else {
-        // Opción vacía
-        fechaVacuna.style.display = "none";
-        fechaVacunaLabel.style.display = "none";
-        fechaVacuna.removeAttribute("required");
-        fechaVacuna.value = "";
-
-        vacunarDiv.style.display = "none";
-        vacunarAnimalSelect.removeAttribute("required");
-        vacunarAnimalSelect.value = "";
+        razaDefinidaInput.value = "";
       }
       verificarValidezFormulario();
     });
