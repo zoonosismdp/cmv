@@ -520,7 +520,7 @@ function emitirBeepExito() {
       btnAcepto.disabled = !formIsValid;
       
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
-      if (!btnAcepto.disabled) {
+      if (!btnAcepto.disabled && !aceptoClicked) {
         btnAcepto.classList.add("btn-accept-parpadeando");
       } else {
         btnAcepto.classList.remove("btn-accept-parpadeando");
