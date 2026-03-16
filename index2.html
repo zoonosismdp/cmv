@@ -194,12 +194,12 @@
             <select name="raza" id="raza" class="form-select mb-2" required>
               <option value="">Seleccione tipo</option>
               <option value="Mestizo">Mestizo</option>
-              <option value="Definida">Raza Definida</option>
+              <option value="Definida">Definida</option>
             </select>
           </div>
 
           <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
-            <label for="razaDefinidaSelect">Listado de Razas</label>
+            <label for="razaDefinidaSelect">Indique la raza</label>
             <select id="razaDefinidaSelect" class="form-select mb-2">
               <option value="">Seleccione la raza</option>
               <optgroup label="Razas PPP (Ord. 22031)">
@@ -241,7 +241,7 @@
             <label for="razaDefinida">Escriba la raza</label>
             <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Indique la raza" class="form-control">
           </div>
-          
+
           <div class="col-12">
             <label for="pelajeInput">Pelaje</label>
             <select name="pelaje" id="pelajeInput" class="form-select" required>
@@ -264,7 +264,7 @@
               <option value="Tricolor">Tricolor</option>
             </select>
           </div>
-          
+
           <div class="row g-3 mb-3">
             <div class="col-12">
               <label for="antirrabica">¿Fue vacunado contra la rabia en el último año?:</label>
@@ -426,6 +426,28 @@
          * @param {string} mensaje El texto a mostrar en el modal.
          * @param {boolean} mostrarPPP Si se debe mostrar el botón de razas peligrosas.
          */
+
+    /**
+ * Genera un sonido de "beep" profesional usando Web Audio API.
+ */
+    function emitirBeepExito() {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.type = 'sine'; // Tono suave
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota La5 (agudo y claro)
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Volumen controlado
+
+      oscillator.start();
+      // El "beep" dura 150ms para ser rápido y profesional
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.15);
+      oscillator.stop(audioCtx.currentTime + 0.15);
+    }
+
     function deshabilitarFormulario(mensaje, mostrarPPP = false) {
       const modalMessage = document.getElementById("warning-message");
       const pppContainer = document.getElementById("pppContainer");
@@ -983,6 +1005,7 @@
             const inputDoc = document.getElementById('documentoInput');
 
             if (inputDoc && dni !== "") {
+              emitirBeepExito();
               inputDoc.value = dni;
 
               // Bloquear para que no editen lo escaneado
