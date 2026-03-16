@@ -4,14 +4,12 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-  /* Estilo para que el lector no sea gigante */
   #reader {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
   }
 
-  /* Definimos el efecto de parpadeo */
   @keyframes parpadeo-suave {
     0% {
       opacity: 1;
@@ -29,11 +27,9 @@
     }
   }
 
-  /* Creamos la clase que aplica la animación */
   .btn-animado {
     animation: parpadeo-suave 1.5s infinite ease-in-out;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
-    /* Un brillo azul sutil */
   }
 </style>
 
@@ -457,10 +453,8 @@ function emitirBeepExito() {
 
       modalMessage.textContent = mensaje;
 
-      // Si mostrarPPP es true, mostramos el botón del listado
       pppContainer.style.display = mostrarPPP ? "block" : "none";
 
-      // Reiniciamos el colapsable por si quedó abierto de antes
       const listaRazas = document.getElementById("listaRazasPPP");
       if (listaRazas.classList.contains('show')) {
         listaRazas.classList.remove('show');
@@ -470,10 +464,6 @@ function emitirBeepExito() {
       warningModal.show();
     }
 
-    /**
-     * Muestra el modal de acceso deshabilitado y bloquea la interacción del formulario.
-     * @param {string} mensaje El texto a mostrar en el modal.
-     */
     function deshabilitarPorAcceso(mensaje) {
       const accessDisabledMessage = document.getElementById("accessDisabledMessage");
       accessDisabledMessage.textContent = mensaje;
@@ -484,18 +474,13 @@ function emitirBeepExito() {
       inputs.forEach(input => input.disabled = true);
     }
 
-    /**
-     * Verifica la validez de los campos y habilita/deshabilita los botones.
-     */
     function verificarValidezFormulario() {
       const form = document.getElementById("miForm");
       const btnAcepto = document.getElementById("btnAcepto");
       const submitBtn = document.getElementById("submitBtn");
 
-      // Validación básica de HTML5 (required, type, etc.)
       let formIsValid = form.checkValidity();
 
-      // 1. Verificar Apellido y Nombre (parte del contenido oculto)
       const formContent = document.getElementById("formContent");
       const apellidoInput = document.getElementById("apellidoInput");
       const nombreInput = document.getElementById("nombreInput");
@@ -520,35 +505,29 @@ function emitirBeepExito() {
         }
       }
 
-      // 3. Validación de Antirrábica y Vacunar Animal (Lógica original)
       const antirrabicaSelect = document.getElementById("antirrabica");
       const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
       const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
 
-      // Si fue vacunado (Sí), la fecha debe ser requerida
       if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
         formIsValid = false;
       }
 
-      // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
       if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
         formIsValid = false;
       }
 
-      // Habilitación del botón de Consentimiento (Acepto)
       btnAcepto.disabled = !formIsValid;
-
+      
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+      if (!btnAcepto.disabled && !aceptoClicked) {
+        btnAcepto.classList.add("btn-accept-parpadeando");
+      } else {
+        btnAcepto.classList.remove("btn-accept-parpadeando");
+      }
 
-      // El botón de enviar solo se habilita si el formulario es válido Y se presionó el botón de consentimiento
       submitBtn.disabled = !(formIsValid && aceptoClicked);
     }
-    // Event listeners para validación
-    // Event listeners para validación
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // 1. Lógica para el selector principal (Mestizo / Definido)
     document.getElementById("raza").addEventListener("change", function () {
       const valor = this.value;
       const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
@@ -557,14 +536,12 @@ function emitirBeepExito() {
       const razaDefinidaInput = document.getElementById("razaDefinida");
 
       if (valor === "Mestizo") {
-        // Si es Mestizo, ocultamos todo y limpiamos el nombre específico
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
         razaSelect.value = "";
         razaDefinidaInput.value = "";
         razaDefinidaInput.removeAttribute("required");
       } else if (valor === "Definida") {
-        // Si es Definido, mostramos el listado
         contenedorEspecial.style.display = "block";
         contenedorManual.style.display = "none";
         razaDefinidaInput.value = "";
@@ -575,19 +552,16 @@ function emitirBeepExito() {
       verificarValidezFormulario();
     });
 
-    // 2. Lógica para el listado de razas
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
       const contenedorManual = document.getElementById("contenedorRazaManual");
 
       if (this.value === "OTRA") {
-        // Si elige "OTRA", mostramos el input manual
         contenedorManual.style.display = "block";
         razaDefinidaInput.value = "";
         razaDefinidaInput.setAttribute("required", "true");
         razaDefinidaInput.style.display = "block";
       } else if (this.value !== "") {
-        // Si elige una raza del listado, la guardamos en el input (aunque esté oculto)
         contenedorManual.style.display = "none";
         razaDefinidaInput.value = this.value;
         razaDefinidaInput.removeAttribute("required");
@@ -731,16 +705,12 @@ function emitirBeepExito() {
               document.getElementById("idPropietarioInput").value = "";
               document.getElementById("idAnimalInput").value = "";
 
-              // **CAMPOS A RESETEAR/HABILITAR:**
               [apellidoCampo, nombreCampo, domicilioCampo, telefonoCampo].forEach(campo => {
                 campo.value = "";
                 campo.readOnly = false;
                 campo.classList.remove("readonly-field");
               });
             }
-            // Fin de Manejo de campos Apellido y Nombre
-
-
 
             document.getElementById("fechaAntirrabica").style.display = "none";
             document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
@@ -755,8 +725,7 @@ function emitirBeepExito() {
         })
         .catch(err => console.error("❌ Error al consultar documento:", err))
         .finally(() => {
-          // Restaurar el texto original y la habilitación del botón
-          continueBtn.textContent = 'Continuar'; // Restaurar el texto
+          continueBtn.textContent = 'Continuar';
           continueBtn.disabled = false;
           verificarValidezFormulario();
         });
@@ -791,18 +760,13 @@ function emitirBeepExito() {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Verificando y enviando...';
 
-      // Función de restauración común
-      // Función de restauración completa
       const restaurarFormulario = () => {
-        console.log("Restaurando formulario...");
         const form = document.getElementById("miForm");
         if (form) form.reset();
 
-        // Ocultar botón de escaneo a la fuerza y mostrar el DNI
         document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
         document.getElementById('documentoDisplayContainer').style.display = 'block';
 
-        // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
         camposAResetear.forEach(id => {
@@ -814,17 +778,14 @@ function emitirBeepExito() {
           }
         });
 
-        // 3. Reset de visibilidad de secciones dinámicas
         const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
         secciones.forEach(id => {
           const el = document.getElementById(id);
           if (el) el.style.display = "none";
         });
 
-        // 4. Reset de Labels
         document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
         document.getElementById("contenedorRazaManual").style.display = "none";
-        // 5. Reset de botones
         const btnAcepto = document.getElementById("btnAcepto");
         if (btnAcepto) {
           btnAcepto.classList.remove("btn-accepted");
@@ -849,8 +810,6 @@ function emitirBeepExito() {
       };
 
 
-      // ** 1. PRIMER PASO: VERIFICAR DUPLICIDAD FINAL (INMEDIATO) **
-      // Hacemos el chequeo justo antes del envío (doble control)
       const checkUrl = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
         + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -861,21 +820,16 @@ function emitirBeepExito() {
 
         if (checkData.error_orden || checkData.error) {
           const errorMessage = checkData.error_orden || checkData.error;
-          // Si detecta un error (orden ya usada, documento duplicado o acceso deshabilitado)
           deshabilitarFormulario(errorMessage);
 
-          // Restaurar estado del formulario para que el usuario pueda corregir
           btnAcepto.parentNode.style.display = "flex";
           btnAcepto.disabled = false;
           submitBtn.disabled = false;
           submitBtn.textContent = 'Enviar datos';
           verificarValidezFormulario();
-          return; // DETENER EL ENVÍO
+          return;
         }
 
-        // Si el chequeo pasa, continuamos con el envío INMEDIATO.
-
-        // 2. Concatenar y formatear: Apellido + " " + Nombre
         const propietarioOriginal = `${apellidoInput.value.trim()} ${nombreInput.value.trim()}`;
 
         const propietarioFormateado = propietarioOriginal
@@ -883,7 +837,6 @@ function emitirBeepExito() {
           .split(' ')
           .map(word => {
             if (word.length === 0) return '';
-            // Asegura que las palabras pequeñas no sean capitalizadas si no son la primera
             if (word.length <= 3 && word !== 'de' && word !== 'la' && word !== 'el') {
               return word;
             }
@@ -891,13 +844,11 @@ function emitirBeepExito() {
           })
           .join(' ');
 
-        // 3. Guardar el valor final en el campo oculto 'propietario' para el envío
         propietarioInput.value = propietarioFormateado;
         const propietario = propietarioFormateado;
 
         const formData = new FormData(this);
 
-        // ** 4. SEGUNDO PASO: ENVÍO FINAL (DENTRO DEL BLOQUEO DEL SERVIDOR) **
         const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec", {
           method: "POST",
           body: formData
@@ -907,17 +858,13 @@ function emitirBeepExito() {
           throw new Error(`Error de envío: ${sendResponse.statusText}`);
         }
 
-        // ¡IMPORTANTE! Validar si el servidor devolvió un error JSON por duplicidad
         const sendData = await sendResponse.json();
 
         if (sendData.error) {
-          // Error devuelto por doPost (Bloqueo): Duplicado de Orden o Documento.
-          // ESTA ES LA CLAVE DE LA CORRECCIÓN: Si el servidor dice que hubo error, mostramos el modal de advertencia con el mensaje.
           deshabilitarFormulario(sendData.error);
-          return; // Detenemos el flujo para evitar el modal de éxito
+          return;
         }
 
-        // 5. Mostrar éxito (solo si NO hubo error en sendData)
         const modalMessage = document.getElementById("modal-message");
         modalMessage.textContent = `Los datos de ${propietario} (DNI: ${documento}) fueron registrados satisfactoriamente. Recuerde los requisitos para la castración de su animal y esperar a ser llamado por el número de orden.`;
         const successModal = new bootstrap.Modal(document.getElementById('successModal'));
@@ -951,13 +898,8 @@ function emitirBeepExito() {
         .catch(err => console.error("❌ Error al verificar el acceso:", err));
     }
 
-    // Inicialización al cargar la ventana
     window.onload = verificarAcceso;
 
-    // ... (mantené la lógica de inicialización de html5QrCode que pasamos antes)
-
-    // --- LÓGICA DEL ESCÁNER DNI ---
-    // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
     let html5QrCode;
 
     function detenerScanner() {
@@ -973,7 +915,6 @@ function emitirBeepExito() {
       const scannerModal = new bootstrap.Modal(modalElement);
       const btnAbrirScanner = document.getElementById('btnAbrirScanner');
       
-      // Remover la animación de parpadeo al abrir la cámara
       btnAbrirScanner.classList.remove('btn-animado');
       
       scannerModal.show();
@@ -984,7 +925,6 @@ function emitirBeepExito() {
         fps: 10,
         qrbox: { width: 250, height: 150 },
         aspectRatio: 1.777778,
-        // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
         formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
       };
 
@@ -992,22 +932,17 @@ function emitirBeepExito() {
         { facingMode: "environment" },
         config,
         (decodedText) => {
-          // El DNI argentino usa @ como separador
           const partes = decodedText.split('@');
           console.log("Datos brutos escaneados:", partes);
 
           if (partes.length > 4) {
-            // En la mayoría de los DNI es la posición 4, 
-            // pero verificamos que sea un número de entre 7 y 9 dígitos
             let dni = "";
 
-            // Buscamos en las posiciones donde suele estar el DNI (índices 4 o 1)
             if (/^\d{7,9}$/.test(partes[4].trim())) {
               dni = partes[4].trim();
             } else if (/^\d{7,9}$/.test(partes[1].trim())) {
               dni = partes[1].trim();
             } else {
-              // Si no está en los lugares fijos, buscamos el primer elemento que sea puramente numérico
               dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
             }
 
@@ -1017,19 +952,15 @@ function emitirBeepExito() {
               emitirBeepExito();
               inputDoc.value = dni;
 
-              // Bloquear para que no editen lo escaneado
               inputDoc.readOnly = true;
               inputDoc.classList.add("readonly-field");
 
-              // Cambiar vista de botones
               document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
               document.getElementById('documentoDisplayContainer').style.display = 'block';
 
               detenerScanner();
               const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
               if (modalInstance) modalInstance.hide();
-
-              // Avisar al sistema que los campos cambiaron para habilitar "Continuar"
               inputDoc.dispatchEvent(new Event('input'));
             } else {
               console.warn("No se encontró un número de DNI válido en el código escaneado.");
@@ -1043,10 +974,8 @@ function emitirBeepExito() {
         scannerModal.hide();
       });
 
-      // Cuando se cierra el modal, detener el scanner y restaurar la animación del botón
       modalElement.addEventListener('hidden.bs.modal', function () {
         detenerScanner();
-        // Restaurar la clase btn-animado solo si el campo documentoInput está vacío
         const documentoInput = document.getElementById('documentoInput');
         const scannerButtonContainer = document.getElementById('scannerButtonContainer');
         if ((!documentoInput.value || documentoInput.value.trim() === '') && scannerButtonContainer.style.display !== 'none') {
