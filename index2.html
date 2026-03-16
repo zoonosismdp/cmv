@@ -189,7 +189,7 @@
             <label for="edadInput">Edad del animal (indique mes o año)</label>
             <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
           </div>
-         <div class="col-12">
+          <div class="col-12">
             <label for="raza">Raza</label>
             <select name="raza" id="raza" class="form-select mb-2" required>
               <option value="">Seleccione tipo</option>
@@ -199,7 +199,7 @@
           </div>
 
 
-          
+
           <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
             <label for="razaDefinidaSelect">Listado de Razas</label>
             <select id="razaDefinidaSelect" class="form-select mb-2">
@@ -461,19 +461,19 @@
 
       // 2. NUEVA LÓGICA DE RAZA: Validación de Tipo de Raza y Selección
       // Dentro de verificarValidezFormulario
-  const tipoRaza = document.getElementById("raza"); // ID actualizado
-  const razaSelect = document.getElementById("razaDefinidaSelect");
-  const razaDefinidaInput = document.getElementById("razaDefinida");
+      const tipoRaza = document.getElementById("raza"); // ID actualizado
+      const razaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
 
-  if (!tipoRaza.value) {
-    formIsValid = false;
-  } else if (tipoRaza.value === "Definida") {
-    if (!razaSelect.value) {
-      formIsValid = false;
-    } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
-      formIsValid = false;
-    }
-  }
+      if (!tipoRaza.value) {
+        formIsValid = false;
+      } else if (tipoRaza.value === "Definida") {
+        if (!razaSelect.value) {
+          formIsValid = false;
+        } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+          formIsValid = false;
+        }
+      }
 
       // 3. Validación de Antirrábica y Vacunar Animal (Lógica original)
       const antirrabicaSelect = document.getElementById("antirrabica");
@@ -503,7 +503,7 @@
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-   // 1. Lógica para el selector principal (Mestizo / Definido)
+    // 1. Lógica para el selector principal (Mestizo / Definido)
     document.getElementById("raza").addEventListener("change", function () {
       const valor = this.value;
       const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
@@ -516,13 +516,13 @@
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
         razaSelect.value = "";
-        razaDefinidaInput.value = ""; 
+        razaDefinidaInput.value = "";
         razaDefinidaInput.removeAttribute("required");
       } else if (valor === "Definida") {
         // Si es Definido, mostramos el listado
         contenedorEspecial.style.display = "block";
         contenedorManual.style.display = "none";
-        razaDefinidaInput.value = ""; 
+        razaDefinidaInput.value = "";
       } else {
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
@@ -538,17 +538,55 @@
       if (this.value === "OTRA") {
         // Si elige "OTRA", mostramos el input manual
         contenedorManual.style.display = "block";
-        razaDefinidaInput.value = ""; 
+        razaDefinidaInput.value = "";
         razaDefinidaInput.setAttribute("required", "true");
         razaDefinidaInput.style.display = "block";
       } else if (this.value !== "") {
         // Si elige una raza del listado, la guardamos en el input (aunque esté oculto)
         contenedorManual.style.display = "none";
-        razaDefinidaInput.value = this.value; 
+        razaDefinidaInput.value = this.value;
         razaDefinidaInput.removeAttribute("required");
       } else {
         contenedorManual.style.display = "none";
         razaDefinidaInput.value = "";
+      }
+      verificarValidezFormulario();
+    });
+
+document.getElementById("antirrabica").addEventListener("change", function () {
+      const fechaVacuna = document.getElementById("fechaAntirrabica");
+      const fechaVacunaLabel = document.querySelector("label[for='fechaAntirrabica']");
+      
+      const vacunarDiv = document.getElementById("vacunarDiv");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+
+      if (this.value === "Sí") {
+        fechaVacuna.style.display = "block";
+        fechaVacunaLabel.style.display = "block";
+        fechaVacuna.setAttribute("required", "true");
+        
+        vacunarDiv.style.display = "none";
+        vacunarAnimalSelect.removeAttribute("required");
+        vacunarAnimalSelect.value = "";
+      } else if (this.value === "No") {
+        fechaVacuna.style.display = "none";
+        fechaVacunaLabel.style.display = "none";
+        fechaVacuna.removeAttribute("required");
+        fechaVacuna.value = "";
+        
+        vacunarDiv.style.display = "block";
+        vacunarAnimalSelect.setAttribute("required", "true");
+        
+      } else {
+        // Opción vacía
+        fechaVacuna.style.display = "none";
+        fechaVacunaLabel.style.display = "none";
+        fechaVacuna.removeAttribute("required");
+        fechaVacuna.value = "";
+        
+        vacunarDiv.style.display = "none";
+        vacunarAnimalSelect.removeAttribute("required");
+        vacunarAnimalSelect.value = "";
       }
       verificarValidezFormulario();
     });
