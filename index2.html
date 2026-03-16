@@ -189,9 +189,9 @@
             <label for="edadInput">Edad del animal (indique mes o año)</label>
             <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
           </div>
-          <div class="col-12">
-            <label for="tipoRazaSelect">Tipo de Raza</label>
-            <select id="tipoRazaSelect" class="form-select mb-2" required>
+         <div class="col-12">
+            <label for="raza">Raza</label>
+            <select name="raza" id="raza" class="form-select mb-2" required>
               <option value="">Seleccione tipo</option>
               <option value="Mestizo">Mestizo</option>
               <option value="Definido">Raza Definida</option>
@@ -199,8 +199,8 @@
           </div>
 
           <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
-            <label for="razaDefinidaSelect">Raza</label>
-            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2">
+            <label for="razaDefinidaSelect">Listado de Razas</label>
+            <select id="razaDefinidaSelect" class="form-select mb-2">
               <option value="">Seleccione la raza</option>
               <optgroup label="Razas PPP (Ord. 22031)">
                 <option value="Airedale Terrier">Airedale Terrier</option>
