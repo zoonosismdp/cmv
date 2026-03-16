@@ -202,7 +202,7 @@
             <label for="razaDefinidaSelect">Raza</label>
             <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2">
               <option value="">Seleccione la raza</option>
-              <optgroup label="Razas Especiales (Ord. 22031)">
+              <optgroup label="Razas PPP (Ord. 22031)">
                 <option value="Airedale Terrier">Airedale Terrier</option>
                 <option value="Akita Inu">Akita Inu</option>
                 <option value="American Staffordshire Terrier">American Staffordshire Terrier</option>
@@ -504,27 +504,30 @@
     // Event listeners para validación
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
+    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
     document.getElementById("tipoRazaSelect").addEventListener("change", function () {
       const valor = this.value;
       const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
       const contenedorManual = document.getElementById("contenedorRazaManual");
       const razaSelect = document.getElementById("razaDefinidaSelect");
       const razaInput = document.getElementById("razaDefinida");
+      const etiquetaManual = document.querySelector("label[for='razaDefinida']");
 
       if (valor === "Mestizo") {
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
+        if(etiquetaManual) etiquetaManual.style.display = "none";
         razaSelect.value = "";
         razaSelect.removeAttribute("required");
-        // Asignamos "Mestizo" directamente al campo final
         razaInput.value = "Mestizo";
       } else if (valor === "Definido") {
         contenedorEspecial.style.display = "block";
         razaSelect.setAttribute("required", "true");
-        razaInput.value = ""; // Limpiamos hasta que elija una
+        razaInput.value = ""; 
       } else {
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
+        if(etiquetaManual) etiquetaManual.style.display = "none";
         razaInput.value = "";
       }
       verificarValidezFormulario();
@@ -534,15 +537,19 @@
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
       const contenedorManual = document.getElementById("contenedorRazaManual");
+      const etiquetaManual = document.querySelector("label[for='razaDefinida']");
 
       if (this.value === "OTRA") {
         contenedorManual.style.display = "block";
+        if(etiquetaManual) etiquetaManual.style.display = "block"; // Mostrar etiqueta
+        razaDefinidaInput.style.display = "block"; // Asegurar que el input sea visible
         razaDefinidaInput.setAttribute("required", "true");
         razaDefinidaInput.value = "";
       } else {
         contenedorManual.style.display = "none";
+        if(etiquetaManual) etiquetaManual.style.display = "none";
         razaDefinidaInput.removeAttribute("required");
-        razaDefinidaInput.value = this.value; // El valor del select se guarda en el input final
+        razaDefinidaInput.value = this.value; 
       }
       verificarValidezFormulario();
     });
@@ -691,10 +698,7 @@
             }
             // Fin de Manejo de campos Apellido y Nombre
 
-            document.getElementById("razaDefinida").style.display = "none";
-            document.querySelector("label[for='razaDefinida']").style.display = "none";
-            document.getElementById("razaDefinida").value = "";
-            document.getElementById("razaDefinida").removeAttribute("required");
+
 
             document.getElementById("fechaAntirrabica").style.display = "none";
             document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
