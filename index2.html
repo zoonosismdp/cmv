@@ -190,43 +190,48 @@
             <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
           </div>
           <div class="col-12">
-            <label for="razaDefinida">Indique la raza</label>
-            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2" style="display:none;">
+            <label for="razaDefinidaSelect">Raza</label>
+            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2" required>
               <option value="">Seleccione la raza</option>
-              <option value="Airedale Terrier">Airedale Terrier</option>
-              <option value="Akita Inu">Akita Inu</option>
-              <option value="American Staffordshire Terrier">American Staffordshire Terrier</option>
-              <option value="Pitbull American Terrier">Pitbull American Terrier</option>
-              <option value="Boyero de berna">Boyero de berna</option>
-              <option value="Bóxer">Bóxer</option>
-              <option value="Bullmastif">Bullmastif</option>
-              <option value="Bull Terrier">Bull Terrier</option>
-              <option value="Cané corso">Cané corso</option>
-              <option value="Doberman">Doberman</option>
-              <option value="Dogo Argentino">Dogo Argentino</option>
-              <option value="Dogo Alemán">Dogo Alemán</option>
-              <option value="Gran Danés">Gran Danés</option>
-              <option value="Dogo Canario">Dogo Canario</option>
-              <option value="Presa Canario">Presa Canario</option>
-              <option value="Dogo de burdeos">Dogo de burdeos</option>
-              <option value="Fila Brasileño">Fila Brasileño</option>
-              <option value="Gran perro Japonés">Gran perro Japonés</option>
-              <option value="Kuvas">Kuvas</option>
-              <option value="Mastiff (Mastín Inglés)">Mastiff (Mastín Inglés)</option>
-              <option value="Mastín Napolitano">Mastín Napolitano</option>
-              <option value="Ovejero Alemán">Ovejero Alemán</option>
-              <option value="Ovejero Belga">Ovejero Belga</option>
-              <option value="Pastor del Cáucaso">Pastor del Cáucaso</option>
-              <option value="Rottweiler">Rottweiler</option>
-              <option value="San Bernardo">San Bernardo</option>
-              <option value="Schnauzer Gigante">Schnauzer Gigante</option>
-              <option value="Staffordshire Bull Terrier">Staffordshire Bull Terrier</option>
-              <option value="Viejo Pastor Inglés">Viejo Pastor Inglés</option>
-              <option value="Mestizos de las cruzas anteriores">Mestizos de las cruzas anteriores</option>
-              <option value="OTRA">No corresponde a ninguna de las razas anteriores</option>
+              <optgroup label="Razas Especiales (Ord. 22031)">
+                <option value="Airedale Terrier">Airedale Terrier</option>
+                <option value="Akita Inu">Akita Inu</option>
+                <option value="American Staffordshire Terrier">American Staffordshire Terrier</option>
+                <option value="Pitbull American Terrier">Pitbull American Terrier</option>
+                <option value="Boyero de berna">Boyero de berna</option>
+                <option value="Bóxer">Bóxer</option>
+                <option value="Bullmastif">Bullmastif</option>
+                <option value="Bull Terrier">Bull Terrier</option>
+                <option value="Cané corso">Cané corso</option>
+                <option value="Doberman">Doberman</option>
+                <option value="Dogo Argentino">Dogo Argentino</option>
+                <option value="Dogo Alemán">Dogo Alemán</option>
+                <option value="Gran Danés">Gran Danés</option>
+                <option value="Dogo Canario">Dogo Canario</option>
+                <option value="Presa Canario">Presa Canario</option>
+                <option value="Dogo de burdeos">Dogo de burdeos</option>
+                <option value="Fila Brasileño">Fila Brasileño</option>
+                <option value="Gran perro Japonés">Gran perro Japonés</option>
+                <option value="Kuvas">Kuvas</option>
+                <option value="Mastiff (Mastín Inglés)">Mastiff (Mastín Inglés)</option>
+                <option value="Mastín Napolitano">Mastín Napolitano</option>
+                <option value="Ovejero Alemán">Ovejero Alemán</option>
+                <option value="Ovejero Belga">Ovejero Belga</option>
+                <option value="Pastor del Cáucaso">Pastor del Cáucaso</option>
+                <option value="Rottweiler">Rottweiler</option>
+                <option value="San Bernardo">San Bernardo</option>
+                <option value="Schnauzer Gigante">Schnauzer Gigante</option>
+                <option value="Staffordshire Bull Terrier">Staffordshire Bull Terrier</option>
+                <option value="Viejo Pastor Inglés">Viejo Pastor Inglés</option>
+                <option value="Mestizos de las cruzas anteriores">Mestizos de las cruzas anteriores</option>
+                <option value="OTRA">OTRA RAZA (Ingresar manualmente)</option>
+              </optgroup>
             </select>
-            <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Escriba la raza aquí"
-              class="form-control" style="display:none;">
+          </div>
+
+          <div class="col-12" id="contenedorRazaManual" style="display:none;">
+            <label for="razaDefinida">Escriba la raza</label>
+            <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Indique la raza" class="form-control">
           </div>
         </div>
 
@@ -476,21 +481,24 @@
     // Event listeners para validación
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
-      const razaDefinidaLabel = document.querySelector("label[for='razaDefinida']");
+      const contenedorManual = document.getElementById("contenedorRazaManual");
 
-      // Si selecciona "OTRA" (No corresponde a ninguna...)
       if (this.value === "OTRA") {
-        razaDefinidaInput.style.display = "block";
-        razaDefinidaLabel.style.display = "block";
+        // Mostrar campo manual
+        contenedorManual.style.display = "block";
         razaDefinidaInput.setAttribute("required", "true");
+        razaDefinidaInput.value = ""; // Limpiar para ingreso manual
       } else {
-        razaDefinidaInput.style.display = "none";
-        razaDefinidaLabel.style.display = "none";
+        // Ocultar campo manual y usar el valor del select
+        contenedorManual.style.display = "none";
         razaDefinidaInput.removeAttribute("required");
-        razaDefinidaInput.value = "";
+        razaDefinidaInput.value = this.value; 
       }
       verificarValidezFormulario();
     });
+
+    // Nueva escucha para el campo manual para que valide mientras escriben
+    document.getElementById("razaDefinida").addEventListener("input", verificarValidezFormulario);
 
     document.getElementById("antirrabica").addEventListener("change", function () {
       const fechaVacuna = document.getElementById("fechaAntirrabica");
@@ -697,6 +705,7 @@
         // Ocultar botón de escaneo a la fuerza y mostrar el DNI
         document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
         document.getElementById('documentoDisplayContainer').style.display = 'block';
+        
         // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
@@ -718,7 +727,7 @@
 
         // 4. Reset de Labels
         document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
-
+document.getElementById("contenedorRazaManual").style.display = "none";
         // 5. Reset de botones
         const btnAcepto = document.getElementById("btnAcepto");
         if (btnAcepto) {
