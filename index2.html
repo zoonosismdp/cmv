@@ -190,8 +190,17 @@
             <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
           </div>
           <div class="col-12">
+            <label for="tipoRazaSelect">Tipo de Raza</label>
+            <select id="tipoRazaSelect" class="form-select mb-2" required>
+              <option value="">Seleccione tipo</option>
+              <option value="Mestizo">Mestizo</option>
+              <option value="Definido">Raza Definida</option>
+            </select>
+          </div>
+
+          <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
             <label for="razaDefinidaSelect">Raza</label>
-            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2" required>
+            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2">
               <option value="">Seleccione la raza</option>
               <optgroup label="Razas Especiales (Ord. 22031)">
                 <option value="Airedale Terrier">Airedale Terrier</option>
@@ -233,47 +242,46 @@
             <label for="razaDefinida">Escriba la raza</label>
             <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Indique la raza" class="form-control">
           </div>
-        </div>
 
-        <div class="row g-3 mb-3">
-          <div class="col-12">
-            <label for="antirrabica">¿Fue vacunado contra la rabia en el último año?:</label>
-            <select name="antirrabica" id="antirrabica" class="form-select" required>
-              <option value="">Seleccione</option>
-              <option value="Sí">Sí</option>
-              <option value="No">No</option>
-            </select>
+          <div class="row g-3 mb-3">
+            <div class="col-12">
+              <label for="antirrabica">¿Fue vacunado contra la rabia en el último año?:</label>
+              <select name="antirrabica" id="antirrabica" class="form-select" required>
+                <option value="">Seleccione</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="fechaAntirrabica" style="display:none;">¿Cuándo fue vacunado?</label>
+              <input type="text" name="fechaAntirrabica" id="fechaAntirrabica" placeholder="¿Cuándo fue vacunado?"
+                required class="form-control" style="display:none;">
+            </div>
+            <div class="col-12" id="vacunarDiv" style="display:none;">
+              <label for="vacunarAnimal">¿Desea vacunar al animal?</label>
+              <select name="vacunarAnimal" id="vacunarAnimal" class="form-select" required>
+                <option value="">Seleccione</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="email">Correo electrónico:(no obligatorio)</label>
+              <input type="email" name="email" id="email" placeholder="Su correo electrónico" class="form-control">
+              <small class="form-text">El correo es opcional y será utilizado únicamente para enviar el consentimiento
+                médico veterinario.</small>
+            </div>
           </div>
-          <div class="col-12">
-            <label for="fechaAntirrabica" style="display:none;">¿Cuándo fue vacunado?</label>
-            <input type="text" name="fechaAntirrabica" id="fechaAntirrabica" placeholder="¿Cuándo fue vacunado?"
-              required class="form-control" style="display:none;">
-          </div>
-          <div class="col-12" id="vacunarDiv" style="display:none;">
-            <label for="vacunarAnimal">¿Desea vacunar al animal?</label>
-            <select name="vacunarAnimal" id="vacunarAnimal" class="form-select" required>
-              <option value="">Seleccione</option>
-              <option value="Sí">Sí</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-          <div class="col-12">
-            <label for="email">Correo electrónico:(no obligatorio)</label>
-            <input type="email" name="email" id="email" placeholder="Su correo electrónico" class="form-control">
-            <small class="form-text">El correo es opcional y será utilizado únicamente para enviar el consentimiento
-              médico veterinario.</small>
-          </div>
-        </div>
 
-        <div class="d-flex justify-content-center">
-          <button type="button" class="btn btn-accept" id="btnAcepto" disabled>HAGA CLICK AQUI en este recuadro si
-            acepta el Consentimiento Médico Veterinario. Verifique que estén todos los datos completos.</button>
-        </div>
+          <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-accept" id="btnAcepto" disabled>HAGA CLICK AQUI en este recuadro si
+              acepta el Consentimiento Médico Veterinario. Verifique que estén todos los datos completos.</button>
+          </div>
 
-        <div class="d-grid gap-2 mt-3">
-          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>Enviar datos</button>
+          <div class="d-grid gap-2 mt-3">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>Enviar datos</button>
+          </div>
         </div>
-      </div>
     </form>
 
     <footer class="text-center mt-5">
@@ -432,67 +440,109 @@
     /**
      * Verifica la validez de los campos y habilita/deshabilita los botones.
      */
-   function verificarValidezFormulario() {
-  const form = document.getElementById("miForm");
-  const btnAcepto = document.getElementById("btnAcepto");
-  const submitBtn = document.getElementById("submitBtn");
+    function verificarValidezFormulario() {
+      const form = document.getElementById("miForm");
+      const btnAcepto = document.getElementById("btnAcepto");
+      const submitBtn = document.getElementById("submitBtn");
 
-  let formIsValid = form.checkValidity();
+      // Validación básica de HTML5 (required, type, etc.)
+      let formIsValid = form.checkValidity();
 
-  // Verificar Apellido y Nombre (parte del contenido oculto)
-  const formContent = document.getElementById("formContent");
-  const apellidoInput = document.getElementById("apellidoInput");
-  const nombreInput = document.getElementById("nombreInput");
-  if (formContent.style.display !== "none" &&
-    (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
-    formIsValid = false;
-  }
+      // 1. Verificar Apellido y Nombre (parte del contenido oculto)
+      const formContent = document.getElementById("formContent");
+      const apellidoInput = document.getElementById("apellidoInput");
+      const nombreInput = document.getElementById("nombreInput");
+      if (formContent.style.display !== "none" &&
+        (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
+        formIsValid = false;
+      }
 
-  // Validación de Raza Definida (Manual)
-  // Ajustado para usar razaDefinidaSelect y el valor "OTRA"
-  const razaSelect = document.getElementById("razaDefinidaSelect");
-  const razaDefinidaInput = document.getElementById("razaDefinida");
-  if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
-    formIsValid = false;
-  }
+      // 2. NUEVA LÓGICA DE RAZA: Validación de Tipo de Raza y Selección
+      const tipoRaza = document.getElementById("tipoRazaSelect");
+      const razaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
 
-  // Validación de Antirrábica y Vacunar Animal
-  const antirrabicaSelect = document.getElementById("antirrabica");
-  const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
-  const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+      // Si no se seleccionó ni Mestizo ni Definido, el formulario no es válido
+      if (!tipoRaza.value) {
+        formIsValid = false;
+      }
+      // Si eligió Definido, debe seleccionar una raza de la lista
+      else if (tipoRaza.value === "Definido") {
+        if (!razaSelect.value) {
+          formIsValid = false;
+        }
+        // Si eligió "OTRA", el campo de texto manual no puede estar vacío
+        else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+          formIsValid = false;
+        }
+      }
 
-  // Si fue vacunado (Sí), la fecha debe ser requerida
-  if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
-    formIsValid = false;
-  }
+      // 3. Validación de Antirrábica y Vacunar Animal (Lógica original)
+      const antirrabicaSelect = document.getElementById("antirrabica");
+      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
 
-  // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
-  if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
-    formIsValid = false;
-  }
+      // Si fue vacunado (Sí), la fecha debe ser requerida
+      if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
+        formIsValid = false;
+      }
 
-  btnAcepto.disabled = !formIsValid;
+      // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
+      if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
+        formIsValid = false;
+      }
 
-  const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
-  // El botón de enviar solo se habilita si el formulario es válido Y se aceptó el CMV
-  submitBtn.disabled = !(formIsValid && aceptoClicked);
-}
+      // Habilitación del botón de Consentimiento (Acepto)
+      btnAcepto.disabled = !formIsValid;
+
+      const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+
+      // El botón de enviar solo se habilita si el formulario es válido Y se presionó el botón de consentimiento
+      submitBtn.disabled = !(formIsValid && aceptoClicked);
+    }
     // Event listeners para validación
     // Event listeners para validación
+    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
+    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
+    document.getElementById("tipoRazaSelect").addEventListener("change", function () {
+      const valor = this.value;
+      const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
+      const contenedorManual = document.getElementById("contenedorRazaManual");
+      const razaSelect = document.getElementById("razaDefinidaSelect");
+      const razaInput = document.getElementById("razaDefinida");
+
+      if (valor === "Mestizo") {
+        contenedorEspecial.style.display = "none";
+        contenedorManual.style.display = "none";
+        razaSelect.value = "";
+        razaSelect.removeAttribute("required");
+        // Asignamos "Mestizo" directamente al campo final
+        razaInput.value = "Mestizo";
+      } else if (valor === "Definido") {
+        contenedorEspecial.style.display = "block";
+        razaSelect.setAttribute("required", "true");
+        razaInput.value = ""; // Limpiamos hasta que elija una
+      } else {
+        contenedorEspecial.style.display = "none";
+        contenedorManual.style.display = "none";
+        razaInput.value = "";
+      }
+      verificarValidezFormulario();
+    });
+
+    // Lógica para el selector de razas específicas
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
       const contenedorManual = document.getElementById("contenedorRazaManual");
 
       if (this.value === "OTRA") {
-        // Mostrar campo manual
         contenedorManual.style.display = "block";
         razaDefinidaInput.setAttribute("required", "true");
-        razaDefinidaInput.value = ""; // Limpiar para ingreso manual
+        razaDefinidaInput.value = "";
       } else {
-        // Ocultar campo manual y usar el valor del select
         contenedorManual.style.display = "none";
         razaDefinidaInput.removeAttribute("required");
-        razaDefinidaInput.value = this.value; 
+        razaDefinidaInput.value = this.value; // El valor del select se guarda en el input final
       }
       verificarValidezFormulario();
     });
@@ -705,7 +755,7 @@
         // Ocultar botón de escaneo a la fuerza y mostrar el DNI
         document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
         document.getElementById('documentoDisplayContainer').style.display = 'block';
-        
+
         // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "apellidoinput", "nombreinput", "domicilioInput", "telefonoInput"];
 
@@ -727,7 +777,7 @@
 
         // 4. Reset de Labels
         document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
-document.getElementById("contenedorRazaManual").style.display = "none";
+        document.getElementById("contenedorRazaManual").style.display = "none";
         // 5. Reset de botones
         const btnAcepto = document.getElementById("btnAcepto");
         if (btnAcepto) {
