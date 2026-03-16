@@ -194,10 +194,12 @@
             <select name="raza" id="raza" class="form-select mb-2" required>
               <option value="">Seleccione tipo</option>
               <option value="Mestizo">Mestizo</option>
-              <option value="Definido">Raza Definida</option>
+              <option value="Definida">Raza Definida</option>
             </select>
           </div>
 
+
+          
           <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
             <label for="razaDefinidaSelect">Listado de Razas</label>
             <select id="razaDefinidaSelect" class="form-select mb-2">
@@ -465,7 +467,7 @@
 
   if (!tipoRaza.value) {
     formIsValid = false;
-  } else if (tipoRaza.value === "Definido") {
+  } else if (tipoRaza.value === "Definida") {
     if (!razaSelect.value) {
       formIsValid = false;
     } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
@@ -516,7 +518,7 @@
         razaSelect.value = "";
         razaDefinidaInput.value = ""; 
         razaDefinidaInput.removeAttribute("required");
-      } else if (valor === "Definido") {
+      } else if (valor === "Definida") {
         // Si es Definido, mostramos el listado
         contenedorEspecial.style.display = "block";
         contenedorManual.style.display = "none";
