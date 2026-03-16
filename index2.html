@@ -442,13 +442,13 @@ function emitirBeepExito() {
   gainNode.connect(audioCtx.destination);
 
   oscillator.type = 'sine'; 
-  oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Tono más grave/cuerpo
-  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volumen más fuerte (30%)
+  oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // Tono más agudo y fuerte
+  gainNode.gain.setValueAtTime(0.8, audioCtx.currentTime); // Volumen más fuerte (80%)
 
   oscillator.start();
-  // Duración extendida a 0.4 segundos con rampa de salida suave
-  gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
-  oscillator.stop(audioCtx.currentTime + 0.4);
+  // Duración extendida a 0.6 segundos con rampa de salida suave
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+  oscillator.stop(audioCtx.currentTime + 0.6);
 }
 
     function deshabilitarFormulario(mensaje, mostrarPPP = false) {
@@ -681,6 +681,7 @@ function emitirBeepExito() {
 
             continueBtn.style.display = "none";
             formContent.style.display = "block";
+            formContent.classList.add("form-3d-appear");
 
             // Manejo de campos Apellido y Nombre
             const apellidoCampo = document.getElementById("apellidoInput");
@@ -970,6 +971,11 @@ function emitirBeepExito() {
     document.getElementById('btnAbrirScanner').addEventListener('click', function () {
       const modalElement = document.getElementById('scannerModal');
       const scannerModal = new bootstrap.Modal(modalElement);
+      const btnAbrirScanner = document.getElementById('btnAbrirScanner');
+      
+      // Remover la animación de parpadeo al abrir la cámara
+      btnAbrirScanner.classList.remove('btn-animado');
+      
       scannerModal.show();
 
       html5QrCode = new Html5Qrcode("reader");
@@ -1037,7 +1043,16 @@ function emitirBeepExito() {
         scannerModal.hide();
       });
 
-      modalElement.addEventListener('hidden.bs.modal', detenerScanner);
+      // Cuando se cierra el modal, detener el scanner y restaurar la animación del botón
+      modalElement.addEventListener('hidden.bs.modal', function () {
+        detenerScanner();
+        // Restaurar la clase btn-animado solo si el campo documentoInput está vacío
+        const documentoInput = document.getElementById('documentoInput');
+        const scannerButtonContainer = document.getElementById('scannerButtonContainer');
+        if ((!documentoInput.value || documentoInput.value.trim() === '') && scannerButtonContainer.style.display !== 'none') {
+          btnAbrirScanner.classList.add('btn-animado');
+        }
+      }, { once: true });
     });
 
 
