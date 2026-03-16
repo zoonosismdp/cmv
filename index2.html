@@ -430,23 +430,26 @@
     /**
  * Genera un sonido de "beep" profesional usando Web Audio API.
  */
-    function emitirBeepExito() {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
+    /**
+ * Genera un sonido de "beep" más largo y fuerte.
+ */
+function emitirBeepExito() {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
 
-      oscillator.type = 'sine'; // Tono suave
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota La5 (agudo y claro)
-      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Volumen controlado
+  oscillator.type = 'sine'; 
+  oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Tono más grave/cuerpo
+  gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volumen más fuerte (30%)
 
-      oscillator.start();
-      // El "beep" dura 150ms para ser rápido y profesional
-      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.15);
-      oscillator.stop(audioCtx.currentTime + 0.15);
-    }
+  oscillator.start();
+  // Duración extendida a 0.4 segundos con rampa de salida suave
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+  oscillator.stop(audioCtx.currentTime + 0.4);
+}
 
     function deshabilitarFormulario(mensaje, mostrarPPP = false) {
       const modalMessage = document.getElementById("warning-message");
