@@ -190,12 +190,43 @@
             <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
           </div>
           <div class="col-12">
-            <label for="raza">Raza</label>
-            <select name="raza" id="raza" class="form-select" required>
-              <option value="">Seleccione raza</option>
-              <option value="Mestizo">Mestizo</option>
-              <option value="Definida">Definida</option>
+            <label for="razaDefinida" style="display:none;">Indique la raza</label>
+            <select name="razaDefinidaSelect" id="razaDefinidaSelect" class="form-select mb-2" style="display:none;">
+              <option value="">Seleccione la raza</option>
+              <option value="Airedale Terrier">Airedale Terrier</option>
+              <option value="Akita Inu">Akita Inu</option>
+              <option value="American Staffordshire Terrier">American Staffordshire Terrier</option>
+              <option value="Pitbull American Terrier">Pitbull American Terrier</option>
+              <option value="Boyero de berna">Boyero de berna</option>
+              <option value="Bóxer">Bóxer</option>
+              <option value="Bullmastif">Bullmastif</option>
+              <option value="Bull Terrier">Bull Terrier</option>
+              <option value="Cané corso">Cané corso</option>
+              <option value="Doberman">Doberman</option>
+              <option value="Dogo Argentino">Dogo Argentino</option>
+              <option value="Dogo Alemán">Dogo Alemán</option>
+              <option value="Gran Danés">Gran Danés</option>
+              <option value="Dogo Canario">Dogo Canario</option>
+              <option value="Presa Canario">Presa Canario</option>
+              <option value="Dogo de burdeos">Dogo de burdeos</option>
+              <option value="Fila Brasileño">Fila Brasileño</option>
+              <option value="Gran perro Japonés">Gran perro Japonés</option>
+              <option value="Kuvas">Kuvas</option>
+              <option value="Mastiff (Mastín Inglés)">Mastiff (Mastín Inglés)</option>
+              <option value="Mastín Napolitano">Mastín Napolitano</option>
+              <option value="Ovejero Alemán">Ovejero Alemán</option>
+              <option value="Ovejero Belga">Ovejero Belga</option>
+              <option value="Pastor del Cáucaso">Pastor del Cáucaso</option>
+              <option value="Rottweiler">Rottweiler</option>
+              <option value="San Bernardo">San Bernardo</option>
+              <option value="Schnauzer Gigante">Schnauzer Gigante</option>
+              <option value="Staffordshire Bull Terrier">Staffordshire Bull Terrier</option>
+              <option value="Viejo Pastor Inglés">Viejo Pastor Inglés</option>
+              <option value="Mestizos de las cruzas anteriores">Mestizos de las cruzas anteriores</option>
+              <option value="OTRA">No corresponde a ninguna de las razas anteriores</option>
             </select>
+            <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Escriba la raza aquí"
+              class="form-control" style="display:none;">
           </div>
           <div class="col-12">
             <label for="razaDefinida" style="display:none;">Indique la raza</label>
@@ -268,7 +299,7 @@
     </form>
 
     <footer class="text-center mt-5">
-      <div><small class="form-text">CMV - DIGITAL</small></div>
+      <div><small class="form-text">CMV - DIGITAL Versión 3</small></div>
       <div><small class="form-text">Sistema prueba piloto</small></div>
       <div><small class="form-text">Consentimientos Médicos Veterinarios Digitales</small></div>
       <div><small class="form-text">Dirección de Zoonosis y Bienestar Animal. MGP</small></div>
@@ -341,6 +372,7 @@
                   <li class="col-md-6">Staffordshire Bull Terrier</li>
                   <li class="col-md-6">Viejo Pastor Inglés</li>
                   <li class="col-md-6">Mestizos de las cruzas anteriores</li>
+
                 </ul>
               </div>
             </div>
@@ -422,64 +454,67 @@
     /**
      * Verifica la validez de los campos y habilita/deshabilita los botones.
      */
-    function verificarValidezFormulario() {
-      const form = document.getElementById("miForm");
-      const btnAcepto = document.getElementById("btnAcepto");
-      const submitBtn = document.getElementById("submitBtn");
+   function verificarValidezFormulario() {
+  const form = document.getElementById("miForm");
+  const btnAcepto = document.getElementById("btnAcepto");
+  const submitBtn = document.getElementById("submitBtn");
 
-      let formIsValid = form.checkValidity();
+  let formIsValid = form.checkValidity();
 
-      // Verificar Apellido y Nombre (parte del contenido oculto)
-      const formContent = document.getElementById("formContent");
-      const apellidoInput = document.getElementById("apellidoInput");
-      const nombreInput = document.getElementById("nombreInput");
-      if (formContent.style.display !== "none" &&
-        (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
-        formIsValid = false;
-      }
+  // Verificar Apellido y Nombre (parte del contenido oculto)
+  const formContent = document.getElementById("formContent");
+  const apellidoInput = document.getElementById("apellidoInput");
+  const nombreInput = document.getElementById("nombreInput");
+  if (formContent.style.display !== "none" &&
+    (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
+    formIsValid = false;
+  }
 
-      // Validación de Raza Definida
-      const razaSelect = document.getElementById("raza");
-      const razaDefinidaInput = document.getElementById("razaDefinida");
-      if (razaSelect.value === "Definida" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
-        formIsValid = false;
-      }
+  // Validación de Raza Definida (Manual)
+  // Ajustado para usar razaDefinidaSelect y el valor "OTRA"
+  const razaSelect = document.getElementById("razaDefinidaSelect");
+  const razaDefinidaInput = document.getElementById("razaDefinida");
+  if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+    formIsValid = false;
+  }
 
-      // Validación de Antirrábica y Vacunar Animal
-      const antirrabicaSelect = document.getElementById("antirrabica");
-      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
-      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+  // Validación de Antirrábica y Vacunar Animal
+  const antirrabicaSelect = document.getElementById("antirrabica");
+  const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
+  const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
 
-      // Si fue vacunado (Sí), la fecha debe ser requerida
-      if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
-        formIsValid = false;
-      }
+  // Si fue vacunado (Sí), la fecha debe ser requerida
+  if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
+    formIsValid = false;
+  }
 
-      // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
-      if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
-        formIsValid = false;
-      }
+  // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
+  if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
+    formIsValid = false;
+  }
 
-      btnAcepto.disabled = !formIsValid;
+  btnAcepto.disabled = !formIsValid;
 
-      const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
-      // El botón de enviar solo se habilita si el formulario es válido Y se aceptó el CMV
-      submitBtn.disabled = !(formIsValid && aceptoClicked);
-    }
-
+  const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+  // El botón de enviar solo se habilita si el formulario es válido Y se aceptó el CMV
+  submitBtn.disabled = !(formIsValid && aceptoClicked);
+}
     // Event listeners para validación
-    document.getElementById("raza").addEventListener("change", function () {
-      const razaDefinida = document.getElementById("razaDefinida");
+    // Event listeners para validación
+    document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
+      const razaDefinidaInput = document.getElementById("razaDefinida");
       const razaDefinidaLabel = document.querySelector("label[for='razaDefinida']");
-      if (this.value === "Definida") {
-        razaDefinida.style.display = "block";
+
+      // Si selecciona "OTRA" (No corresponde a ninguna...)
+      if (this.value === "OTRA") {
+        razaDefinidaInput.style.display = "block";
         razaDefinidaLabel.style.display = "block";
-        razaDefinida.setAttribute("required", "true");
+        razaDefinidaInput.setAttribute("required", "true");
       } else {
-        razaDefinida.style.display = "none";
+        razaDefinidaInput.style.display = "none";
         razaDefinidaLabel.style.display = "none";
-        razaDefinida.removeAttribute("required");
-        razaDefinida.value = "";
+        razaDefinidaInput.removeAttribute("required");
+        razaDefinidaInput.value = "";
       }
       verificarValidezFormulario();
     });
@@ -935,7 +970,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Escaneá el código del DNI.</h5>
-          <button type="button" class="btn btn-primary btn-animado btn-lg" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn btn-primary btn-animado btn-lg" data-bs-dismiss="modal"
+            aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
           <div id="reader"></div>
