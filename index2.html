@@ -126,6 +126,14 @@
       width: 100%;
     }
 
+    .numero-orden-container.sticky {
+      position: sticky;
+      top: 80px;
+      background-color: #fff;
+      padding: 12px 0;
+      z-index: 5;
+    }
+
     .orden-numero-input {
       text-align: center;
       font-weight: bold;
@@ -715,6 +723,7 @@ function emitirBeepExito() {
             continueBtn.style.display = "none";
             formContent.style.display = "block";
             formContent.classList.add("form-3d-appear");
+            document.querySelector('.numero-orden-container')?.classList.add('sticky');
 
             // Manejo de campos Apellido y Nombre
             const apellidoCampo = document.getElementById("apellidoInput");
@@ -852,6 +861,11 @@ function emitirBeepExito() {
           btnAcepto.classList.remove("btn-accepted");
           btnAcepto.classList.remove('btn-highlight');
           btnAcepto.parentNode.style.display = "flex";
+        }
+
+        const numeroOrden = document.querySelector('.numero-orden-container');
+        if (numeroOrden) {
+          numeroOrden.classList.remove('sticky');
         }
 
         const submitBtn = document.getElementById("submitBtn");
