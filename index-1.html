@@ -8,7 +8,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <style>
-    /* Estilos para asegurar que el botón primario deshabilitado mantenga el color azul */
     .btn-primary:disabled {
       background-color: #0d6efd !important;
       border-color: #0d6efd !important;
@@ -16,7 +15,6 @@
       cursor: not-allowed;
     }
 
-    /* Definimos el efecto de parpadeo */
     @keyframes parpadeo-suave {
       0% {
         opacity: 1;
@@ -34,7 +32,6 @@
       }
     }
 
-    /* Estilos base para el botón de aceptación del CMV */
     .btn-accept {
       border: 1px solid #0d6efd;
       color: #fff;
@@ -109,16 +106,22 @@
       margin-bottom: 15px;
     }
 
+    .numero-orden-container label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
     .orden-numero-input {
       text-align: center;
-      font-weight: bold;
-      font-size: 2rem;
+      font-weight: 900;
+      font-size: 3rem;
       padding: 20px;
       width: 220px;
       border: 3px solid #dc3545;
       border-radius: 8px;
       background-color: #f8f9fa;
       margin: 0 auto;
+      color: #dc3545;
     }
 
     .modal-text-lg {
@@ -336,8 +339,8 @@
     small {
       font-size: 0.85em;
       color: #888;
-      margin-top: -15px;
-      margin-bottom: 15px;
+      margin: 0;
+      line-height: 1.2;
       display: block;
     }
 
@@ -387,8 +390,8 @@
 
     .orden-numero-input {
       text-align: center;
-      font-weight: 700;
-      font-size: 2rem;
+      font-weight: 800;
+      font-size: 3rem;
       padding: 20px;
       width: 100%;
       max-width: 280px;
@@ -396,6 +399,7 @@
       border-radius: 12px;
       margin: 0 auto;
       background-color: #f8f9fa;
+      color: #dc3545;
       transition: border-color 0.3s ease;
     }
 
@@ -562,11 +566,13 @@
     </form>
 
     <footer class="text-center mt-5">
-      <div><small class="form-text">CMV - DIGITAL Versión 2.1</small></div>
-      <div><small class="form-text">Sistema prueba piloto</small></div>
-      <div><small class="form-text">Consentimientos Médicos Veterinarios Digitales</small></div>
-      <div><small class="form-text">Dirección de Zoonosis y Bienestar Animal. MGP</small></div>
-      <div><small class="form-text">Proyecto Expediente EX-2025-00370345--MUNIMDP-DZBA#SSA</small></div>
+      <small class="form-text">
+        CMV - DIGITAL Versión 2.1<br>
+        Sistema prueba piloto<br>
+        Consentimientos Médicos Veterinarios Digitales<br>
+        Dirección de Zoonosis y Bienestar Animal. MGP<br>
+        Proyecto Expediente EX-2025-00370345--MUNIMDP-DZBA#SSA
+      </small>
     </footer>
   </div>
 
