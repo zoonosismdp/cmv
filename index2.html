@@ -584,6 +584,15 @@ function emitirBeepExito() {
         formIsValid = false;
       }
 
+      const numeroOrdenInput = document.getElementById("numeroOrdenInput");
+      if (numeroOrdenInput) {
+        if (numeroOrdenInput.value.trim()) {
+          numeroOrdenInput.classList.add("btn-animado");
+        } else {
+          numeroOrdenInput.classList.remove("btn-animado");
+        }
+      }
+
       btnAcepto.disabled = !formIsValid;
       
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
