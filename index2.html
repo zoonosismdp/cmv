@@ -126,12 +126,14 @@
       width: 100%;
     }
 
-    .numero-orden-container.sticky {
+    .sticky-top {
       position: sticky;
-      top: 80px;
+      top: 0;
       background-color: #fff;
-      padding: 12px 0;
-      z-index: 5;
+      z-index: 10;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
 
     .orden-numero-input {
@@ -175,19 +177,20 @@
 
 <body>
   <div class="form-container container mt-4">
-    <p class="fecha-centrada">Fecha actual: <span id="fechaActual"></span></p>
-    <h2 class="fw-bold">Registro CMV On Line</h2>
-    <form id="miForm">
-      <p id="mensajeAdvertencia" class="text-danger" style="display: none;"></p>
+    <div class="sticky-top">
+      <p class="fecha-centrada">Fecha actual: <span id="fechaActual"></span></p>
+      <h2 class="fw-bold">Registro CMV On Line</h2>
+      <form id="miForm">
+        <p id="mensajeAdvertencia" class="text-danger" style="display: none;"></p>
 
-      <div class="col-12 text-center numero-orden-container">
-        <label for="numeroOrdenInput">Número de Orden</label>
-        <input type="number" name="numero_de_orden" class="form-control orden-numero-input" id="numeroOrdenInput"
-          placeholder="🔢 Ingrese su número" required>
-      </div>
+        <div class="col-12 text-center numero-orden-container">
+          <label for="numeroOrdenInput">Número de Orden</label>
+          <input type="number" name="numero_de_orden" class="form-control orden-numero-input" id="numeroOrdenInput"
+            placeholder="🔢 Ingrese su número" required>
+        </div>
 
-      <div class="col-12 mb-3">
-        <div id="scannerButtonContainer" class="d-grid gap-2">
+        <div class="col-12 mb-3">
+          <div id="scannerButtonContainer" class="d-grid gap-2">
 
           <button type="button" class="btn btn-primary btn-animado" id="btnAbrirScanner">
             🪪Escanear DNI para comenzar
@@ -209,6 +212,8 @@
 
       <div id="continueButtonContainer" class="d-grid gap-2">
         <button type="button" class="btn btn-primary btn-lg" id="continueBtn">Continuar</button>
+      </div>
+
       </div>
 
       <div id="formContent" style="display: none;">
@@ -723,7 +728,6 @@ function emitirBeepExito() {
             continueBtn.style.display = "none";
             formContent.style.display = "block";
             formContent.classList.add("form-3d-appear");
-            document.querySelector('.numero-orden-container')?.classList.add('sticky');
 
             // Manejo de campos Apellido y Nombre
             const apellidoCampo = document.getElementById("apellidoInput");
@@ -863,10 +867,6 @@ function emitirBeepExito() {
           btnAcepto.parentNode.style.display = "flex";
         }
 
-        const numeroOrden = document.querySelector('.numero-orden-container');
-        if (numeroOrden) {
-          numeroOrden.classList.remove('sticky');
-        }
 
         const submitBtn = document.getElementById("submitBtn");
         if (submitBtn) {
