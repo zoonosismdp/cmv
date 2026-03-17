@@ -593,31 +593,26 @@ function emitirBeepExito() {
       }
 
       // 5. Validar Raza
-      if (!razaSelect.value) {
+if (!razaSelect.value) {
         formIsValid = false;
       } else if (razaSelect.value === "Definida") {
-        // Si es Definida, debe haber seleccionado una raza
+        // Si es DEFINIDA, debe elegir una del select o escribir en manual si eligió OTRA
         if (!razaDefinidaSelect.value) {
           formIsValid = false;
-        } else if (razaDefinidaSelect.value === "OTRA") {
-          // Si seleccionó OTRA, debe ingresar la raza manualmente
-          if (!razaDefinidaManual.value.trim()) {
-            formIsValid = false;
-          }
+        } else if (razaDefinidaSelect.value === "OTRA" && !razaDefinidaManual.value.trim()) {
+          formIsValid = false;
         }
       }
-      // Si es Mestizo, no necesita validación adicional
-
       // 6. Validar Antirrábica
-      if (!antirrabicaSelect.value) {
+if (!antirrabicaSelect.value) {
         formIsValid = false;
       } else if (antirrabicaSelect.value === "Sí") {
-        // Si fue vacunado, debe ingresar la fecha
+        // Si es "Sí", exige fecha obligatoriamente
         if (!fechaAntirrabicaInput.value.trim()) {
           formIsValid = false;
         }
       } else if (antirrabicaSelect.value === "No") {
-        // Si NO fue vacunado, debe seleccionar si desea vacunar
+        // Si es "No", exige seleccionar Sí o No en vacunarAnimal
         if (!vacunarAnimalSelect.value) {
           formIsValid = false;
         }
