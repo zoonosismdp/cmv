@@ -215,8 +215,6 @@
         <button type="button" class="btn btn-primary btn-lg" id="continueBtn">Continuar</button>
       </div>
 
-    </form>
-
       <div id="formContent" style="display: none;">
         <div class="row g-3 mb-3">
           <div class="col-12">
@@ -554,69 +552,85 @@ function emitirBeepExito() {
         return;
       }
 
-      let formIsValid = form.checkValidity();
+      let formIsValid = true;
 
-      // Verificar datos del propietario
+      // CAMPOS OBLIGATORIOS DEL FORMULARIO EXPANDIDO
+      const numeroOrdenInput = document.getElementById("numeroOrdenInput");
+      const documentoInput = document.getElementById("documentoInput");
       const apellidoInput = document.getElementById("apellidoInput");
       const nombreInput = document.getElementById("nombreInput");
-      const domicilioInput = document.querySelector("input[name='domicilio']");
-      const telefonoInput = document.querySelector("input[name='telefono']");
-      
+      const domicilioInput = document.getElementById("domicilioInput");
+      const telefonoInput = document.getElementById("telefonoInput");
+      const especieInput = document.getElementById("especieInput");
+      const edadInput = document.getElementById("edadInput");
+      const pelajeInput = document.getElementById("pelajeInput");
+      const razaSelect = document.getElementById("raza");
+      const razaDefinidaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaManual = document.getElementById("razaDefinida");
+      const antirrabicaSelect = document.getElementById("antirrabica");
+      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+
+      // 1. Validar Número de Orden
+      if (!numeroOrdenInput.value.trim()) {
+        formIsValid = false;
+      }
+
+      // 2. Validar Documento
+      if (!documentoInput.value.trim()) {
+        formIsValid = false;
+      }
+
+      // 3. Validar Propietario (Apellido, Nombre, Domicilio, Teléfono)
       if (!apellidoInput.value.trim() || !nombreInput.value.trim() || 
           !domicilioInput.value.trim() || !telefonoInput.value.trim()) {
         formIsValid = false;
       }
 
-      // Verificar datos del animal
-      const especieInput = document.getElementById("especieInput");
-      const edadInput = document.getElementById("edadInput");
-      const pelajeInput = document.getElementById("pelajeInput");
-      
-      if (!especieInput.value || !edadInput.value || !pelajeInput.value) {
+      // 4. Validar Datos del Animal (Especie, Edad, Pelaje)
+      if (!especieInput.value || !edadInput.value.trim() || !pelajeInput.value) {
         formIsValid = false;
       }
 
-      // Validación de Raza
-      const razaSelect = document.getElementById("raza");
-      const razaDefinidaSelect = document.getElementById("razaDefinidaSelect");
-      const razaDefinidaInput = document.getElementById("razaDefinida");
-      
+      // 5. Validar Raza
       if (!razaSelect.value) {
         formIsValid = false;
       } else if (razaSelect.value === "Definida") {
+        // Si es Definida, debe haber seleccionado una raza
         if (!razaDefinidaSelect.value) {
           formIsValid = false;
-        } else if (razaDefinidaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
-          formIsValid = false;
+        } else if (razaDefinidaSelect.value === "OTRA") {
+          // Si seleccionó OTRA, debe ingresar la raza manualmente
+          if (!razaDefinidaManual.value.trim()) {
+            formIsValid = false;
+          }
         }
       }
+      // Si es Mestizo, no necesita validación adicional
 
-      // Validación de Antirrábica y Vacunación
-      const antirrabicaSelect = document.getElementById("antirrabica");
-      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
-      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
-
+      // 6. Validar Antirrábica
       if (!antirrabicaSelect.value) {
         formIsValid = false;
       } else if (antirrabicaSelect.value === "Sí") {
-        if (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim()) {
+        // Si fue vacunado, debe ingresar la fecha
+        if (!fechaAntirrabicaInput.value.trim()) {
           formIsValid = false;
         }
       } else if (antirrabicaSelect.value === "No") {
-        if (vacunarAnimalSelect.getAttribute("required") === "true" && !vacunarAnimalSelect.value) {
+        // Si NO fue vacunado, debe seleccionar si desea vacunar
+        if (!vacunarAnimalSelect.value) {
           formIsValid = false;
         }
       }
 
-      const numeroOrdenInput = document.getElementById("numeroOrdenInput");
-      if (numeroOrdenInput) {
-        if (numeroOrdenInput.value.trim()) {
-          numeroOrdenInput.classList.add("btn-animado");
-        } else {
-          numeroOrdenInput.classList.remove("btn-animado");
-        }
+      // Animar Número de Orden si tiene valor
+      if (numeroOrdenInput.value.trim()) {
+        numeroOrdenInput.classList.add("btn-animado");
+      } else {
+        numeroOrdenInput.classList.remove("btn-animado");
       }
 
+      // Habilitar/Deshabilitar botón ACEPTO
       btnAcepto.disabled = !formIsValid;
       
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
@@ -626,6 +640,7 @@ function emitirBeepExito() {
         btnAcepto.classList.remove('btn-highlight');
       }
 
+      // Habilitar/Deshabilitar botón ENVIAR
       submitBtn.disabled = !(formIsValid && aceptoClicked);
 
       if (!submitBtn.disabled) {
