@@ -547,53 +547,55 @@ function emitirBeepExito() {
       const submitBtn = document.getElementById("submitBtn");
       const formContent = document.getElementById("formContent");
 
-      let formIsValid = true;
-
-      // Si el formulario expandido NO está visible, solo deshabilitar los botones
+      // Si el formulario expandido NO está visible, deshabilitar botones
       if (formContent.style.display === "none") {
         btnAcepto.disabled = true;
         submitBtn.disabled = true;
         return;
       }
 
-      // Si el formulario expandido SÍ está visible, validar TODOS los campos requeridos explícitamente
+      let formIsValid = form.checkValidity();
+
+      // Verificar datos del propietario
       const apellidoInput = document.getElementById("apellidoInput");
       const nombreInput = document.getElementById("nombreInput");
       const domicilioInput = document.querySelector("input[name='domicilio']");
       const telefonoInput = document.querySelector("input[name='telefono']");
-      const especieInput = document.getElementById("especieInput");
-      const edadInput = document.getElementById("edadInput");
-      const pelajeInput = document.getElementById("pelajeInput");
-      const antirrabicaSelect = document.getElementById("antirrabica");
-      const tipoRaza = document.getElementById("raza");
-      const razaSelect = document.getElementById("razaDefinidaSelect");
-      const razaDefinidaInput = document.getElementById("razaDefinida");
-      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
-      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
-
-      // Validar datos básicos del propietario
+      
       if (!apellidoInput.value.trim() || !nombreInput.value.trim() || 
           !domicilioInput.value.trim() || !telefonoInput.value.trim()) {
         formIsValid = false;
       }
 
-      // Validar datos del animal
-      if (!especieInput.value.trim() || !edadInput.value.trim() || !pelajeInput.value.trim()) {
+      // Verificar datos del animal
+      const especieInput = document.getElementById("especieInput");
+      const edadInput = document.getElementById("edadInput");
+      const pelajeInput = document.getElementById("pelajeInput");
+      
+      if (!especieInput.value || !edadInput.value || !pelajeInput.value) {
         formIsValid = false;
       }
 
-      // Validar tipo de raza
-      if (!tipoRaza.value) {
+      // Validación de Raza
+      const razaSelect = document.getElementById("raza");
+      const razaDefinidaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
+      
+      if (!razaSelect.value) {
         formIsValid = false;
-      } else if (tipoRaza.value === "Definida") {
-        if (!razaSelect.value) {
+      } else if (razaSelect.value === "Definida") {
+        if (!razaDefinidaSelect.value) {
           formIsValid = false;
-        } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+        } else if (razaDefinidaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
           formIsValid = false;
         }
       }
 
-      // Validar antirrabica
+      // Validación de Antirrábica y Vacunación
+      const antirrabicaSelect = document.getElementById("antirrabica");
+      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+
       if (!antirrabicaSelect.value) {
         formIsValid = false;
       } else if (antirrabicaSelect.value === "Sí") {
@@ -601,7 +603,7 @@ function emitirBeepExito() {
           formIsValid = false;
         }
       } else if (antirrabicaSelect.value === "No") {
-        if (!vacunarAnimalSelect.value) {
+        if (vacunarAnimalSelect.getAttribute("required") === "true" && !vacunarAnimalSelect.value) {
           formIsValid = false;
         }
       }
