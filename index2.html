@@ -853,6 +853,7 @@ function emitirBeepExito() {
     });
 
     document.getElementById("miForm").addEventListener("input", verificarValidezFormulario);
+    document.getElementById("miForm").addEventListener("change", verificarValidezFormulario);
 
     document.getElementById("btnAcepto").addEventListener("click", function () {
       this.classList.add("btn-accepted");
