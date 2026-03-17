@@ -7,9 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css"> 
   <style>
-    /* Estilos para asegurar que el botón primario deshabilitado mantenga el color azul */
     .btn-primary:disabled {
       background-color: #0d6efd !important;
       border-color: #0d6efd !important;
@@ -17,19 +15,46 @@
       cursor: not-allowed;
     }
 
-    /* Estilos base para el botón de aceptación del CMV */
+    @keyframes parpadeo-suave {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     .btn-accept {
-      border: 1px solid #ccc;
-      color: #333;
-      background-color: transparent;
+      border: 1px solid #0d6efd;
+      color: #fff;
+      background-color: #0d6efd;
       padding: 12px 20px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 800;
       transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
       text-align: center;
       margin-top: 15px;
+    }
+
+    /* Permite que parte del texto del botón se muestre sin negrita */
+    .btn-accept .normal-weight {
+      font-weight: 400 !important;
+    }
+
+    /* Clase que anima el botón cuando está habilitado */
+    .btn-highlight {
+      animation: parpadeo-suave 1.5s infinite ease-in-out;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
     }
 
     .btn-accept:disabled {
@@ -39,14 +64,35 @@
 
     /* Estilo cuando el CMV ha sido aceptado */
     .btn-accepted {
-      background-color: #28a745;
+      background-color: #0b5ed7;
       color: #fff;
-      border-color: #28a745;
+      border-color: #0b5ed7;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+
+    @keyframes parpadeo-aceptado {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.7);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+      }
     }
 
     .btn-accept:hover {
-      background-color: #218838;
+      background-color: #0b5ed7;
       color: #fff;
+    }
+
+    .highlight-text {
+      color: #000;
+      font-weight: bold;
     }
 
     .readonly-field {
@@ -56,25 +102,325 @@
     .numero-orden-container {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: left;
       margin-bottom: 15px;
+    }
+
+    .numero-orden-container label {
+      font-weight: 600;
+      font-size: 1rem;
     }
 
     .orden-numero-input {
       text-align: center;
-      font-weight: bold;
-      font-size: 2rem;
+      font-weight: 900;
+      font-size: 3rem;
       padding: 20px;
       width: 220px;
       border: 3px solid #dc3545;
       border-radius: 8px;
       background-color: #f8f9fa;
       margin: 0 auto;
+      color: #dc3545;
     }
 
     .modal-text-lg {
       font-size: 1.25rem;
     }
+
+    /* Estilos generales del cuerpo y contenedor */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e9ecef 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .form-container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Nuevo estilo para la fecha */
+    .fecha-centrada {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #f10736;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    /* Estilos de los campos del formulario */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fafafa;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #5cb85c;
+      box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.1);
+      background-color: #fff;
+    }
+
+    /* Estilos para el botón de envío */
+    button[type="submit"] {
+
+      
+
+
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: #fff;
+      transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    }
+
+    /* ====== Contenido embebido de style.css ====== */
+
+    /* Estilos generales del cuerpo y contenedor */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e9ecef 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .form-container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Nuevo estilo para la fecha */
+    .fecha-centrada {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #f10736;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    /* Estilos de los campos del formulario */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fafafa;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #5cb85c;
+      box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.1);
+      background-color: #fff;
+    }
+
+    /* Estilos para los campos de solo lectura */
+    .readonly-field {
+      background-color: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+      border-color: #adb5bd;
+    }
+
+    /* Estilos para el botón de envío (coincide con el resto de botones primarios) */
+    button[type="submit"] {
+      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    }
+
+    /* Estilos para la etiqueta y texto pequeño */
+    label {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    small {
+      font-size: 0.85em;
+      color: #888;
+      margin: 0;
+      line-height: 1.2;
+      display: block;
+    }
+
+    /* Media queries para móviles */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .form-container {
+        padding: 20px;
+        margin: 10px;
+        border-radius: 12px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="tel"],
+      input[type="email"],
+      select {
+        padding: 14px 16px;
+        font-size: 16px; /* Previene zoom en iOS */
+      }
+
+      button[type="submit"] {
+        padding: 14px 24px;
+        font-size: 16px;
+      }
+
+      .fecha-centrada {
+        font-size: 1rem;
+      }
+    }
+
+    /* Contenedor y estilo para Número de Orden */
+    .numero-orden-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .orden-numero-input {
+      text-align: center;
+      font-weight: 800;
+      font-size: 3rem;
+      padding: 20px;
+      width: 100%;
+      max-width: 280px;
+      border: 3px solid #dc3545;
+      border-radius: 12px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+      color: #dc3545;
+      transition: border-color 0.3s ease;
+    }
+
+    .orden-numero-input:focus {
+      border-color: #5cb85c;
+      box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.1);
+    }
+
+    /* Estilo para botones adicionales */
+    .btn {
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+      border: none;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+
   </style>
 </head>
 
@@ -165,19 +511,19 @@
               <option value="Blanco">Blanco</option>
               <option value="Blanco y marron">Blanco y marrón</option>
               <option value="Blanco y negro">Blanco y negro</option>
-              <option value="Blanco y negro">Blanco y gris</option>
+              <option value="Blanco y gris">Blanco y gris</option>
               <option value="Gris">Gris</option>
-              <option value="Gris y negro">Gris y blanco</option>
+              <option value="Gris y blanco">Gris y blanco</option>
               <option value="Gris y negro">Gris y negro</option>
-              <option value="Gris y negro">Gris y marrón</option>
+              <option value="Gris y marrón">Gris y marrón</option>
               <option value="Marron">Marrón</option>
               <option value="Naranja">Naranja</option>
               <option value="Negro">Negro</option>
-              <option value="Negro">Negro y marrón</option>
+              <option value="Negro y marrón">Negro y marrón</option>
               <option value="Tricolor">Tricolor</option>
             </select>
           </div>
-          </div>
+        </div>
 
         <div class="row g-3 mb-3">
           <div class="col-12">
@@ -190,8 +536,8 @@
           </div>
           <div class="col-12">
             <label for="fechaAntirrabica" style="display:none;">¿Cuándo fue vacunado?</label>
-            <input type="text" name="fechaAntirrabica" id="fechaAntirrabica" placeholder="¿Cuándo fue vacunado?" required
-              class="form-control" style="display:none;">
+            <input type="text" name="fechaAntirrabica" id="fechaAntirrabica" placeholder="¿Cuándo fue vacunado?"
+              required class="form-control" style="display:none;">
           </div>
           <div class="col-12" id="vacunarDiv" style="display:none;">
             <label for="vacunarAnimal">¿Desea vacunar al animal?</label>
@@ -210,7 +556,7 @@
         </div>
 
         <div class="d-flex justify-content-center">
-          <button type="button" class="btn btn-accept" id="btnAcepto" disabled>HAGA CLICK AQUI en este recuadro si acepta el Consentimiento Médico Veterinario. Verifique que estén todos los datos completos.</button>
+          <button type="button" class="btn btn-accept" id="btnAcepto" disabled><span class="normal-weight">HAGA CLICK AQUI en este recuadro si acepta el Consentimiento Médico Veterinario.</span> <span class="highlight-text">VERIFIQUE QUE LOS DATOS ESTEN COMPLETOS.</span></button>
         </div>
 
         <div class="d-grid gap-2 mt-3">
@@ -220,11 +566,13 @@
     </form>
 
     <footer class="text-center mt-5">
-      <div><small class="form-text">CMV - DIGITAL</small></div>
-      <div><small class="form-text">Sistema prueba piloto</small></div>
-      <div><small class="form-text">Consentimientos Médicos Veterinarios Digitales</small></div>
-      <div><small class="form-text">Dirección de Zoonosis y Bienestar Animal. MGP</small></div>
-      <div><small class="form-text">Proyecto Expediente EX-2025-00370345--MUNIMDP-DZBA#SSA</small></div>
+      <small class="form-text">
+        CMV - DIGITAL Versión 2.1<br>
+        Sistema prueba piloto<br>
+        Consentimientos Médicos Veterinarios Digitales<br>
+        Dirección de Zoonosis y Bienestar Animal. MGP<br>
+        Proyecto Expediente EX-2025-00370345--MUNIMDP-DZBA#SSA
+      </small>
     </footer>
   </div>
 
@@ -254,29 +602,45 @@
         </div>
         <div class="modal-body">
           <p id="warning-message" class="modal-text-lg"></p>
-          
+
           <div id="pppContainer" style="display: none;" class="mt-3">
-            <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#listaRazasPPP" aria-expanded="false">
+            <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse"
+              data-bs-target="#listaRazasPPP" aria-expanded="false">
               Ver listado de razas (Ordenanza 22031)
             </button>
             <div class="collapse mt-2" id="listaRazasPPP">
               <div class="card card-body" style="font-size: 0.9rem;">
                 <ul class="row list-unstyled">
-                  <li class="col-md-6">Airedale Terrier</li><li class="col-md-6">Akita Inu</li>
-                  <li class="col-md-6">American Staffordshire Terrier</li><li class="col-md-6">Pitbull American Terrier</li>
-                  <li class="col-md-6">Boyero de berna</li><li class="col-md-6">Bóxer</li>
-                  <li class="col-md-6">Bullmastif</li><li class="col-md-6">Bull Terrier</li>
-                  <li class="col-md-6">Cané corso</li><li class="col-md-6">Doberman</li>
-                  <li class="col-md-6">Dogo Argentino</li><li class="col-md-6">Dogo Alemán</li>
-                  <li class="col-md-6">Gran Danés</li><li class="col-md-6">Dogo Canario</li>
-                  <li class="col-md-6">Presa Canario</li><li class="col-md-6">Dogo de burdeos</li>
-                  <li class="col-md-6">Fila Brasileño</li><li class="col-md-6">Gran perro Japonés</li>
-                  <li class="col-md-6">Kuvas</li><li class="col-md-6">Mastiff (Mastín Inglés)</li>
-                  <li class="col-md-6">Mastín Napolitano</li><li class="col-md-6">Ovejero Alemán</li>
-                  <li class="col-md-6">Ovejero Belga</li><li class="col-md-6">Pastor del Cáucaso</li>
-                  <li class="col-md-6">Rottweiler</li><li class="col-md-6">San Bernardo</li>
-                  <li class="col-md-6">Schnauzer Gigante</li><li class="col-md-6">Staffordshire Bull Terrier</li>
-                  <li class="col-md-6">Viejo Pastor Inglés</li><li class="col-md-6">Mestizos de las cruzas anteriores</li>
+                  <li class="col-md-6">Airedale Terrier</li>
+                  <li class="col-md-6">Akita Inu</li>
+                  <li class="col-md-6">American Staffordshire Terrier</li>
+                  <li class="col-md-6">Pitbull American Terrier</li>
+                  <li class="col-md-6">Boyero de berna</li>
+                  <li class="col-md-6">Bóxer</li>
+                  <li class="col-md-6">Bullmastif</li>
+                  <li class="col-md-6">Bull Terrier</li>
+                  <li class="col-md-6">Cané corso</li>
+                  <li class="col-md-6">Doberman</li>
+                  <li class="col-md-6">Dogo Argentino</li>
+                  <li class="col-md-6">Dogo Alemán</li>
+                  <li class="col-md-6">Gran Danés</li>
+                  <li class="col-md-6">Dogo Canario</li>
+                  <li class="col-md-6">Presa Canario</li>
+                  <li class="col-md-6">Dogo de burdeos</li>
+                  <li class="col-md-6">Fila Brasileño</li>
+                  <li class="col-md-6">Gran perro Japonés</li>
+                  <li class="col-md-6">Kuvas</li>
+                  <li class="col-md-6">Mastiff (Mastín Inglés)</li>
+                  <li class="col-md-6">Mastín Napolitano</li>
+                  <li class="col-md-6">Ovejero Alemán</li>
+                  <li class="col-md-6">Ovejero Belga</li>
+                  <li class="col-md-6">Pastor del Cáucaso</li>
+                  <li class="col-md-6">Rottweiler</li>
+                  <li class="col-md-6">San Bernardo</li>
+                  <li class="col-md-6">Schnauzer Gigante</li>
+                  <li class="col-md-6">Staffordshire Bull Terrier</li>
+                  <li class="col-md-6">Viejo Pastor Inglés</li>
+                  <li class="col-md-6">Mestizos de las cruzas anteriores</li>
                 </ul>
               </div>
             </div>
@@ -317,24 +681,24 @@
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
     fechaElemento.textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-/**
-     * Muestra el modal de advertencia con un mensaje específico.
-     * @param {string} mensaje El texto a mostrar en el modal.
-     * @param {boolean} mostrarPPP Si se debe mostrar el botón de razas peligrosas.
-     */
+    /**
+         * Muestra el modal de advertencia con un mensaje específico.
+         * @param {string} mensaje El texto a mostrar en el modal.
+         * @param {boolean} mostrarPPP Si se debe mostrar el botón de razas peligrosas.
+         */
     function deshabilitarFormulario(mensaje, mostrarPPP = false) {
       const modalMessage = document.getElementById("warning-message");
       const pppContainer = document.getElementById("pppContainer");
-      
+
       modalMessage.textContent = mensaje;
-      
+
       // Si mostrarPPP es true, mostramos el botón del listado
       pppContainer.style.display = mostrarPPP ? "block" : "none";
-      
+
       // Reiniciamos el colapsable por si quedó abierto de antes
       const listaRazas = document.getElementById("listaRazasPPP");
       if (listaRazas.classList.contains('show')) {
-          listaRazas.classList.remove('show');
+        listaRazas.classList.remove('show');
       }
 
       const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
@@ -369,8 +733,8 @@
       const formContent = document.getElementById("formContent");
       const apellidoInput = document.getElementById("apellidoInput");
       const nombreInput = document.getElementById("nombreInput");
-      if (formContent.style.display !== "none" && 
-          (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
+      if (formContent.style.display !== "none" &&
+        (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
         formIsValid = false;
       }
 
@@ -380,27 +744,41 @@
       if (razaSelect.value === "Definida" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
         formIsValid = false;
       }
-      
+
       // Validación de Antirrábica y Vacunar Animal
       const antirrabicaSelect = document.getElementById("antirrabica");
       const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
       const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
-      
+
       // Si fue vacunado (Sí), la fecha debe ser requerida
       if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
         formIsValid = false;
       }
-      
+
       // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
       if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
-          formIsValid = false;
+        formIsValid = false;
       }
 
       btnAcepto.disabled = !formIsValid;
 
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+      // Si el botón está habilitado y aún NO fue clickeado, lo destacamos con parpadeo.
+      if (!btnAcepto.disabled && !aceptoClicked) {
+        btnAcepto.classList.add('btn-highlight');
+      } else {
+        btnAcepto.classList.remove('btn-highlight');
+      }
+
       // El botón de enviar solo se habilita si el formulario es válido Y se aceptó el CMV
-      submitBtn.disabled = !(formIsValid && aceptoClicked); 
+      submitBtn.disabled = !(formIsValid && aceptoClicked);
+
+      // Si el botón de envío está habilitado, lo hacemos parpadear hasta que el usuario lo cliquee
+      if (!submitBtn.disabled) {
+        submitBtn.classList.add('btn-highlight');
+      } else {
+        submitBtn.classList.remove('btn-highlight');
+      }
     }
 
     // Event listeners para validación
@@ -423,7 +801,7 @@
     document.getElementById("antirrabica").addEventListener("change", function () {
       const fechaVacuna = document.getElementById("fechaAntirrabica");
       const fechaVacunaLabel = document.querySelector("label[for='fechaAntirrabica']");
-      
+
       const vacunarDiv = document.getElementById("vacunarDiv");
       const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
 
@@ -431,7 +809,7 @@
         fechaVacuna.style.display = "block";
         fechaVacunaLabel.style.display = "block";
         fechaVacuna.setAttribute("required", "true");
-        
+
         vacunarDiv.style.display = "none";
         vacunarAnimalSelect.removeAttribute("required");
         vacunarAnimalSelect.value = "";
@@ -440,36 +818,36 @@
         fechaVacunaLabel.style.display = "none";
         fechaVacuna.removeAttribute("required");
         fechaVacuna.value = "";
-        
+
         vacunarDiv.style.display = "block";
         vacunarAnimalSelect.setAttribute("required", "true");
-        
+
       } else {
         // Opción vacía
         fechaVacuna.style.display = "none";
         fechaVacunaLabel.style.display = "none";
         fechaVacuna.removeAttribute("required");
         fechaVacuna.value = "";
-        
+
         vacunarDiv.style.display = "none";
         vacunarAnimalSelect.removeAttribute("required");
         vacunarAnimalSelect.value = "";
       }
       verificarValidezFormulario();
     });
-    
+
     // Al presionar Continuar
     document.getElementById("continueBtn").addEventListener("click", function () {
       const documento = document.getElementById("documentoInput").value.trim();
       const numeroDeOrden = document.getElementById("numeroOrdenInput").value.trim();
-      
+
       if (!documento || !numeroDeOrden) {
         deshabilitarFormulario("⛔ Debe ingresar su Documento y el Número de Orden para continuar.");
         return;
       }
 
       const continueBtn = document.getElementById("continueBtn");
-      
+
       const mensajeAdvertencia = document.getElementById("mensajeAdvertencia");
       mensajeAdvertencia.style.display = "none";
       const formContent = document.getElementById("formContent");
@@ -477,32 +855,32 @@
 
       // CAMBIOS DE ESTADO (AHORA ANTES DEL FETCH)
       continueBtn.disabled = true;
-      continueBtn.textContent = 'Aguarde un instante...'; 
+      continueBtn.textContent = 'Aguarde un instante...';
       // FIN CAMBIOS DE ESTADO
 
-      const url = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento=" 
-                  + encodeURIComponent(documento)
-                  + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
+      const url = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
+        + encodeURIComponent(documento)
+        + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
 
       fetch(url)
         .then(res => res.json())
         .then(data => {
           if (data.error_orden) {
             deshabilitarFormulario(data.error_orden); // Usa el mensaje específico de orden
-          } 
+          }
           else if (data.error) {
             deshabilitarFormulario(data.error); // Usa el mensaje específico de documento o cupo agotado
           } else {
             // Mostrar el mensaje de advertencia aquí, después de verificar que no hay errores.
-            
-                
-            
-const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez por día y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";          
-deshabilitarFormulario(mensajeAlerta, true)
+
+
+
+            const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez por día y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";
+            deshabilitarFormulario(mensajeAlerta, true)
 
             continueBtn.style.display = "none";
             formContent.style.display = "block";
-            
+
             // Manejo de campos Apellido y Nombre
             const apellidoCampo = document.getElementById("apellidoInput");
             const nombreCampo = document.getElementById("nombreInput");
@@ -514,27 +892,27 @@ deshabilitarFormulario(mensajeAlerta, true)
             if (data.existe) {
               document.getElementById("idPropietarioInput").value = data.id_propietario;
               document.getElementById("idAnimalInput").value = "";
-              
+
               // Dividir el campo 'propietario' si existe y rellenar los nuevos campos
               const nombreCompleto = data.datos[0] || "";
               const partesNombre = nombreCompleto.split(/\s+/); // Divide por uno o más espacios
-              
+
               // Asume que la última palabra es el nombre y el resto es el apellido/s
               const nombre = partesNombre.length > 0 ? partesNombre.pop() : "";
               const apellido = partesNombre.join(' '); // El resto es el apellido/s
-              
+
               apellidoCampo.value = apellido;
               apellidoCampo.readOnly = true;
               apellidoCampo.classList.add("readonly-field");
-              
+
               nombreCampo.value = nombre;
               nombreCampo.readOnly = true;
               nombreCampo.classList.add("readonly-field");
-              
+
               domicilioCampo.value = data.datos[1] || "";
               domicilioCampo.readOnly = true;
               domicilioCampo.classList.add("readonly-field");
-              
+
               telefonoCampo.value = data.datos[2] || "";
               telefonoCampo.readOnly = true;
               telefonoCampo.classList.add("readonly-field");
@@ -559,12 +937,12 @@ deshabilitarFormulario(mensajeAlerta, true)
               });
             }
             // Fin de Manejo de campos Apellido y Nombre
-            
+
             document.getElementById("razaDefinida").style.display = "none";
             document.querySelector("label[for='razaDefinida']").style.display = "none";
             document.getElementById("razaDefinida").value = "";
             document.getElementById("razaDefinida").removeAttribute("required");
-            
+
             document.getElementById("fechaAntirrabica").style.display = "none";
             document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
             document.getElementById("fechaAntirrabica").value = "";
@@ -589,6 +967,7 @@ deshabilitarFormulario(mensajeAlerta, true)
 
     document.getElementById("btnAcepto").addEventListener("click", function () {
       this.classList.add("btn-accepted");
+      this.classList.remove("btn-highlight");
       verificarValidezFormulario();
     });
 
@@ -599,91 +978,92 @@ deshabilitarFormulario(mensajeAlerta, true)
       const submitBtn = document.getElementById("submitBtn");
       const documento = document.getElementById("documentoInput").value;
       const numeroDeOrden = document.getElementById("numeroOrdenInput").value;
-      
-      const apellidoInput = document.getElementById("apellidoInput"); 
-      const nombreInput = document.getElementById("nombreInput"); 
+
+      const apellidoInput = document.getElementById("apellidoInput");
+      const nombreInput = document.getElementById("nombreInput");
       const propietarioInput = document.getElementById("propietarioInput");
       const continueBtn = document.getElementById("continueBtn");
       const btnAcepto = document.getElementById("btnAcepto");
 
       // Ocultar el div contenedor y deshabilitar explícitamente el botón.
-      btnAcepto.parentNode.style.display = "none"; 
-      btnAcepto.disabled = true; 
-      
-      // Bloquear botón de envío y cambiar texto
+      btnAcepto.parentNode.style.display = "none";
+      btnAcepto.disabled = true;
+
+      // Bloquear botón de envío, detener el parpadeo y cambiar texto
       submitBtn.disabled = true;
+      submitBtn.classList.remove('btn-highlight');
       submitBtn.textContent = 'Verificando y enviando...';
 
       // Función de restauración común
       const restaurarFormulario = () => {
-          this.reset();
-          document.getElementById("formContent").style.display = "none";
-          document.getElementById("razaDefinida").style.display = "none";
-          document.getElementById("fechaAntirrabica").style.display = "none";
-          document.querySelector("label[for='razaDefinida']").style.display = "none";
-          document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
-          
-          document.getElementById("vacunarDiv").style.display = "none";
-          document.getElementById("vacunarAnimal").removeAttribute("required");
+        this.reset();
+        document.getElementById("formContent").style.display = "none";
+        document.getElementById("razaDefinida").style.display = "none";
+        document.getElementById("fechaAntirrabica").style.display = "none";
+        document.querySelector("label[for='razaDefinida']").style.display = "none";
+        document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
 
-          document.getElementById("btnAcepto").classList.remove("btn-accepted");
-          
-          submitBtn.textContent = 'Enviar datos';
-          continueBtn.style.display = "block";
-          continueBtn.textContent = 'Continuar'; 
-          
-          btnAcepto.parentNode.style.display = "flex"; 
-          
-          [apellidoInput, nombreInput, document.getElementById("domicilioInput"), document.getElementById("telefonoInput")].forEach(campo => {
-            campo.readOnly = false;
-            campo.classList.remove("readonly-field");
-          });
-          verificarValidezFormulario(); // Re-chequea el estado
+        document.getElementById("vacunarDiv").style.display = "none";
+        document.getElementById("vacunarAnimal").removeAttribute("required");
+
+        document.getElementById("btnAcepto").classList.remove("btn-accepted");
+
+        submitBtn.textContent = 'Enviar datos';
+        continueBtn.style.display = "block";
+        continueBtn.textContent = 'Continuar';
+
+        btnAcepto.parentNode.style.display = "flex";
+
+        [apellidoInput, nombreInput, document.getElementById("domicilioInput"), document.getElementById("telefonoInput")].forEach(campo => {
+          campo.readOnly = false;
+          campo.classList.remove("readonly-field");
+        });
+        verificarValidezFormulario(); // Re-chequea el estado
       }
 
 
       // ** 1. PRIMER PASO: VERIFICAR DUPLICIDAD FINAL (INMEDIATO) **
       // Hacemos el chequeo justo antes del envío (doble control)
-      const checkUrl = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento=" 
-                  + encodeURIComponent(documento)
-                  + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
-      
+      const checkUrl = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
+        + encodeURIComponent(documento)
+        + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
+
       try {
         const checkResponse = await fetch(checkUrl);
         const checkData = await checkResponse.json();
 
         if (checkData.error_orden || checkData.error) {
-           const errorMessage = checkData.error_orden || checkData.error;
-           // Si detecta un error (orden ya usada, documento duplicado o acceso deshabilitado)
-           deshabilitarFormulario(errorMessage); 
+          const errorMessage = checkData.error_orden || checkData.error;
+          // Si detecta un error (orden ya usada, documento duplicado o acceso deshabilitado)
+          deshabilitarFormulario(errorMessage);
 
-           // Restaurar estado del formulario para que el usuario pueda corregir
-           btnAcepto.parentNode.style.display = "flex"; 
-           btnAcepto.disabled = false;
-           submitBtn.disabled = false;
-           submitBtn.textContent = 'Enviar datos';
-           verificarValidezFormulario();
-           return; // DETENER EL ENVÍO
+          // Restaurar estado del formulario para que el usuario pueda corregir
+          btnAcepto.parentNode.style.display = "flex";
+          btnAcepto.disabled = false;
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar datos';
+          verificarValidezFormulario();
+          return; // DETENER EL ENVÍO
         }
-        
+
         // Si el chequeo pasa, continuamos con el envío INMEDIATO.
-        
+
         // 2. Concatenar y formatear: Apellido + " " + Nombre
         const propietarioOriginal = `${apellidoInput.value.trim()} ${nombreInput.value.trim()}`;
-        
+
         const propietarioFormateado = propietarioOriginal
-            .toLowerCase()
-            .split(' ')
-            .map(word => {
-                if (word.length === 0) return '';
-                // Asegura que las palabras pequeñas no sean capitalizadas si no son la primera
-                if (word.length <= 3 && word !== 'de' && word !== 'la' && word !== 'el') {
-                    return word;
-                }
-                return word.charAt(0).toUpperCase() + word.slice(1);
-            })
-            .join(' ');
-        
+          .toLowerCase()
+          .split(' ')
+          .map(word => {
+            if (word.length === 0) return '';
+            // Asegura que las palabras pequeñas no sean capitalizadas si no son la primera
+            if (word.length <= 3 && word !== 'de' && word !== 'la' && word !== 'el') {
+              return word;
+            }
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          })
+          .join(' ');
+
         // 3. Guardar el valor final en el campo oculto 'propietario' para el envío
         propietarioInput.value = propietarioFormateado;
         const propietario = propietarioFormateado;
@@ -697,17 +1077,17 @@ deshabilitarFormulario(mensajeAlerta, true)
         });
 
         if (!sendResponse.ok) {
-           throw new Error(`Error de envío: ${sendResponse.statusText}`);
+          throw new Error(`Error de envío: ${sendResponse.statusText}`);
         }
-        
+
         // ¡IMPORTANTE! Validar si el servidor devolvió un error JSON por duplicidad
         const sendData = await sendResponse.json();
-        
+
         if (sendData.error) {
-            // Error devuelto por doPost (Bloqueo): Duplicado de Orden o Documento.
-            // ESTA ES LA CLAVE DE LA CORRECCIÓN: Si el servidor dice que hubo error, mostramos el modal de advertencia con el mensaje.
-            deshabilitarFormulario(sendData.error);
-            return; // Detenemos el flujo para evitar el modal de éxito
+          // Error devuelto por doPost (Bloqueo): Duplicado de Orden o Documento.
+          // ESTA ES LA CLAVE DE LA CORRECCIÓN: Si el servidor dice que hubo error, mostramos el modal de advertencia con el mensaje.
+          deshabilitarFormulario(sendData.error);
+          return; // Detenemos el flujo para evitar el modal de éxito
         }
 
         // 5. Mostrar éxito (solo si NO hubo error en sendData)
@@ -720,10 +1100,10 @@ deshabilitarFormulario(mensajeAlerta, true)
         console.error("❌ Error en la verificación o envío:", error);
         // Si hubo un error en la comunicación o el servidor no respondió OK
         deshabilitarFormulario("❌ Error grave al intentar enviar los datos. Intente nuevamente. (" + error.message + ")");
-        
+
       } finally {
-          // Restaurar la interfaz después del intento (éxito o fallo)
-          restaurarFormulario();
+        // Restaurar la interfaz después del intento (éxito o fallo)
+        restaurarFormulario();
       }
     });
 
