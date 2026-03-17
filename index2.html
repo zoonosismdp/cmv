@@ -118,6 +118,12 @@
       flex-direction: column;
       justify-content: center;
       margin-bottom: 15px;
+      align-items: center;
+    }
+
+    .numero-orden-container label {
+      text-align: center;
+      width: 100%;
     }
 
     .orden-numero-input {
@@ -167,9 +173,9 @@
       <p id="mensajeAdvertencia" class="text-danger" style="display: none;"></p>
 
       <div class="col-12 text-center numero-orden-container">
-
+        <label for="numeroOrdenInput">Número de Orden</label>
         <input type="number" name="numero_de_orden" class="form-control orden-numero-input" id="numeroOrdenInput"
-          placeholder="Número de Orden" required>
+          placeholder="🔢 Ingrese su número aqui" required>
       </div>
 
       <div class="col-12 mb-3">
