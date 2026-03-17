@@ -766,6 +766,13 @@
 
       // El botón de enviar solo se habilita si el formulario es válido Y se aceptó el CMV
       submitBtn.disabled = !(formIsValid && aceptoClicked);
+
+      // Si el botón de envío está habilitado, lo hacemos parpadear hasta que el usuario lo cliquee
+      if (!submitBtn.disabled) {
+        submitBtn.classList.add('btn-highlight');
+      } else {
+        submitBtn.classList.remove('btn-highlight');
+      }
     }
 
     // Event listeners para validación
@@ -976,8 +983,9 @@
       btnAcepto.parentNode.style.display = "none";
       btnAcepto.disabled = true;
 
-      // Bloquear botón de envío y cambiar texto
+      // Bloquear botón de envío, detener el parpadeo y cambiar texto
       submitBtn.disabled = true;
+      submitBtn.classList.remove('btn-highlight');
       submitBtn.textContent = 'Verificando y enviando...';
 
       // Función de restauración común
