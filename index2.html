@@ -545,14 +545,13 @@ function emitirBeepExito() {
       const form = document.getElementById("miForm");
       const btnAcepto = document.getElementById("btnAcepto");
       const submitBtn = document.getElementById("submitBtn");
-
-      let formIsValid = form.checkValidity();
-
       const formContent = document.getElementById("formContent");
-      
-      // Si el formulario expandido NO está visible, solo validar documento y número de orden
+
+      let formIsValid = true;
+
+      // Si el formulario expandido NO está visible, solo deshabilitar los botones
       if (formContent.style.display === "none") {
-        btnAcepto.disabled = !formIsValid;
+        btnAcepto.disabled = true;
         submitBtn.disabled = true;
         return;
       }
