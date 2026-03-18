@@ -567,28 +567,40 @@
 
         basicRequired.forEach(key => {
           const el = fields[key];
-          if (!el || !el.value || !el.value.trim || (typeof el.value === 'string' && !el.value.trim())) {
+          if (!el || !el.value || el.value.toString().trim() === "") {
             formIsValid = false;
           }
         });
 
-        // Verificación lógica de Raza
-        if (fields.raza && fields.raza.value === "Definida") {
-          if (!fields.razaDefinidaSel || !fields.razaDefinidaSel.value) {
-            formIsValid = false;
-          } else if (fields.razaDefinidaSel.value === "OTRA" && (!fields.razaDefinidaMan || !fields.razaDefinidaMan.value.trim())) {
-            formIsValid = false;
+        // Verificación lógica de Raza (Lógica específica solicitada)
+        const razaVal = fields.raza ? fields.raza.value : "";
+        if (razaVal === "Mestizo") {
+          // OK, Mestizo no bloquea
+        } else if (razaVal === "Definida") {
+          const defSel = fields.razaDefinidaSel ? fields.razaDefinidaSel.value : "";
+          if (!defSel) {
+            formIsValid = false; // Definida requiere elegir de la lista
+          } else if (defSel === "OTRA") {
+            const manualVal = fields.razaDefinidaMan ? fields.razaDefinidaMan.value.trim() : "";
+            if (!manualVal) {
+              formIsValid = false; // OTRA requiere nombre manual
+            }
           }
+        } else {
+          // Si no es ni Mestizo ni Definida, es falso (ej: "Seleccione tipo")
+          formIsValid = false;
         }
 
         // Verificación lógica de Antirrábica
         if (fields.antirrabica) {
-          if (fields.antirrabica.value === "Sí") {
-            if (!fields.fechaAntirrabica || !fields.fechaAntirrabica.value.trim()) {
+          const rabiesVal = fields.antirrabica.value;
+          // Comprobamos Sí con y sin tilde
+          if (rabiesVal === "Sí" || rabiesVal === "Si") {
+            if (!fields.fechaAntirrabica || fields.fechaAntirrabica.value.trim() === "") {
               formIsValid = false;
             }
-          } else if (fields.antirrabica.value === "No") {
-            if (!fields.vacunarAnimal || !fields.vacunarAnimal.value) {
+          } else if (rabiesVal === "No") {
+            if (!fields.vacunarAnimal || fields.vacunarAnimal.value === "") {
               formIsValid = false;
             }
           }
