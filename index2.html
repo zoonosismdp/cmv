@@ -110,6 +110,13 @@
       background-color: #f0f0f0;
     }
 
+    .highlight-text {
+      color: #dc3545;
+      font-weight: 900;
+      display: block;
+      margin-top: 5px;
+    }
+
     .numero-orden-container {
       display: flex;
       flex-direction: column;
@@ -528,79 +535,75 @@
         const submitBtn = document.getElementById("submitBtn");
         const formContent = document.getElementById("formContent");
 
-        if (formContent.style.display === "none") {
-          btnAcepto.disabled = true;
-          submitBtn.disabled = true;
+        if (!formContent || formContent.style.display === "none") {
+          if (btnAcepto) btnAcepto.disabled = true;
+          if (submitBtn) submitBtn.disabled = true;
           return;
         }
 
         let formIsValid = true;
 
-        const numeroOrdenInput = document.getElementById("numeroOrdenInput");
-        const documentoInput = document.getElementById("documentoInput");
-        const apellidoInput = document.getElementById("apellidoInput");
-        const nombreInput = document.getElementById("nombreInput");
-        const domicilioInput = document.getElementById("domicilioInput");
-        const telefonoInput = document.getElementById("telefonoInput");
-        const especieInput = document.getElementById("especieInput");
-        const edadInput = document.getElementById("edadInput");
-        const pelajeInput = document.getElementById("pelajeInput");
-        const razaSelect = document.getElementById("raza");
-        const razaDefinidaSelect = document.getElementById("razaDefinidaSelect");
-        const razaDefinidaManual = document.getElementById("razaDefinida");
-        const antirrabicaSelect = document.getElementById("antirrabica");
-        const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
-        const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+        // Referencias a campos
+        const fields = {
+          numeroOrden: document.getElementById("numeroOrdenInput"),
+          documento: document.getElementById("documentoInput"),
+          apellido: document.getElementById("apellidoInput"),
+          nombre: document.getElementById("nombreInput"),
+          domicilio: document.getElementById("domicilioInput"),
+          telefono: document.getElementById("telefonoInput"),
+          especie: document.getElementById("especieInput"),
+          edad: document.getElementById("edadInput"),
+          pelaje: document.getElementById("pelajeInput"),
+          raza: document.getElementById("raza"),
+          razaDefinidaSel: document.getElementById("razaDefinidaSelect"),
+          razaDefinidaMan: document.getElementById("razaDefinida"),
+          antirrabica: document.getElementById("antirrabica"),
+          fechaAntirrabica: document.getElementById("fechaAntirrabica"),
+          vacunarAnimal: document.getElementById("vacunarAnimal")
+        };
 
-        if (!numeroOrdenInput.value.trim()) {
-          formIsValid = false;
-        }
+        // Verificación de campos requeridos básicos
+        const basicRequired = ["numeroOrden", "documento", "apellido", "nombre", "domicilio", "telefono", "especie", "edad", "pelaje", "raza", "antirrabica"];
 
-        if (!documentoInput.value.trim()) {
-          formIsValid = false;
-        }
-
-        if (!apellidoInput.value.trim() || !nombreInput.value.trim() ||
-          !domicilioInput.value.trim() || !telefonoInput.value.trim()) {
-          formIsValid = false;
-        }
-
-        if (!especieInput.value || !edadInput.value.trim() || !pelajeInput.value) {
-          formIsValid = false;
-        }
-
-        if (!razaSelect.value) {
-          formIsValid = false;
-        } else if (razaSelect.value === "Definida") {
-          // Solo si es Definida, verificamos los campos adicionales
-          if (!razaDefinidaSelect.value) {
+        basicRequired.forEach(key => {
+          const el = fields[key];
+          if (!el || !el.value || !el.value.trim || (typeof el.value === 'string' && !el.value.trim())) {
             formIsValid = false;
-          } else if (razaDefinidaSelect.value === "OTRA" && !razaDefinidaManual.value.trim()) {
+          }
+        });
+
+        // Verificación lógica de Raza
+        if (fields.raza && fields.raza.value === "Definida") {
+          if (!fields.razaDefinidaSel || !fields.razaDefinidaSel.value) {
+            formIsValid = false;
+          } else if (fields.razaDefinidaSel.value === "OTRA" && (!fields.razaDefinidaMan || !fields.razaDefinidaMan.value.trim())) {
             formIsValid = false;
           }
         }
 
-        if (!antirrabicaSelect.value) {
-          formIsValid = false;
-        } else if (antirrabicaSelect.value === "Sí") {
-          if (!fechaAntirrabicaInput.value.trim()) {
-            formIsValid = false;
-          }
-        } else if (antirrabicaSelect.value === "No") {
-          if (!vacunarAnimalSelect.value) {
-            formIsValid = false;
+        // Verificación lógica de Antirrábica
+        if (fields.antirrabica) {
+          if (fields.antirrabica.value === "Sí") {
+            if (!fields.fechaAntirrabica || !fields.fechaAntirrabica.value.trim()) {
+              formIsValid = false;
+            }
+          } else if (fields.antirrabica.value === "No") {
+            if (!fields.vacunarAnimal || !fields.vacunarAnimal.value) {
+              formIsValid = false;
+            }
           }
         }
 
-        if (numeroOrdenInput.value.trim()) {
-          numeroOrdenInput.classList.add("btn-animado");
-        } else {
-          numeroOrdenInput.classList.remove("btn-animado");
+        // Actualizar estado de los botones
+        if (fields.numeroOrden && fields.numeroOrden.value.trim()) {
+          fields.numeroOrden.classList.add("btn-animado");
+        } else if (fields.numeroOrden) {
+          fields.numeroOrden.classList.remove("btn-animado");
         }
 
         btnAcepto.disabled = !formIsValid;
-
         const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+
         if (!btnAcepto.disabled && !aceptoClicked) {
           btnAcepto.classList.add('btn-highlight');
         } else {
