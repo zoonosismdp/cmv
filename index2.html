@@ -572,13 +572,12 @@
         if (!razaSelect.value) {
           formIsValid = false;
         } else if (razaSelect.value === "Definida") {
+          // Solo si es Definida, verificamos los campos adicionales
           if (!razaDefinidaSelect.value) {
             formIsValid = false;
           } else if (razaDefinidaSelect.value === "OTRA" && !razaDefinidaManual.value.trim()) {
             formIsValid = false;
           }
-        } else if (razaSelect.value === "Mestizo") {
-          // Si es Mestizo, no requiere validaciones adicionales, formIsValid permanece según los campos anteriores
         }
 
         if (!antirrabicaSelect.value) {
