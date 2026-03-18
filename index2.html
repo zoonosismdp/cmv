@@ -600,6 +600,14 @@
         btnAcepto.classList.remove('btn-highlight');
       }
 
+      // Actualizar animación del Número de Orden
+      const numeroOrdenInput = document.getElementById("numeroOrdenInput");
+      if (numeroOrdenInput && numeroOrdenInput.value.trim()) {
+        numeroOrdenInput.classList.add("btn-animado");
+      } else if (numeroOrdenInput) {
+        numeroOrdenInput.classList.remove("btn-animado");
+      }
+
       // El botón de enviar solo se habilita si el formulario es válido Y se presionó el botón de consentimiento
       submitBtn.disabled = !(formIsValid && aceptoClicked);
 
