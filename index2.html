@@ -880,9 +880,9 @@
         const form = document.getElementById("miForm");
         if (form) form.reset();
 
-        // Ocultar botón de escaneo a la fuerza y mostrar el DNI
-        document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
-        document.getElementById('documentoDisplayContainer').style.display = 'block';
+        // Restablecer vista inicial: mostrar botón de escaneo y ocultar campo de documento
+        document.getElementById('scannerButtonContainer').style.setProperty('display', 'grid', 'important');
+        document.getElementById('documentoDisplayContainer').style.display = 'none';
 
         // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "numeroOrdenInput", "apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"];
@@ -890,8 +890,14 @@
         camposAResetear.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            el.readOnly = false;
-            el.classList.remove("readonly-field");
+            // Todos los campos se vuelven editables EXCEPTO el documento escaneado (que ya viene readonly en HTML)
+            if (id === "documentoInput") {
+              el.readOnly = true;
+              el.classList.add("readonly-field");
+            } else {
+              el.readOnly = false;
+              el.classList.remove("readonly-field");
+            }
             el.classList.remove("orden-activo"); // Quitar animación
             el.value = "";
           }
