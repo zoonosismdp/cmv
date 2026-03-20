@@ -1,17 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-  /* Estilo para que el lector no sea gigante */
   #reader {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
   }
 
-  /* Definimos el efecto de parpadeo */
   @keyframes parpadeo-suave {
     0% {
       opacity: 1;
@@ -29,14 +27,12 @@
     }
   }
 
-  /* Creamos la clase que aplica la animación */
   .btn-animado {
     animation: parpadeo-suave 1.5s infinite ease-in-out;
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
-    /* Un brillo azul sutil */
+
   }
 </style>
-
 
 <head>
   <meta charset="UTF-8">
@@ -46,7 +42,6 @@
     xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos para asegurar que el botón primario deshabilitado mantenga el color azul */
     .btn-primary:disabled {
       background-color: #0d6efd !important;
       border-color: #0d6efd !important;
@@ -54,7 +49,6 @@
       cursor: not-allowed;
     }
 
-    /* Estilos base para el botón de aceptación del CMV */
     .btn-accept {
       border: 1px solid #0d6efd;
       color: #fff;
@@ -83,7 +77,6 @@
       cursor: not-allowed;
     }
 
-    /* Estilo cuando el CMV ha sido aceptado */
     .btn-accepted {
       background-color: #0b5ed7;
       color: #fff;
@@ -144,11 +137,21 @@
       transition: all 0.3s ease;
     }
 
-    /* Animación de parpadeo para el borde rojo */
     @keyframes parpadeo-borde-rojo {
-      0% { border-color: #dc3545; box-shadow: 0 0 5px rgba(220, 53, 69, 0.5); }
-      50% { border-color: #f8f9fa; box-shadow: 0 0 20px rgba(220, 53, 69, 0.8); }
-      100% { border-color: #dc3545; box-shadow: 0 0 5px rgba(220, 53, 69, 0.5); }
+      0% {
+        border-color: #dc3545;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+      }
+
+      50% {
+        border-color: #f8f9fa;
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+      }
+
+      100% {
+        border-color: #dc3545;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+      }
     }
 
     .orden-activo {
@@ -482,24 +485,13 @@
     crossorigin="anonymous"></script>
 
   <script>
-    // Configuración de la fecha actual
+
     const fechaElemento = document.getElementById("fechaActual");
     const hoy = new Date();
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
     fechaElemento.textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-    /**
-         * Muestra el modal de advertencia con un mensaje específico.
-         * @param {string} mensaje El texto a mostrar en el modal.
-         * @param {boolean} mostrarPPP Si se debe mostrar el botón de razas peligrosas.
-         */
 
-    /**
- * Genera un sonido de "beep" profesional usando Web Audio API.
- */
-    /**
- * Genera un sonido de "beep" más largo y fuerte.
- */
     function emitirBeepExito() {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
@@ -509,11 +501,11 @@
       gainNode.connect(audioCtx.destination);
 
       oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Tono más grave/cuerpo
-      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volumen más fuerte (30%)
+      oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
 
       oscillator.start();
-      // Duración extendida a 0.4 segundos con rampa de salida suave
+
       gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
       oscillator.stop(audioCtx.currentTime + 0.4);
     }
@@ -524,10 +516,8 @@
 
       modalMessage.textContent = mensaje;
 
-      // Si mostrarPPP es true, mostramos el botón del listado
       pppContainer.style.display = mostrarPPP ? "block" : "none";
 
-      // Reiniciamos el colapsable por si quedó abierto de antes
       const listaRazas = document.getElementById("listaRazasPPP");
       if (listaRazas.classList.contains('show')) {
         listaRazas.classList.remove('show');
@@ -537,10 +527,6 @@
       warningModal.show();
     }
 
-    /**
-     * Muestra el modal de acceso deshabilitado y bloquea la interacción del formulario.
-     * @param {string} mensaje El texto a mostrar en el modal.
-     */
     function deshabilitarPorAcceso(mensaje) {
       const accessDisabledMessage = document.getElementById("accessDisabledMessage");
       accessDisabledMessage.textContent = mensaje;
@@ -551,18 +537,13 @@
       inputs.forEach(input => input.disabled = true);
     }
 
-    /**
-     * Verifica la validez de los campos y habilita/deshabilita los botones.
-     */
     function verificarValidezFormulario() {
       const form = document.getElementById("miForm");
       const btnAcepto = document.getElementById("btnAcepto");
       const submitBtn = document.getElementById("submitBtn");
 
-      // Validación básica de HTML5 (required, type, etc.)
       let formIsValid = form.checkValidity();
 
-      // 1. Verificar Apellido y Nombre (parte del contenido oculto)
       const formContent = document.getElementById("formContent");
       const apellidoInput = document.getElementById("apellidoInput");
       const nombreInput = document.getElementById("nombreInput");
@@ -571,9 +552,7 @@
         formIsValid = false;
       }
 
-      // 2. NUEVA LÓGICA DE RAZA: Validación de Tipo de Raza y Selección
-      // Dentro de verificarValidezFormulario
-      const tipoRaza = document.getElementById("raza"); // ID actualizado
+      const tipoRaza = document.getElementById("raza");
       const razaSelect = document.getElementById("razaDefinidaSelect");
       const razaDefinidaInput = document.getElementById("razaDefinida");
 
@@ -587,22 +566,18 @@
         }
       }
 
-      // 3. Validación de Antirrábica y Vacunar Animal (Lógica original)
       const antirrabicaSelect = document.getElementById("antirrabica");
       const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
       const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
 
-      // Si fue vacunado (Sí), la fecha debe ser requerida
       if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
         formIsValid = false;
       }
 
-      // Si NO fue vacunado (No), la opción de vacunar debe ser seleccionada si es requerida
       if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
         formIsValid = false;
       }
 
-      // Habilitación del botón de Consentimiento (Acepto)
       btnAcepto.disabled = !formIsValid;
 
       const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
@@ -613,7 +588,6 @@
         btnAcepto.classList.remove('btn-highlight');
       }
 
-      // El botón de enviar solo se habilita si el formulario es válido Y se presionó el botón de consentimiento
       submitBtn.disabled = !(formIsValid && aceptoClicked);
 
       if (!submitBtn.disabled) {
@@ -622,12 +596,7 @@
         submitBtn.classList.remove('btn-highlight');
       }
     }
-    // Event listeners para validación
-    // Event listeners para validación
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // Lógica para el selector de Tipo de Raza (Mestizo/Definido)
-    // 1. Lógica para el selector principal (Mestizo / Definido)
+
     document.getElementById("raza").addEventListener("change", function () {
       const valor = this.value;
       const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
@@ -636,14 +605,14 @@
       const razaDefinidaInput = document.getElementById("razaDefinida");
 
       if (valor === "Mestizo") {
-        // Si es Mestizo, ocultamos todo y limpiamos el nombre específico
+
         contenedorEspecial.style.display = "none";
         contenedorManual.style.display = "none";
         razaSelect.value = "";
         razaDefinidaInput.value = "";
         razaDefinidaInput.removeAttribute("required");
       } else if (valor === "Definida") {
-        // Si es Definido, mostramos el listado
+
         contenedorEspecial.style.display = "block";
         contenedorManual.style.display = "none";
         razaDefinidaInput.value = "";
@@ -654,19 +623,18 @@
       verificarValidezFormulario();
     });
 
-    // 2. Lógica para el listado de razas
     document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
       const razaDefinidaInput = document.getElementById("razaDefinida");
       const contenedorManual = document.getElementById("contenedorRazaManual");
 
       if (this.value === "OTRA") {
-        // Si elige "OTRA", mostramos el input manual
+
         contenedorManual.style.display = "block";
         razaDefinidaInput.value = "";
         razaDefinidaInput.setAttribute("required", "true");
         razaDefinidaInput.style.display = "block";
       } else if (this.value !== "") {
-        // Si elige una raza del listado, la guardamos en el input (aunque esté oculto)
+
         contenedorManual.style.display = "none";
         razaDefinidaInput.value = this.value;
         razaDefinidaInput.removeAttribute("required");
@@ -702,7 +670,7 @@
         vacunarAnimalSelect.setAttribute("required", "true");
 
       } else {
-        // Opción vacía
+
         fechaVacuna.style.display = "none";
         fechaVacunaLabel.style.display = "none";
         fechaVacuna.removeAttribute("required");
@@ -715,7 +683,6 @@
       verificarValidezFormulario();
     });
 
-    // Al presionar Continuar
     document.getElementById("continueBtn").addEventListener("click", function () {
       const documento = document.getElementById("documentoInput").value.trim();
       const numeroDeOrden = document.getElementById("numeroOrdenInput").value.trim();
@@ -731,13 +698,10 @@
       mensajeAdvertencia.style.display = "none";
       const formContent = document.getElementById("formContent");
 
-
-      // CAMBIOS DE ESTADO (AHORA ANTES DEL FETCH)
       continueBtn.disabled = true;
       continueBtn.textContent = 'Aguarde un instante...';
-      // FIN CAMBIOS DE ESTADO
 
-      const url = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
+      const url = "https://script.google.com/macros/s/AKfycbyRG1qEiDSaxprNH9c0q98T1i5hyyV1yWfbZVbQw0bIC-aL8kqtCGpjxAZJfdTpw73gig/exec?documento="
         + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
 
@@ -745,12 +709,11 @@
         .then(res => res.json())
         .then(data => {
           if (data.error_orden) {
-            deshabilitarFormulario(data.error_orden); // Usa el mensaje específico de orden
+            deshabilitarFormulario(data.error_orden);
           }
           else if (data.error) {
-            deshabilitarFormulario(data.error); // Usa el mensaje específico de documento o cupo agotado
+            deshabilitarFormulario(data.error);
           } else {
-            // Mostrar el mensaje de advertencia aquí, después de verificar que no hay errores.
 
             document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
             document.getElementById('documentoDisplayContainer').style.display = 'block';
@@ -760,12 +723,10 @@
 
             continueBtn.style.display = "none";
             formContent.style.display = "block";
-            
-            // Activar el parpadeo del borde en el Número de Orden
+
             const numOrden = document.getElementById("numeroOrdenInput");
             if (numOrden) numOrden.classList.add("orden-activo");
 
-            // Manejo de campos Apellido y Nombre
             const apellidoCampo = document.getElementById("apellidoInput");
             const nombreCampo = document.getElementById("nombreInput");
             const domicilioCampo = document.querySelector("input[name='domicilio']");
@@ -777,13 +738,11 @@
               document.getElementById("idPropietarioInput").value = data.id_propietario;
               document.getElementById("idAnimalInput").value = "";
 
-              // Dividir el campo 'propietario' si existe y rellenar los nuevos campos
               const nombreCompleto = data.datos[0] || "";
-              const partesNombre = nombreCompleto.split(/\s+/); // Divide por uno o más espacios
+              const partesNombre = nombreCompleto.split(/\s+/);
 
-              // Asume que la última palabra es el nombre y el resto es el apellido/s
               const nombre = partesNombre.length > 0 ? partesNombre.pop() : "";
-              const apellido = partesNombre.join(' '); // El resto es el apellido/s
+              const apellido = partesNombre.join(' ');
 
               apellidoCampo.value = apellido;
               apellidoCampo.readOnly = true;
@@ -813,16 +772,12 @@
               document.getElementById("idPropietarioInput").value = "";
               document.getElementById("idAnimalInput").value = "";
 
-              // **CAMPOS A RESETEAR/HABILITAR:**
               [apellidoCampo, nombreCampo, domicilioCampo, telefonoCampo].forEach(campo => {
                 campo.value = "";
                 campo.readOnly = false;
                 campo.classList.remove("readonly-field");
               });
             }
-            // Fin de Manejo de campos Apellido y Nombre
-
-
 
             document.getElementById("fechaAntirrabica").style.display = "none";
             document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
@@ -837,8 +792,8 @@
         })
         .catch(err => console.error("❌ Error al consultar documento:", err))
         .finally(() => {
-          // Restaurar el texto original y la habilitación del botón
-          continueBtn.textContent = 'Continuar'; // Restaurar el texto
+
+          continueBtn.textContent = 'Continuar';
           continueBtn.disabled = false;
           verificarValidezFormulario();
         });
@@ -851,7 +806,6 @@
       verificarValidezFormulario();
     });
 
-    // Lógica de concatenación y envío (CON MANEJO DE ERROR DE BLOQUEO)
     document.getElementById("miForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -865,32 +819,26 @@
       const continueBtn = document.getElementById("continueBtn");
       const btnAcepto = document.getElementById("btnAcepto");
 
-      // Ocultar el div contenedor y deshabilitar explícitamente el botón.
       btnAcepto.parentNode.style.display = "none";
       btnAcepto.disabled = true;
 
-      // Bloquear botón de envío y cambiar texto
       submitBtn.disabled = true;
       submitBtn.textContent = 'Verificando y enviando...';
 
-      // Función de restauración común
-      // Función de restauración completa
       const restaurarFormulario = () => {
         console.log("Restaurando formulario...");
         const form = document.getElementById("miForm");
         if (form) form.reset();
 
-        // Restablecer vista inicial: mostrar botón de escaneo y ocultar campo de documento
         document.getElementById('scannerButtonContainer').style.setProperty('display', 'grid', 'important');
         document.getElementById('documentoDisplayContainer').style.display = 'none';
 
-        // 2. Lista de campos a limpiar y desbloquear (IDs exactos de tu index2.html)
         const camposAResetear = ["documentoInput", "numeroOrdenInput", "apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"];
 
         camposAResetear.forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            // Todos los campos se vuelven editables EXCEPTO el documento escaneado (que ya viene readonly en HTML)
+
             if (id === "documentoInput") {
               el.readOnly = true;
               el.classList.add("readonly-field");
@@ -898,22 +846,20 @@
               el.readOnly = false;
               el.classList.remove("readonly-field");
             }
-            el.classList.remove("orden-activo"); // Quitar animación
+            el.classList.remove("orden-activo");
             el.value = "";
           }
         });
 
-        // 3. Reset de visibilidad de secciones dinámicas
         const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
         secciones.forEach(id => {
           const el = document.getElementById(id);
           if (el) el.style.display = "none";
         });
 
-        // 4. Reset de Labels
         document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
         document.getElementById("contenedorRazaManual").style.display = "none";
-        // 5. Reset de botones
+
         const btnAcepto = document.getElementById("btnAcepto");
         if (btnAcepto) {
           btnAcepto.classList.remove("btn-accepted");
@@ -937,10 +883,7 @@
         }
       };
 
-
-      // ** 1. PRIMER PASO: VERIFICAR DUPLICIDAD FINAL (INMEDIATO) **
-      // Hacemos el chequeo justo antes del envío (doble control)
-      const checkUrl = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
+      const checkUrl = "https://https://script.google.com/macros/s/AKfycbyRG1qEiDSaxprNH9c0q98T1i5hyyV1yWfbZVbQw0bIC-aL8kqtCGpjxAZJfdTpw73gig/exec?documento="
         + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
 
@@ -950,21 +893,17 @@
 
         if (checkData.error_orden || checkData.error) {
           const errorMessage = checkData.error_orden || checkData.error;
-          // Si detecta un error (orden ya usada, documento duplicado o acceso deshabilitado)
+
           deshabilitarFormulario(errorMessage);
 
-          // Restaurar estado del formulario para que el usuario pueda corregir
           btnAcepto.parentNode.style.display = "flex";
           btnAcepto.disabled = false;
           submitBtn.disabled = false;
           submitBtn.textContent = 'Enviar datos';
           verificarValidezFormulario();
-          return; // DETENER EL ENVÍO
+          return;
         }
 
-        // Si el chequeo pasa, continuamos con el envío INMEDIATO.
-
-        // 2. Concatenar y formatear: Apellido + " " + Nombre
         const propietarioOriginal = `${apellidoInput.value.trim()} ${nombreInput.value.trim()}`;
 
         const propietarioFormateado = propietarioOriginal
@@ -972,7 +911,7 @@
           .split(' ')
           .map(word => {
             if (word.length === 0) return '';
-            // Asegura que las palabras pequeñas no sean capitalizadas si no son la primera
+
             if (word.length <= 3 && word !== 'de' && word !== 'la' && word !== 'el') {
               return word;
             }
@@ -980,14 +919,12 @@
           })
           .join(' ');
 
-        // 3. Guardar el valor final en el campo oculto 'propietario' para el envío
         propietarioInput.value = propietarioFormateado;
         const propietario = propietarioFormateado;
 
         const formData = new FormData(this);
 
-        // ** 4. SEGUNDO PASO: ENVÍO FINAL (DENTRO DEL BLOQUEO DEL SERVIDOR) **
-        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec", {
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbyRG1qEiDSaxprNH9c0q98T1i5hyyV1yWfbZVbQw0bIC-aL8kqtCGpjxAZJfdTpw73gig/exec", {
           method: "POST",
           body: formData
         });
@@ -996,17 +933,14 @@
           throw new Error(`Error de envío: ${sendResponse.statusText}`);
         }
 
-        // ¡IMPORTANTE! Validar si el servidor devolvió un error JSON por duplicidad
         const sendData = await sendResponse.json();
 
         if (sendData.error) {
-          // Error devuelto por doPost (Bloqueo): Duplicado de Orden o Documento.
-          // ESTA ES LA CLAVE DE LA CORRECCIÓN: Si el servidor dice que hubo error, mostramos el modal de advertencia con el mensaje.
+
           deshabilitarFormulario(sendData.error);
-          return; // Detenemos el flujo para evitar el modal de éxito
+          return;
         }
 
-        // 5. Mostrar éxito (solo si NO hubo error en sendData)
         const modalMessage = document.getElementById("modal-message");
         modalMessage.textContent = `Los datos de ${propietario} (DNI: ${documento}) fueron registrados satisfactoriamente. Recuerde los requisitos para la castración de su animal y esperar a ser llamado por el número de orden.`;
         const successModal = new bootstrap.Modal(document.getElementById('successModal'));
@@ -1014,20 +948,17 @@
 
       } catch (error) {
         console.error("❌ Error en la verificación o envío:", error);
-        // Si hubo un error en la comunicación o el servidor no respondió OK
+
         deshabilitarFormulario("❌ Error grave al intentar enviar los datos. Intente nuevamente. (" + error.message + ")");
 
       } finally {
-        // Restaurar la interfaz después del intento (éxito o fallo)
+
         restaurarFormulario();
       }
     });
 
-    /**
-     * Verifica si el acceso está habilitado (Cupo o Deshabilitado) al cargar la página.
-     */
     function verificarAcceso() {
-      const urlAcceso = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?web_on_off=true";
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbyRG1qEiDSaxprNH9c0q98T1i5hyyV1yWfbZVbQw0bIC-aL8kqtCGpjxAZJfdTpw73gig/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
         .then(data => {
@@ -1040,13 +971,8 @@
         .catch(err => console.error("❌ Error al verificar el acceso:", err));
     }
 
-    // Inicialización al cargar la ventana
     window.onload = verificarAcceso;
 
-    // ... (mantené la lógica de inicialización de html5QrCode que pasamos antes)
-
-    // --- LÓGICA DEL ESCÁNER DNI ---
-    // --- LÓGICA DEL ESCÁNER DNI ACTUALIZADA ---
     let html5QrCode;
 
     function detenerScanner() {
@@ -1068,7 +994,7 @@
         fps: 10,
         qrbox: { width: 250, height: 150 },
         aspectRatio: 1.777778,
-        // ACÁ LA MAGIA PARA EL DNI ARGENTINO: Le decimos que lea PDF417
+
         formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
       };
 
@@ -1076,22 +1002,20 @@
         { facingMode: "environment" },
         config,
         (decodedText) => {
-          // El DNI argentino usa @ como separador
+
           const partes = decodedText.split('@');
           console.log("Datos brutos escaneados:", partes);
 
           if (partes.length > 4) {
-            // En la mayoría de los DNI es la posición 4, 
-            // pero verificamos que sea un número de entre 7 y 9 dígitos
+
             let dni = "";
 
-            // Buscamos en las posiciones donde suele estar el DNI (índices 4 o 1)
             if (/^\d{7,9}$/.test(partes[4].trim())) {
               dni = partes[4].trim();
             } else if (/^\d{7,9}$/.test(partes[1].trim())) {
               dni = partes[1].trim();
             } else {
-              // Si no está en los lugares fijos, buscamos el primer elemento que sea puramente numérico
+
               dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
             }
 
@@ -1101,11 +1025,9 @@
               emitirBeepExito();
               inputDoc.value = dni;
 
-              // Bloquear para que no editen lo escaneado
               inputDoc.readOnly = true;
               inputDoc.classList.add("readonly-field");
 
-              // Cambiar vista de botones
               document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
               document.getElementById('documentoDisplayContainer').style.display = 'block';
 
@@ -1113,14 +1035,13 @@
               const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
               if (modalInstance) modalInstance.hide();
 
-              // Avisar al sistema que los campos cambiaron para habilitar "Continuar"
               inputDoc.dispatchEvent(new Event('input'));
             } else {
               console.warn("No se encontró un número de DNI válido en el código escaneado.");
             }
           }
         },
-        (errorMessage) => { /* Silencioso mientras busca */ }
+        (errorMessage) => { }
       ).catch((err) => {
         console.error("Error al iniciar cámara: ", err);
         alert("No se pudo acceder a la cámara. Verificá los permisos o consultar en Administración.");
@@ -1129,7 +1050,6 @@
 
       modalElement.addEventListener('hidden.bs.modal', detenerScanner);
     });
-
 
   </script>
 
