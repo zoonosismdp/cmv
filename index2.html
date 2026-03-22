@@ -701,7 +701,7 @@
       continueBtn.disabled = true;
       continueBtn.textContent = 'Aguarde un instante...';
 
-      const url = "https://script.google.com/macros/s/AKfycby_p9u6-i2BH616Sy_2FS0xNYLTx-opFLud9WmBd_7R-OskaTv4fnUH7wuHBBvZSyNO4w/exec?documento="
+      const url = "https://script.google.com/macros/s/AKfycbz3Xxb3uGEKsNyIBvcV1-tlP1ce5NwVVbhDBLmuhc4Pe4O8E6sLOW5ODHAjSnrX1ebzVA/exec?documento="
         + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
 
@@ -883,7 +883,7 @@
         }
       };
 
-      const checkUrl = "https://script.google.com/macros/s/AKfycby_p9u6-i2BH616Sy_2FS0xNYLTx-opFLud9WmBd_7R-OskaTv4fnUH7wuHBBvZSyNO4w/exec?documento="
+      const checkUrl = "https://script.google.com/macros/s/AKfycbz3Xxb3uGEKsNyIBvcV1-tlP1ce5NwVVbhDBLmuhc4Pe4O8E6sLOW5ODHAjSnrX1ebzVA/exec?documento="
         + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
 
@@ -924,7 +924,7 @@
 
         const formData = new FormData(this);
 
-        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycby_p9u6-i2BH616Sy_2FS0xNYLTx-opFLud9WmBd_7R-OskaTv4fnUH7wuHBBvZSyNO4w/exec", {
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbz3Xxb3uGEKsNyIBvcV1-tlP1ce5NwVVbhDBLmuhc4Pe4O8E6sLOW5ODHAjSnrX1ebzVA/exec", {
           method: "POST",
           body: formData
         });
@@ -958,7 +958,7 @@
     });
 
     function verificarAcceso() {
-      const urlAcceso = "https://script.google.com/macros/s/AKfycby_p9u6-i2BH616Sy_2FS0xNYLTx-opFLud9WmBd_7R-OskaTv4fnUH7wuHBBvZSyNO4w/exec?web_on_off=true";
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbz3Xxb3uGEKsNyIBvcV1-tlP1ce5NwVVbhDBLmuhc4Pe4O8E6sLOW5ODHAjSnrX1ebzVA/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
         .then(data => {
