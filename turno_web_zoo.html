@@ -646,6 +646,29 @@
     </div>
   </div>
 
+  <!-- Modal de Confirmación de Selección (NUEVO) -->
+  <div class="modal fade" id="confirmacionSeleccionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold">Confirmar Selección</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <div class="mb-3 fs-1 text-warning">⚠️</div>
+          <p class="fs-5 mb-0">¿Está seguro de su selección?</p>
+          <hr>
+          <p class="text-muted">En caso de anular el turno debe enviar email a <strong>zoonosismdp@gmail.com</strong> y
+            volver a solicitar el turno. En caso de inasistencia el cupo figurará como utilizado.</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-center border-0 pb-4">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary px-4" id="finalConfirmBtn">Sí, estoy seguro</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal de Confirmación Final -->
   <div class="modal fade" id="confirmacionFinalModal" tabindex="-1" aria-labelledby="confirmacionFinalModalLabel"
     aria-hidden="true">
@@ -819,9 +842,18 @@
     // Acción al confirmar el turno en el popup de agenda
     confirmarTurnoBtn.addEventListener('click', () => {
       if (!diaSeleccionado) {
-        alert("Por favor, seleccione un día de la agenda.");
+        mostrarAviso("Falta Selección", "Por favor, seleccione un día de la agenda.", "warning");
         return;
       }
+      const confirmacionSeleccionModal = new bootstrap.Modal(document.getElementById('confirmacionSeleccionModal'));
+      confirmacionSeleccionModal.show();
+    });
+
+    // Acción definitiva tras la advertencia
+    document.getElementById('finalConfirmBtn').addEventListener('click', () => {
+      const modalConfirm = bootstrap.Modal.getInstance(document.getElementById('confirmacionSeleccionModal'));
+      if (modalConfirm) modalConfirm.hide();
+
       disponibilidadModal.hide();
 
       // Mostrar popup final con requisitos
