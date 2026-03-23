@@ -785,18 +785,57 @@
         return;
       }
 
-      // Ejemplo de validación: DNI ya registrado (Mockup)
-      if (dni === "22222222") {
-        mostrarAviso(
-          "Restricción de Turno",
-          `El usuario con DNI ${dni} ya tiene registrado un turno solicitado el día 15/01/2026. Por sistema no se permite duplicar solicitudes en un plazo de 6 meses.`,
-          "error"
-        );
-        return;
-      }
+      // Bloquear botón y mostrar estado de carga
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Verificando...";
 
-      step1.style.display = 'none';
-      step2.style.display = 'block';
+      // --- PEGA TU URL DE APPS SCRIPT AQUÍ ---
+      const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxZPxQDWU809BvooEq6sqSYTSM3ewcMPBkhpVmSmRe6gn8vwc9gc7SD73JGo69lsq0pYg/exec";
+
+      fetch(`${URL_APPS_SCRIPT}?dni=${dni}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            // Si el backend retorna error de validación (ej: menos de 6 meses)
+            mostrarAviso("Restricción de Turno", data.mensaje, "error");
+          } else {
+            // Si todo está OK (puede ser usuario nuevo o existente con más de 6 meses)
+            if (data.existe && data.datos) {
+              // Rellenamos los campos con los datos del sistema
+              document.getElementById("apellidoInput").value = data.datos.apellido || "";
+              document.getElementById("nombreInput").value = data.datos.nombre || "";
+              document.getElementById("domicilioInput").value = data.datos.domicilio || "";
+              document.getElementById("telefonoInput").value = data.datos.telefono || "";
+
+              // Bloqueamos los campos para que no se editen ya que son datos maestros
+              ["apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"].forEach(id => {
+                const el = document.getElementById(id);
+                el.readOnly = true;
+                el.classList.add("readonly-field");
+              });
+            } else {
+              // Si es usuario nuevo, limpiamos y habilitamos campos
+              ["apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"].forEach(id => {
+                const el = document.getElementById(id);
+                el.value = "";
+                el.readOnly = false;
+                el.classList.remove("readonly-field");
+              });
+            }
+
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            verificarValidezFormulario();
+          }
+        })
+        .catch(err => {
+          console.error("Error backend:", err);
+          mostrarAviso("Error de Conexión", "No se pudo verificar el historial con el servidor. Intente de nuevo.", "error");
+        })
+        .finally(() => {
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Continuar";
+        });
     });
 
     // Función para validar el formulario y activar el efecto de titileo
