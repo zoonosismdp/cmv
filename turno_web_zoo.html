@@ -780,7 +780,7 @@
     }
 
     // --- URL DE TU APPS SCRIPT ---
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxa0_5HdoXrdwz8WujjmsMh7vhvR8RVl7xfp_YJI5jB16Hj4jfJ7j90Rtc4h2ZvzKRoUg/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbz3tPdFNg2xBcwkfWEo0g37UPBweTFiqP3Zzpjs73OIosfhhfLWXeM2qPdBBDrmsFRp-A/exec";
 
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
@@ -907,22 +907,45 @@
         });
     });
 
-    // Función para llenar el modal con las fechas de la planilla (Objetos {id, fecha})
+    // Función para llenar el modal con las fechas de la planilla (Objetos {id, fecha, disponible, cupoTotal})
     function actualizarListaAgenda(fechasObjs) {
       const container = document.querySelector("#disponibilidadModal .list-group");
-      container.innerHTML = ""; // Limpiar las fechas hardcoded anteriores
+      container.innerHTML = "";
+
+      // ✅ ORDENAR DE MENOR A MAYOR (CRONOLÓGICAMENTE)
+      fechasObjs.sort((a, b) => {
+        const [da, ma, ya] = a.fecha.split('/');
+        const [db, mb, yb] = b.fecha.split('/');
+        return new Date(ya, ma - 1, da) - new Date(yb, mb - 1, db);
+      });
 
       fechasObjs.forEach(item => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "list-group-item list-group-item-action agenda-item";
-        btn.innerHTML = `<span class="dia-nombre">📅 ${item.fecha}</span>`;
+        btn.className = "list-group-item list-group-item-action agenda-item d-flex justify-content-between align-items-center";
+
+        // Calcular porcentaje de disponibilidad
+        const cupoMax = item.cupoTotal || 15; // Valor por defecto de 15 si falla el servidor
+        const porcentaje = (item.disponible / cupoMax) * 100;
+        let badgeClass = "bg-success";
+        let textoLabel = "Disponibles";
+
+        if (porcentaje <= 20) {
+          badgeClass = "bg-danger";
+          textoLabel = "¡Últimos cupos!";
+        } else if (porcentaje <= 50) {
+          badgeClass = "bg-warning text-dark";
+          textoLabel = "Disponibles";
+        }
+
+        btn.innerHTML = `
+          <span class="dia-nombre">📅 ${item.fecha}</span>
+          <span class="badge ${badgeClass} rounded-pill">${textoLabel}: ${item.disponible}</span>
+        `;
 
         btn.onclick = function () {
           document.querySelectorAll('.agenda-item').forEach(i => i.classList.remove('active'));
           this.classList.add('active');
-
-          // Guardar la fecha y su ID para el registro final
           diaSeleccionado = item.fecha;
           idFechaSeleccionada = item.id;
         };
