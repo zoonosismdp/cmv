@@ -779,6 +779,9 @@
       notificacionModal.show();
     }
 
+    // --- URL DE TU APPS SCRIPT ---
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxa0_5HdoXrdwz8WujjmsMh7vhvR8RVl7xfp_YJI5jB16Hj4jfJ7j90Rtc4h2ZvzKRoUg/exec";
+
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
 
@@ -790,9 +793,6 @@
       // Bloquear botón y mostrar estado de carga
       continueBtn.disabled = true;
       continueBtn.textContent = "Verificando...";
-
-      // --- PEGA TU URL DE APPS SCRIPT AQUÍ ---
-      const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxZPxQDWU809BvooEq6sqSYTSM3ewcMPBkhpVmSmRe6gn8vwc9gc7SD73JGo69lsq0pYg/exec";
 
       fetch(`${URL_APPS_SCRIPT}?dni=${dni}`)
         .then(res => res.json())
@@ -869,16 +869,67 @@
     // Escuchar cambios en los inputs para validar
     document.getElementById("miForm").addEventListener("input", verificarValidezFormulario);
 
-    // Simular el envío del formulario: abrir el popup de disponibilidad
+    // Simular el envío del formulario: abrir el popup de disponibilidad con datos REALES
     const disponibilidadModal = new bootstrap.Modal(document.getElementById('disponibilidadModal'));
     const confirmacionFinalModal = new bootstrap.Modal(document.getElementById('confirmacionFinalModal'));
     const confirmarTurnoBtn = document.getElementById('confirmarTurnoBtn');
     let diaSeleccionado = "";
+    let idFechaSeleccionada = null; // Guardará el ID de la tabla turnos_agenda_web
 
     document.getElementById("miForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      disponibilidadModal.show();
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Consultando fechas...";
+
+      // Llamada a GAS para obtener fechas reales (filtradas por habilitado y cupo > 0)
+      fetch(`${URL_APPS_SCRIPT}?action=getDates`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.fechas && data.fechas.length > 0) {
+            actualizarListaAgenda(data.fechas);
+            disponibilidadModal.show();
+          } else {
+            const msj = (data.fechas && data.fechas.length === 0)
+              ? "Lo sentimos, no hay turnos disponibles con cupo por el momento."
+              : "Error al intentar obtener fechas. Intente más tarde.";
+            mostrarAviso("Sin Disponibilidad", msj, "warning");
+          }
+        })
+        .catch(err => {
+          console.error("Error al obtener fechas:", err);
+          mostrarAviso("Error de Conexión", "No se pudo conectar con el servidor para ver los turnos.", "error");
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Consultar disponibilidad...";
+        });
     });
+
+    // Función para llenar el modal con las fechas de la planilla (Objetos {id, fecha})
+    function actualizarListaAgenda(fechasObjs) {
+      const container = document.querySelector("#disponibilidadModal .list-group");
+      container.innerHTML = ""; // Limpiar las fechas hardcoded anteriores
+
+      fechasObjs.forEach(item => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "list-group-item list-group-item-action agenda-item";
+        btn.innerHTML = `<span class="dia-nombre">📅 ${item.fecha}</span>`;
+
+        btn.onclick = function () {
+          document.querySelectorAll('.agenda-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+
+          // Guardar la fecha y su ID para el registro final
+          diaSeleccionado = item.fecha;
+          idFechaSeleccionada = item.id;
+        };
+
+        container.appendChild(btn);
+      });
+    }
 
     // Acción al confirmar el turno en el popup de agenda
     confirmarTurnoBtn.addEventListener('click', () => {
@@ -890,16 +941,49 @@
       confirmacionSeleccionModal.show();
     });
 
-    // Acción definitiva tras la advertencia
-    document.getElementById('finalConfirmBtn').addEventListener('click', () => {
+    // Acción definitiva tras la advertencia: REGISTRO FINAL EN GAS
+    document.getElementById('finalConfirmBtn').addEventListener('click', async () => {
+      const confirmBtn = document.getElementById('finalConfirmBtn');
       const modalConfirm = bootstrap.Modal.getInstance(document.getElementById('confirmacionSeleccionModal'));
-      if (modalConfirm) modalConfirm.hide();
 
-      disponibilidadModal.hide();
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "Registrando turno...";
 
-      // Mostrar popup final con requisitos
-      document.getElementById('finalDiaTexto').textContent = diaSeleccionado;
-      confirmacionFinalModal.show();
+      // Recolección de datos para turnos_asignados_web
+      const payload = {
+        action: "confirmTurno",
+        id_fecha: idFechaSeleccionada,
+        dni: document.getElementById('documentoInput').value,
+        apellido: document.getElementById('apellidoInput').value,
+        nombre: document.getElementById('nombreInput').value,
+        domicilio: document.getElementById('domicilioInput').value,
+        telefono: document.getElementById('telefonoInput').value,
+        email: document.getElementById('emailInput').value || ""
+      };
+
+      try {
+        // Enviar datos al GAS mediante POST
+        await fetch(URL_APPS_SCRIPT, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // Ocultar modales intermedios y mostrar el éxito
+        if (modalConfirm) modalConfirm.hide();
+        disponibilidadModal.hide();
+
+        document.getElementById('finalDiaTexto').textContent = diaSeleccionado;
+        confirmacionFinalModal.show();
+
+      } catch (error) {
+        console.error("Error al registrar el turno:", error);
+        mostrarAviso("Error Grave", "No se pudo registrar su turno en nuestra base de datos. Intente nuevamente.", "error");
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = "Sí, estoy seguro";
+      }
     });
 
     // Resetear formulario al cerrar el modal final
@@ -912,18 +996,7 @@
       verificarValidezFormulario();
     });
 
-    // Permitir selección visual en la agenda
-    document.querySelectorAll('.agenda-item').forEach(item => {
-      item.addEventListener('click', function () {
-        // Habilitar selección independientemente de si el cupo está completo
-        document.querySelectorAll('.agenda-item').forEach(i => i.classList.remove('active'));
-        this.classList.add('active');
-
-        // Formatear el nombre del día y la fecha: "Lunes 23/03"
-        const diaCompletoRaw = this.querySelector('.dia-nombre').textContent.replace('📅', '').trim();
-        diaSeleccionado = diaCompletoRaw.replace(' - ', ' ');
-      });
-    });
+    // La selección de agenda ahora se maneja en actualizarListaAgenda() de forma dinámica.
   </script>
 </body>
 
