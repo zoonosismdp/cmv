@@ -780,7 +780,7 @@
     }
 
     // --- URL DE TU APPS SCRIPT ---
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbz3tPdFNg2xBcwkfWEo0g37UPBweTFiqP3Zzpjs73OIosfhhfLWXeM2qPdBBDrmsFRp-A/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyO_fzIqQVGgfKdawpSf1cDae9ymABXvBZlcAko1P_6SnQ7k81fnZoh6sZPlkDJpJG_yA/exec";
 
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
@@ -797,7 +797,14 @@
       fetch(`${URL_APPS_SCRIPT}?dni=${dni}`)
         .then(res => res.json())
         .then(data => {
-          if (data.error) {
+          if (data.turnoPendiente) {
+            // Ya tiene un turno solicitado en turnos_asignados_web
+            mostrarAviso(
+              "⚠️ Turno Ya Registrado",
+              `No puede solicitar un nuevo turno. Usted ya tiene un turno asignado para el día ${data.fechaTurno}. Si necesita cancelarlo, comuníquese a zoonosismdp@gmail.com.`,
+              "warning"
+            );
+          } else if (data.error) {
             // Si el backend retorna error de validación (ej: menos de 6 meses)
             mostrarAviso("Restricción de Turno", data.mensaje, "error");
           } else {
