@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoobase - Gestor de Turnos</title>
+    <link rel="icon" href="zoobase icono.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        :root {
+            --zoobase-purple: #352355;
+            --zoobase-dark: #1a202c;
+            --zoobase-teal: #19C2C9;
+            --stm-gray: #f8f9fa;
+            --calendar-border: #e2e8f0;
+            --day-hover: #f1f5f9;
+            --disabled-day: #f8fafc;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* --- ENCABEZADO (Estilo remca.html) --- */
+        .zoobase-header {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background-color: var(--zoobase-purple);
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            height: 70px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        /* --- SUB HEADER --- */
+        .sub-header {
+            position: sticky;
+            top: 70px;
+            z-index: 1010;
+            background-color: var(--zoobase-dark);
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--zoobase-teal);
+        }
+
+        .listado-titulo {
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+
+        /* --- CALENDAR CONTAINERS --- */
+        .calendar-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--calendar-border);
+        }
+
+        .calendar-header {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid var(--calendar-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .current-month {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--zoobase-purple);
+            text-transform: capitalize;
+        }
+
+        .nav-buttons .btn {
+            border: 1px solid var(--calendar-border);
+            color: var(--zoobase-purple);
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .nav-buttons .btn:hover {
+            background-color: var(--zoobase-teal);
+            color: white;
+            border-color: var(--zoobase-teal);
+        }
+
+        /* --- CALENDAR GRID --- */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .weekday {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            background-color: var(--stm-gray);
+            border-bottom: 1px solid var(--calendar-border);
+        }
+
+        .day {
+            min-height: 120px;
+            padding: 10px;
+            border-right: 1px solid var(--calendar-border);
+            border-bottom: 1px solid var(--calendar-border);
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            background-color: white;
+        }
+
+        .day:nth-child(7n) {
+            border-right: none;
+        }
+
+        .day:hover {
+            background-color: var(--day-hover);
+        }
+
+        .day.other-month {
+            background-color: var(--disabled-day);
+            color: #cbd5e1;
+            cursor: default;
+        }
+
+        .day.disabled-date {
+            background-color: #fee2e2;
+        }
+
+        .day-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .day-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .slot-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .slots-total {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .slots-occupied {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .slots-available {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .slots-full {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .dot-enabled {
+            background-color: var(--zoobase-teal);
+        }
+
+        .dot-disabled {
+            background-color: #ef4444;
+        }
+
+        .disabled-label {
+            font-size: 0.7rem;
+            color: #ef4444;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* --- MODAL ESTILO ZOOBASE --- */
+        .modal-content {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background-color: var(--zoobase-purple);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: var(--zoobase-purple);
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus,
+        .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(25, 194, 201, 0.25);
+            border-color: var(--zoobase-teal);
+        }
+
+        .btn-save {
+            background-color: var(--zoobase-teal);
+            color: white;
+            font-weight: bold;
+            padding: 12px 25px;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-save:hover {
+            background-color: #15aab1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 194, 201, 0.3);
+            color: white;
+        }
+
+        /* --- TABLA INSCRIPTOS --- */
+        .table-inscriptos th {
+            background-color: var(--zoobase-purple);
+            color: white;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-inscriptos td {
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        .btn-cancelar-turno {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-cancelar-turno:hover {
+            background-color: #a71d2a;
+            transform: scale(1.05);
+        }
+
+        .modal-inscriptos-header {
+            background: linear-gradient(135deg, #1a3a5d 0%, #352355 100%);
+        }
+
+        /* --- LOADER --- */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        @media (max-width: 768px) {
+            .day {
+                min-height: 80px;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+            }
+
+            .slot-badge {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner-border text-primary" style="color: var(--zoobase-teal) !important;" role="status"></div>
+        <span class="mt-3 fw-bold">Actualizando calendario...</span>
+    </div>
+
+    <header class="zoobase-header">
+        <div class="logo-container">
+            <div class="header-title">
+                <i class="fa-solid fa-calendar-check"></i> Zoobase - Gestor de Turnos
+            </div>
+            <div class="header-subtitle">
+                ** MAQUETA **
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+        </div>
+    </header>
+
+    <div class="sub-header">
+        <div class="listado-titulo">
+            <i class="fa-solid fa-gear me-2"></i> Configuración de Turnos Mensuales
+        </div>
+        <div class="d-flex gap-2">
+        </div>
+    </div>
+
+    <div class="container-fluid pb-5">
+        <div class="calendar-container animate__animated animate__fadeIn">
+            <div class="calendar-header">
+                <div class="current-month" id="monthDisplay">Marzo 2026</div>
+                <div class="nav-buttons">
+                    <button class="btn btn-sm" onclick="changeMonth(-1)">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-sm mx-1" onclick="goToToday()">Hoy</button>
+                    <button class="btn btn-sm" onclick="changeMonth(1)">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Weekdays -->
+                <div class="weekday">Lun</div>
+                <div class="weekday">Mar</div>
+                <div class="weekday">Mie</div>
+                <div class="weekday">Jue</div>
+                <div class="weekday">Vie</div>
+                <div class="weekday">Sab</div>
+                <!-- Days will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal informativo de cupo para hoy -->
+    <div class="modal fade" id="quotaTodayModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content animate__animated animate__zoomIn">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-circle-info me-2"></i> Estado de Cupos - Hoy
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <p class="text-muted" id="modalTodayDate"></p>
+                        <hr>
+                    </div>
+                    <div class="row g-3 text-center">
+                        <div class="col-4">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block mb-1">CUPO TOTAL</small>
+                                <h3 class="fw-bold mb-0 text-dark" id="modalQuotaTotal">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block mb-1">OCUPADOS</small>
+                                <h3 class="fw-bold mb-0 text-warning" id="modalQuotaOccupied">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 border rounded bg-light">
+                                <small class="text-muted d-block mb-1">DISPONIBLES</small>
+                                <h3 class="fw-bold mb-0 text-success" id="modalQuotaAvailable">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="modalStatusAlert" class="mt-4 alert d-flex align-items-center gap-2">
+                        <!-- Icon and Message injected via JS -->
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-save w-100 py-3" data-bs-dismiss="modal">
+                        ENTRAR AL GESTOR <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar día -->
+    <div class="modal fade" id="editDayModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalTitle">Configurar Día</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDayForm">
+                        <input type="hidden" id="editDateIso">
+
+                        <div class="mb-4">
+                            <label class="form-label d-block mb-2">Estado del Día</label>
+                            <div class="form-check form-switch p-0 d-flex align-items-center gap-3">
+                                <label class="form-check-label order-0" for="dayEnabledSwitch"
+                                    id="switchLabel">Habilitado</label>
+                                <input class="form-check-input ms-0" type="checkbox" id="dayEnabledSwitch" checked
+                                    style="width: 3rem; height: 1.5rem;">
+                            </div>
+                        </div>
+
+                        <div id="slotsContainer">
+                            <!-- Input oculto para Ocupados para no romper el script de guardado -->
+                            <input type="hidden" id="occupiedInput" value="0">
+
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-sm-8 text-center">
+                                    <label for="slotsInput" class="form-label fw-bold">Cupo Total (Capacidad
+                                        Máxima)</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light text-muted"><i
+                                                class="fa-solid fa-users"></i></span>
+                                        <input type="number" class="form-control text-center fw-bold" id="slotsInput"
+                                            min="0" placeholder="Ej: 15">
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Indique la capacidad de turnos disponibles
+                                        para este día.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info py-2 small mb-0">
+                            <i class="fa-solid fa-circle-info me-2"></i> Los cambios se aplicarán inmediatamente tras
+                            guardar.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-info px-4" id="btnVerInscriptos"
+                        onclick="verInscriptos()">
+                        <i class="fa-solid fa-list-ul me-2"></i> Ver Inscriptos
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-save px-4" onclick="saveDayConfig()">
+                            <i class="fa-solid fa-save me-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Listado de Inscriptos -->
+    <div class="modal fade" id="listadoInscriptosModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header modal-inscriptos-header text-white">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">
+                            <i class="fa-solid fa-users me-2"></i> Inscriptos del día
+                        </h5>
+                        <small id="inscriptosFechaSubtitle" class="opacity-75"></small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="inscriptosLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Cargando inscriptos...</p>
+                    </div>
+                    <div id="inscriptosContent" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-light">
+                            <span class="fw-bold text-muted small">TOTAL INSCRIPTOS: <span id="totalInscriptos"
+                                    class="text-dark fs-6">0</span></span>
+                            <span class="badge bg-secondary" id="fechaBadge"></span>
+                        </div>
+                        <div class="p-3">
+                            <div id="sinInscriptosMsg" class="text-center py-4 text-muted" style="display:none;">
+                                <i class="fa-solid fa-calendar-xmark fs-2 mb-2 d-block"></i>
+                                No hay inscriptos para este día.
+                            </div>
+                            <table class="table table-hover table-inscriptos" id="tablaInscriptos"
+                                style="display:none;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Propietario</th>
+                                        <th>DNI</th>
+                                        <th>Teléfono</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inscriptosTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- CONFIGURACIÓN Y ESTADO ---
+        let currentDate = new Date();
+        let turnosConfig = {};
+        const editModal = new bootstrap.Modal(document.getElementById('editDayModal'));
+
+        // --- URL DE TU APPS SCRIPT (Reemplaza la URL abajo con la tuya de Google) ---
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyUk9QIrVZSWGAGUhsGU6HAuoeW1TQS98uX9V7ftOKKdmCdOGMGfVivq7rYLYTif08a/exec";
+
+
+
+        // --- CALENDAR LOGIC ---
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthDisplay = document.getElementById('monthDisplay');
+
+            // Clear previous days (keep headers)
+            const headers = Array.from(grid.querySelectorAll('.weekday'));
+            grid.innerHTML = '';
+            headers.forEach(h => grid.appendChild(h));
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 (Sun) to 6 (Sat)
+            let startOffset = (firstDayOfMonth === 0) ? 0 : firstDayOfMonth - 1;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            monthDisplay.innerText = `${monthNames[month]} ${year}`;
+
+            // Previous month fill (Monday to Saturday only)
+            // If the month starts on Tuesday (offset 1), we show Monday from previous month.
+            // If it starts on Sunday, firstMonthDay is 2nd (Mon), so offset 0.
+            for (let i = startOffset; i > 0; i--) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day other-month';
+                dayDiv.innerHTML = `<span class="day-number">${prevMonthLastDay - i + 1}</span>`;
+                grid.appendChild(dayDiv);
+            }
+
+            // Current month
+            const todayIso = new Date().toISOString().split('T')[0];
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayOfWeek = new Date(year, month, d).getDay();
+                if (dayOfWeek === 0) continue; // Skip Sundays
+
+                const dateIso = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const config = turnosConfig[dateIso] || { enabled: false, slots: 0, occupied: 0 };
+
+                const occupied = config.occupied || 0;
+                const available = Math.max(0, config.slots - occupied);
+                const isFull = config.enabled && available === 0 && config.slots > 0;
+
+                const isToday = todayIso === dateIso;
+
+                const dayDiv = document.createElement('div');
+                dayDiv.className = `day ${config.enabled ? '' : 'disabled-date'}`;
+                if (isToday) dayDiv.style.border = "3px solid var(--zoobase-teal)";
+
+                dayDiv.innerHTML = `
+                    <span class="day-number">${d} ${isToday ? '<small class="badge bg-info text-white" style="font-size:0.6rem; vertical-align: middle;">HOY</small>' : ''}</span>
+                    <div class="day-info">
+                        ${config.enabled
+                        ? `
+                            <span class="slot-badge slots-total">CUPO: ${config.slots}</span>
+                            <span class="slot-badge slots-occupied">OCUPADOS: ${occupied}</span>
+                            <span class="slot-badge ${isFull ? 'slots-full' : 'slots-available'}">DISPONIBLE: ${available}</span>
+                            `
+                        : `<span class="disabled-label"><i class="fa-solid fa-ban"></i> Deshabilitado</span>`
+                    }
+                        <div class="small mt-1">
+                            <span class="status-dot ${config.enabled ? 'dot-enabled' : 'dot-disabled'}"></span>
+                            <span style="font-size: 0.7rem; color: #64748b;">${config.enabled ? 'Activo' : 'Cerrado'}</span>
+                        </div>
+                    </div>
+                `;
+
+                dayDiv.onclick = () => openEditModal(dateIso, config);
+                grid.appendChild(dayDiv);
+            }
+
+            // Next month fill (to complete 36 cells = 6 rows x 6 cols)
+            const totalCells = grid.children.length - 6;
+            const remaining = 36 - totalCells;
+            for (let i = 1; i <= remaining; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day other-month';
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            renderCalendar();
+        }
+
+        // --- MODAL ACTIONS ---
+        function openEditModal(isoDate, config) {
+            isoFechaActual = isoDate; // guardar para usar en Ver Inscriptos
+
+            const dateParts = isoDate.split('-');
+            const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            const displayDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('editModalTitle').innerText = displayDate;
+            document.getElementById('editDateIso').value = isoDate;
+
+            const switchEl = document.getElementById('dayEnabledSwitch');
+            switchEl.checked = config.enabled;
+            updateSwitchLabel(config.enabled);
+
+            document.getElementById('slotsInput').value = config.slots;
+            document.getElementById('occupiedInput').value = config.occupied || 0;
+            document.getElementById('slotsContainer').style.display = config.enabled ? 'block' : 'none';
+
+            // Habilitar/deshabilitar botón Ver Inscriptos según si el día tiene cupo
+            document.getElementById('btnVerInscriptos').disabled = !config.enabled;
+
+            editModal.show();
+        }
+
+        document.getElementById('dayEnabledSwitch').addEventListener('change', function (e) {
+            updateSwitchLabel(this.checked);
+            document.getElementById('slotsContainer').style.display = this.checked ? 'block' : 'none';
+        });
+
+        function updateSwitchLabel(isEnabled) {
+            const label = document.getElementById('switchLabel');
+            label.innerText = isEnabled ? "Habilitado" : "Deshabilitado";
+            label.className = isEnabled ? "form-check-label text-success fw-bold" : "form-check-label text-danger fw-bold";
+        }
+
+        async function saveDayConfig() {
+            const isoDate = document.getElementById('editDateIso').value;
+            const enabled = document.getElementById('dayEnabledSwitch').checked;
+            const slots = parseInt(document.getElementById('slotsInput').value) || 0;
+            const occupied = parseInt(document.getElementById('occupiedInput').value) || 0;
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+
+            const payload = {
+                isoDate: isoDate,
+                enabled: enabled,
+                slots: slots,
+                occupied: occupied
+            };
+
+            try {
+                // Realizar el POST a Apps Script para sincronizar Sheets
+                // Usamos 'cors' para asegurar que el servidor reciba los datos correctamente
+                const response = await fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Actualizar localmente al finalizar el envío
+                turnosConfig[isoDate] = { enabled, slots, occupied };
+                localStorage.setItem('zoobase_turnos_config', JSON.stringify(turnosConfig));
+
+                loadingOverlay.style.display = 'none';
+                editModal.hide();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sincronizado',
+                    text: `La fecha fue ${enabled ? 'habilitada' : 'deshabilitada'} y se actualizó en el sistema.`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                renderCalendar();
+
+            } catch (error) {
+                console.error("Error al sincronizar:", error);
+                loadingOverlay.style.display = 'none';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Red',
+                    text: 'No se pudo sincronizar con Google Sheets. Se guardará localmente.',
+                    confirmButtonText: 'Entendido'
+                });
+
+                // Aún así guardamos localmente como backup por si falla la red
+                turnosConfig[isoDate] = { enabled, slots, occupied };
+                localStorage.setItem('zoobase_turnos_config', JSON.stringify(turnosConfig));
+                renderCalendar();
+            }
+        }
+
+        function resetCurrentMonthData() {
+            Swal.fire({
+                title: '¿Confirmar reinicio?',
+                text: "Se borrará la configuración personalizada y se volverá a los valores por defecto.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#19C2C9',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, resetear',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    turnosConfig = {};
+                    localStorage.removeItem('zoobase_turnos_config');
+                    renderCalendar();
+                    Swal.fire('Reseteado', 'La configuración ha sido reiniciada.', 'success');
+                }
+            });
+        }
+
+
+
+        function showTodaySummary() {
+            const today = new Date();
+            const todayIso = today.toISOString().split('T')[0];
+            const config = turnosConfig[todayIso] || { enabled: false, slots: 0, occupied: 0 };
+
+            const displayDate = today.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('modalTodayDate').innerText = displayDate.toUpperCase();
+
+            const slots = config.slots || 0;
+            const occupied = config.occupied || 0;
+            const available = Math.max(0, slots - occupied);
+
+            document.getElementById('modalQuotaTotal').innerText = slots;
+            document.getElementById('modalQuotaOccupied').innerText = occupied;
+            document.getElementById('modalQuotaAvailable').innerText = available;
+
+            const statusAlert = document.getElementById('modalStatusAlert');
+            if (!config.enabled) {
+                statusAlert.className = "mt-4 alert alert-danger d-flex align-items-center gap-2";
+                statusAlert.innerHTML = '<i class="fa-solid fa-ban fs-4"></i> <strong>ATENCIÓN:</strong> El sistema de turnos está CERRADO para el día de hoy.';
+            } else if (available === 0 && slots > 0) {
+                statusAlert.className = "mt-4 alert alert-warning d-flex align-items-center gap-2";
+                statusAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4"></i> <strong>CUPO LLENO:</strong> No quedan lugares disponibles para hoy.';
+            } else {
+                statusAlert.className = "mt-4 alert alert-success d-flex align-items-center gap-2";
+                statusAlert.innerHTML = `<i class="fa-solid fa-check-circle fs-4"></i> <strong>SISTEMA ACTIVO:</strong> Hay ${available} lugares disponibles.`;
+            }
+
+            const quotaModal = new bootstrap.Modal(document.getElementById('quotaTodayModal'));
+            quotaModal.show();
+        }
+
+        async function loadConfig() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            try {
+                const response = await fetch(URL_APPS_SCRIPT);
+                const data = await response.json();
+                if (data && !data.error) {
+                    turnosConfig = data;
+                }
+            } catch (error) {
+                console.error("Error cargando configuración:", error);
+                // Fallback a localStorage si falla la red
+                turnosConfig = JSON.parse(localStorage.getItem('zoobase_turnos_config')) || {};
+            } finally {
+                loadingOverlay.style.display = 'none';
+                renderCalendar();
+                showTodaySummary();
+            }
+        }
+
+        // --- GESTIÓN DE INSCRIPTOS ---
+        let inscriptosModal = null;
+        let idFechaActual = null;
+        let isoFechaActual = null;
+
+        async function verInscriptos() {
+            if (!isoFechaActual) return;
+
+            // Cerrar el modal de edición y abrir el de inscriptos
+            editModal.hide();
+
+            if (!inscriptosModal) {
+                inscriptosModal = new bootstrap.Modal(document.getElementById('listadoInscriptosModal'));
+            }
+
+            // Resetear UI
+            document.getElementById('inscriptosLoading').style.display = 'block';
+            document.getElementById('inscriptosContent').style.display = 'none';
+            document.getElementById('inscriptosTbody').innerHTML = '';
+
+            // Armar la fecha display dd/MM/yyyy
+            const [y, m, d] = isoFechaActual.split('-');
+            const fechaDisplay = `${d}/${m}/${y}`;
+            document.getElementById('inscriptosFechaSubtitle').textContent = fechaDisplay;
+            document.getElementById('fechaBadge').textContent = fechaDisplay;
+
+            inscriptosModal.show();
+
+            try {
+                const res = await fetch(`${URL_APPS_SCRIPT}?action=getTurnosByFecha&fecha=${fechaDisplay}`);
+                const data = await res.json();
+
+                document.getElementById('inscriptosLoading').style.display = 'none';
+                document.getElementById('inscriptosContent').style.display = 'block';
+
+                if (!data.success || !data.inscriptos || data.inscriptos.length === 0) {
+                    document.getElementById('sinInscriptosMsg').style.display = 'block';
+                    document.getElementById('tablaInscriptos').style.display = 'none';
+                    document.getElementById('totalInscriptos').textContent = '0';
+                    idFechaActual = data.idFecha || null;
+                    return;
+                }
+
+                idFechaActual = data.idFecha;
+                document.getElementById('totalInscriptos').textContent = data.inscriptos.length;
+                document.getElementById('sinInscriptosMsg').style.display = 'none';
+                document.getElementById('tablaInscriptos').style.display = 'table';
+
+                const tbody = document.getElementById('inscriptosTbody');
+                data.inscriptos.forEach((p, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.id = `fila-${p.idTurno}`;
+                    tr.innerHTML = `
+                        <td class="text-muted">${idx + 1}</td>
+                        <td class="fw-bold">${p.propietario}</td>
+                        <td>${p.dni}</td>
+                        <td>${p.telefono}</td>
+                        <td>
+                            <button class="btn-cancelar-turno" onclick="cancelarTurno('${p.idTurno}', '${p.propietario}')">
+                                <i class="fa-solid fa-trash-can me-1"></i> Cancelar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error('Error al cargar inscriptos:', err);
+                document.getElementById('inscriptosLoading').style.display = 'none';
+                document.getElementById('inscriptosContent').style.display = 'block';
+                document.getElementById('sinInscriptosMsg').style.display = 'block';
+                document.getElementById('sinInscriptosMsg').innerHTML = '<i class="fa-solid fa-circle-exclamation fs-2 mb-2 d-block text-danger"></i>Error al conectar con el servidor.';
+                document.getElementById('tablaInscriptos').style.display = 'none';
+            }
+        }
+
+        async function cancelarTurno(idTurno, nombrePersona) {
+            const confirm = await Swal.fire({
+                title: '¿Cancelar turno?',
+                html: `Se eliminará el turno de <strong>${nombrePersona}</strong> y se actualizará el cupo disponible.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, cancelar turno',
+                cancelButtonText: 'No'
+            });
+
+            if (!confirm.isConfirmed) return;
+
+            try {
+                const res = await fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'cancelTurno',
+                        idTurno: idTurno,
+                        idFecha: idFechaActual
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Eliminar la fila de la tabla visualmente
+                    const fila = document.getElementById(`fila-${idTurno}`);
+                    if (fila) fila.remove();
+
+                    // Actualizar contador
+                    const totalEl = document.getElementById('totalInscriptos');
+                    const newTotal = parseInt(totalEl.textContent) - 1;
+                    totalEl.textContent = newTotal;
+
+                    if (newTotal === 0) {
+                        document.getElementById('tablaInscriptos').style.display = 'none';
+                        document.getElementById('sinInscriptosMsg').style.display = 'block';
+                    }
+
+                    // Actualizar config local
+                    if (isoFechaActual && turnosConfig[isoFechaActual]) {
+                        turnosConfig[isoFechaActual].occupied = Math.max(0, (turnosConfig[isoFechaActual].occupied || 1) - 1);
+                        localStorage.setItem('zoobase_turnos_config', JSON.stringify(turnosConfig));
+                        renderCalendar();
+                    }
+
+                    Swal.fire({ icon: 'success', title: 'Turno cancelado', text: `El turno de ${nombrePersona} fue eliminado.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                } else {
+                    Swal.fire('Error', data.error || 'No se pudo cancelar el turno.', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error de red', 'No se pudo conectar con el servidor.', 'error');
+            }
+        }
+
+        window.onload = () => {
+            loadConfig();
+        };
+    </script>
+</body>
+
+</html>
