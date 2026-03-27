@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+  #reader {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @keyframes parpadeo-suave {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .btn-animado {
+    animation: parpadeo-suave 1.5s infinite ease-in-out;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+
+  }
+</style>
+
+<head>
+  <meta charset="UTF-8">
+  <title>CMV on line</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .btn-primary:disabled {
+      background-color: #0d6efd !important;
+      border-color: #0d6efd !important;
+      opacity: 0.65 !important;
+      cursor: not-allowed;
+    }
+
+    .btn-accept {
+      border: 1px solid #0d6efd;
+      color: #fff;
+      background-color: #0d6efd;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 800;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .btn-accept .normal-weight {
+      font-weight: 400 !important;
+    }
+
+    .btn-highlight {
+      animation: parpadeo-suave 1.5s infinite ease-in-out;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+
+    .btn-accept:disabled {
+      opacity: 0.65 !important;
+      cursor: not-allowed;
+    }
+
+    .btn-accepted {
+      background-color: #0b5ed7;
+      color: #fff;
+      border-color: #0b5ed7;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    }
+
+    @keyframes parpadeo-aceptado {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+      }
+
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.7);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+      }
+    }
+
+    .btn-accept:hover {
+      background-color: #0b5ed7;
+      color: #fff;
+    }
+
+    .readonly-field {
+      background-color: #f0f0f0;
+    }
+
+    .highlight-text {
+      color: #000000;
+      font-weight: 900;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .numero-orden-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .orden-numero-input {
+      text-align: center;
+      font-weight: bold;
+      font-size: 2rem;
+      padding: 20px;
+      width: 220px;
+      border: 3px solid #dc3545;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+    }
+
+    @keyframes parpadeo-borde-rojo {
+      0% {
+        border-color: #dc3545;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+      }
+
+      50% {
+        border-color: #f8f9fa;
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+      }
+
+      100% {
+        border-color: #dc3545;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+      }
+    }
+
+    .orden-activo {
+      animation: parpadeo-borde-rojo 1s infinite ease-in-out;
+      border-width: 5px !important;
+    }
+
+    button[type="submit"] {
+      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    }
+
+    .modal-text-lg {
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-container container mt-4">
+    <p class="fecha-centrada">Fecha actual: <span id="fechaActual"></span></p>
+    <h2 class="fw-bold">Registro CMV On Line</h2>
+    <form id="miForm">
+      <p id="mensajeAdvertencia" class="text-danger" style="display: none;"></p>
+
+      <div class="col-12 text-center numero-orden-container">
+        <label for="numeroOrdenInput">Número de Orden</label>
+        <input type="number" name="numero_de_orden" class="form-control orden-numero-input" id="numeroOrdenInput"
+          placeholder="🔢 Ingrese su número" required>
+      </div>
+
+      <div class="col-12 mb-3">
+        <div id="scannerButtonContainer" class="d-grid gap-2">
+
+          <button type="button" class="btn btn-primary btn-animado" id="btnAbrirScanner">
+            🪪Escanear DNI para comenzar
+          </button>
+          <small class="text-muted text-center">Es necesario para iniciar el registro</small>
+        </div>
+
+        <div id="documentoDisplayContainer" style="display: none;">
+          <label for="documentoInput">Nro. de documento (Escaneado)</label>
+          <input type="number" name="documento" class="form-control readonly-field" id="documentoInput" readonly
+            required>
+          <small class="text-success">✔ Documento cargado correctamente</small>
+        </div>
+
+        <input type="hidden" name="id_propietario" id="idPropietarioInput">
+        <input type="hidden" name="id_animal" id="idAnimalInput">
+        <input type="hidden" name="hereda" id="heredaInput">
+      </div>
+
+      <div id="continueButtonContainer" class="d-grid gap-2">
+        <button type="button" class="btn btn-primary btn-lg" id="continueBtn">Continuar</button>
+      </div>
+
+      <div id="formContent" style="display: none;">
+        <div class="row g-3 mb-3">
+          <div class="col-12">
+            <label for="apellidoInput">Apellido</label>
+            <input type="text" placeholder="Apellido del propietario" class="form-control" id="apellidoInput" required>
+          </div>
+          <div class="col-12">
+            <label for="nombreInput">Nombre</label>
+            <input type="text" placeholder="Nombre del propietario" class="form-control" id="nombreInput" required>
+            <input type="hidden" name="propietario" id="propietarioInput">
+          </div>
+          <div class="col-12">
+            <label for="domicilioInput">Domicilio</label>
+            <input type="text" name="domicilio" placeholder="Domicilio" class="form-control" id="domicilioInput"
+              required>
+          </div>
+          <div class="col-12">
+            <label for="telefonoInput">Teléfono / Celular</label>
+            <input type="tel" name="telefono" placeholder="Teléfono" class="form-control" id="telefonoInput" required>
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12">
+            <label for="especieInput">Especie</label>
+            <select name="especie" class="form-select" id="especieInput" required>
+              <option value="">Seleccione especie</option>
+              <option value="Canino macho">Canino macho</option>
+              <option value="Canino hembra">Canino hembra</option>
+              <option value="Felino macho">Felino macho</option>
+              <option value="Felino hembra">Felino hembra</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="edadInput">Edad del animal (indique mes o año)</label>
+            <input type="text" name="edad" placeholder="Edad" class="form-control" id="edadInput" required>
+          </div>
+          <div class="col-12">
+            <label for="raza">Raza</label>
+            <select name="raza" id="raza" class="form-select mb-2" required>
+              <option value="">Seleccione tipo</option>
+              <option value="Mestizo">Mestizo</option>
+              <option value="Definida">Definida</option>
+            </select>
+          </div>
+
+          <div class="col-12" id="contenedorRazaEspecial" style="display:none;">
+            <label for="razaDefinidaSelect">Indique la raza</label>
+            <select id="razaDefinidaSelect" class="form-select mb-2">
+              <option value="">Seleccione la raza</option>
+              <optgroup label="Razas PPP (Ord. 22031)">
+                <option value="Airedale Terrier">Airedale Terrier</option>
+                <option value="Akita Inu">Akita Inu</option>
+                <option value="American Staffordshire Terrier">American Staffordshire Terrier</option>
+                <option value="Pitbull American Terrier">Pitbull American Terrier</option>
+                <option value="Boyero de berna">Boyero de berna</option>
+                <option value="Bóxer">Bóxer</option>
+                <option value="Bullmastif">Bullmastif</option>
+                <option value="Bull Terrier">Bull Terrier</option>
+                <option value="Cané corso">Cané corso</option>
+                <option value="Doberman">Doberman</option>
+                <option value="Dogo Argentino">Dogo Argentino</option>
+                <option value="Dogo Alemán">Dogo Alemán</option>
+                <option value="Gran Danés">Gran Danés</option>
+                <option value="Dogo Canario">Dogo Canario</option>
+                <option value="Presa Canario">Presa Canario</option>
+                <option value="Dogo de burdeos">Dogo de burdeos</option>
+                <option value="Fila Brasileño">Fila Brasileño</option>
+                <option value="Gran perro Japonés">Gran perro Japonés</option>
+                <option value="Kuvas">Kuvas</option>
+                <option value="Mastiff (Mastín Inglés)">Mastiff (Mastín Inglés)</option>
+                <option value="Mastín Napolitano">Mastín Napolitano</option>
+                <option value="Ovejero Alemán">Ovejero Alemán</option>
+                <option value="Ovejero Belga">Ovejero Belga</option>
+                <option value="Pastor del Cáucaso">Pastor del Cáucaso</option>
+                <option value="Rottweiler">Rottweiler</option>
+                <option value="San Bernardo">San Bernardo</option>
+                <option value="Schnauzer Gigante">Schnauzer Gigante</option>
+                <option value="Staffordshire Bull Terrier">Staffordshire Bull Terrier</option>
+                <option value="Viejo Pastor Inglés">Viejo Pastor Inglés</option>
+                <option value="OTRA">OTRA RAZA (Ingresar manualmente)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="col-12" id="contenedorRazaManual" style="display:none;">
+            <label for="razaDefinida">Escriba la raza</label>
+            <input type="text" name="razaDefinida" id="razaDefinida" placeholder="Indique la raza" class="form-control">
+          </div>
+
+          <div class="col-12">
+            <label for="pelajeInput">Pelaje</label>
+            <select name="pelaje" id="pelajeInput" class="form-select" required>
+              <option value="">Seleccione pelaje</option>
+              <option value="Amarillo">Amarillo</option>
+              <option value="Atigrado">Atigrado</option>
+              <option value="Bayo">Bayo</option>
+              <option value="Blanco">Blanco</option>
+              <option value="Blanco y marron">Blanco y marrón</option>
+              <option value="Blanco y negro">Blanco y negro</option>
+              <option value="Blanco y negro">Blanco y gris</option>
+              <option value="Gris">Gris</option>
+              <option value="Gris y negro">Gris y blanco</option>
+              <option value="Gris y negro">Gris y negro</option>
+              <option value="Gris y negro">Gris y marrón</option>
+              <option value="Marron">Marrón</option>
+              <option value="Naranja">Naranja</option>
+              <option value="Negro">Negro</option>
+              <option value="Negro">Negro y marrón</option>
+              <option value="Tricolor">Tricolor</option>
+            </select>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12">
+              <label for="antirrabica">¿Fue vacunado contra la rabia en el último año?:</label>
+              <select name="antirrabica" id="antirrabica" class="form-select" required>
+                <option value="">Seleccione</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="fechaAntirrabica" style="display:none;">¿Cuándo fue vacunado?</label>
+              <input type="text" name="fechaAntirrabica" id="fechaAntirrabica" placeholder="¿Cuándo fue vacunado?"
+                required class="form-control" style="display:none;">
+            </div>
+            <div class="col-12" id="vacunarDiv" style="display:none;">
+              <label for="vacunarAnimal">¿Desea vacunar al animal?</label>
+              <select name="vacunarAnimal" id="vacunarAnimal" class="form-select" required>
+                <option value="">Seleccione</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label for="email">Correo electrónico:(no obligatorio)</label>
+              <input type="email" name="email" id="email" placeholder="Su correo electrónico" class="form-control">
+              <small class="form-text">El correo es opcional y será utilizado únicamente para enviar el consentimiento
+                médico veterinario.</small>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-accept" id="btnAcepto" disabled><span class="normal-weight">HAGA CLICK
+                AQUI en este recuadro si acepta el Consentimiento Médico Veterinario.</span><span
+                class="highlight-text">VERIFIQUE QUE LOS DATOS ESTEN COMPLETOS.</span></button>
+          </div>
+
+          <div class="d-grid gap-2 mt-3">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>Enviar datos</button>
+          </div>
+        </div>
+    </form>
+
+    <footer class="text-center mt-5">
+      <div><small class="form-text">CMV - DIGITAL Versión 3</small></div>
+      <div><small class="form-text">Sistema prueba piloto</small></div>
+      <div><small class="form-text">Consentimientos Médicos Veterinarios Digitales</small></div>
+      <div><small class="form-text">Dirección de Zoonosis y Bienestar Animal. MGP</small></div>
+      <div><small class="form-text">Proyecto Expediente EX-2025-00370345--MUNIMDP-DZBA#SSA</small></div>
+    </footer>
+  </div>
+
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">CMV Online</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-message" class="modal-text-lg"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="warningModalLabel">CMV Online</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="warning-message" class="modal-text-lg"></p>
+
+          <div id="pppContainer" style="display: none;" class="mt-3">
+            <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse"
+              data-bs-target="#listaRazasPPP" aria-expanded="false">
+              Ver listado de razas (Ordenanza 22031)
+            </button>
+            <div class="collapse mt-2" id="listaRazasPPP">
+              <div class="card card-body" style="font-size: 0.9rem;">
+                <ul class="row list-unstyled">
+                  <li class="col-md-6">Airedale Terrier</li>
+                  <li class="col-md-6">Akita Inu</li>
+                  <li class="col-md-6">American Staffordshire Terrier</li>
+                  <li class="col-md-6">Pitbull American Terrier</li>
+                  <li class="col-md-6">Boyero de berna</li>
+                  <li class="col-md-6">Bóxer</li>
+                  <li class="col-md-6">Bullmastif</li>
+                  <li class="col-md-6">Bull Terrier</li>
+                  <li class="col-md-6">Cané corso</li>
+                  <li class="col-md-6">Doberman</li>
+                  <li class="col-md-6">Dogo Argentino</li>
+                  <li class="col-md-6">Dogo Alemán</li>
+                  <li class="col-md-6">Gran Danés</li>
+                  <li class="col-md-6">Dogo Canario</li>
+                  <li class="col-md-6">Presa Canario</li>
+                  <li class="col-md-6">Dogo de burdeos</li>
+                  <li class="col-md-6">Fila Brasileño</li>
+                  <li class="col-md-6">Gran perro Japonés</li>
+                  <li class="col-md-6">Kuvas</li>
+                  <li class="col-md-6">Mastiff (Mastín Inglés)</li>
+                  <li class="col-md-6">Mastín Napolitano</li>
+                  <li class="col-md-6">Ovejero Alemán</li>
+                  <li class="col-md-6">Ovejero Belga</li>
+                  <li class="col-md-6">Pastor del Cáucaso</li>
+                  <li class="col-md-6">Rottweiler</li>
+                  <li class="col-md-6">San Bernardo</li>
+                  <li class="col-md-6">Schnauzer Gigante</li>
+                  <li class="col-md-6">Staffordshire Bull Terrier</li>
+                  <li class="col-md-6">Viejo Pastor Inglés</li>
+                  <li class="col-md-6">Mestizos de las cruzas anteriores</li>
+
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sin Turno Asignado (bloqueante) -->
+  <div class="modal fade" id="sinTurnoModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title fw-bold">🚫 Sin Turno Asignado</h5>
+        </div>
+        <div class="modal-body text-center p-4">
+          <div class="fs-1 mb-3">🚫</div>
+          <p class="fs-5 fw-bold text-danger">No tiene turno asignado para hoy.</p>
+          <p class="text-muted">Debe solicitar su turno a través del sitio web de turnos de Zoonosis antes de
+            presentarse.</p>
+          <p><strong>🌐 Acceda al sistema de turnos para registrarse.</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Turno Ya Utilizado (verde informativo) -->
+  <div class="modal fade" id="turnoUtilizadoModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, #198754 0%, #0d6832 100%);">
+          <h5 class="modal-title fw-bold">✅ Turno Verificado</h5>
+        </div>
+        <div class="modal-body text-center p-4">
+          <div class="fs-1 mb-3">✅</div>
+          <p class="fs-5 fw-bold text-success">Su turno fue verificado.</p>
+          <p id="turnoUtilizadoMensaje" class="text-muted"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success w-100" data-bs-dismiss="modal">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="accessDisabledModal" tabindex="-1" aria-labelledby="accessDisabledModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="accessDisabledModalLabel">CMV Online</h5>
+        </div>
+        <div class="modal-body">
+          <p class="modal-text-lg text-danger fw-bold text-center" id="accessDisabledMessage">ACCESO DESHABILITADO</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <script>
+
+    // Variables globales de turno
+    let idTurnoActual = null;     // id_turno de turnos_asignados_web
+    let fechaTurnoActual = null;  // fecha formateada del turno
+
+    const fechaElemento = document.getElementById("fechaActual");
+    const hoy = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
+    fechaElemento.textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
+
+    function emitirBeepExito() {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+
+      oscillator.start();
+
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+      oscillator.stop(audioCtx.currentTime + 0.4);
+    }
+
+    function deshabilitarFormulario(mensaje, mostrarPPP = false) {
+      const modalMessage = document.getElementById("warning-message");
+      const pppContainer = document.getElementById("pppContainer");
+
+      modalMessage.textContent = mensaje;
+
+      pppContainer.style.display = mostrarPPP ? "block" : "none";
+
+      const listaRazas = document.getElementById("listaRazasPPP");
+      if (listaRazas.classList.contains('show')) {
+        listaRazas.classList.remove('show');
+      }
+
+      const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
+      warningModal.show();
+    }
+
+    function deshabilitarPorAcceso(mensaje) {
+      const accessDisabledMessage = document.getElementById("accessDisabledMessage");
+      accessDisabledMessage.textContent = mensaje;
+      const accessDisabledModal = new bootstrap.Modal(document.getElementById('accessDisabledModal'));
+      accessDisabledModal.show();
+      const form = document.getElementById("miForm");
+      const inputs = form.querySelectorAll("input, select, button");
+      inputs.forEach(input => input.disabled = true);
+    }
+
+    function verificarValidezFormulario() {
+      const form = document.getElementById("miForm");
+      const btnAcepto = document.getElementById("btnAcepto");
+      const submitBtn = document.getElementById("submitBtn");
+
+      let formIsValid = form.checkValidity();
+
+      const formContent = document.getElementById("formContent");
+      const apellidoInput = document.getElementById("apellidoInput");
+      const nombreInput = document.getElementById("nombreInput");
+      if (formContent.style.display !== "none" &&
+        (!apellidoInput.value.trim() || !nombreInput.value.trim())) {
+        formIsValid = false;
+      }
+
+      const tipoRaza = document.getElementById("raza");
+      const razaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
+
+      if (!tipoRaza.value) {
+        formIsValid = false;
+      } else if (tipoRaza.value === "Definida") {
+        if (!razaSelect.value) {
+          formIsValid = false;
+        } else if (razaSelect.value === "OTRA" && (!razaDefinidaInput.value || !razaDefinidaInput.value.trim())) {
+          formIsValid = false;
+        }
+      }
+
+      const antirrabicaSelect = document.getElementById("antirrabica");
+      const fechaAntirrabicaInput = document.getElementById("fechaAntirrabica");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+
+      if (antirrabicaSelect.value === "Sí" && (!fechaAntirrabicaInput.value || !fechaAntirrabicaInput.value.trim())) {
+        formIsValid = false;
+      }
+
+      if (antirrabicaSelect.value === "No" && vacunarAnimalSelect.getAttribute("required") === "true" && vacunarAnimalSelect.value === "") {
+        formIsValid = false;
+      }
+
+      btnAcepto.disabled = !formIsValid;
+
+      const aceptoClicked = btnAcepto.classList.contains("btn-accepted");
+
+      if (!btnAcepto.disabled && !aceptoClicked) {
+        btnAcepto.classList.add('btn-highlight');
+      } else {
+        btnAcepto.classList.remove('btn-highlight');
+      }
+
+      submitBtn.disabled = !(formIsValid && aceptoClicked);
+
+      if (!submitBtn.disabled) {
+        submitBtn.classList.add('btn-highlight');
+      } else {
+        submitBtn.classList.remove('btn-highlight');
+      }
+    }
+
+    document.getElementById("raza").addEventListener("change", function () {
+      const valor = this.value;
+      const contenedorEspecial = document.getElementById("contenedorRazaEspecial");
+      const contenedorManual = document.getElementById("contenedorRazaManual");
+      const razaSelect = document.getElementById("razaDefinidaSelect");
+      const razaDefinidaInput = document.getElementById("razaDefinida");
+
+      if (valor === "Mestizo") {
+
+        contenedorEspecial.style.display = "none";
+        contenedorManual.style.display = "none";
+        razaSelect.value = "";
+        razaDefinidaInput.value = "";
+        razaDefinidaInput.removeAttribute("required");
+      } else if (valor === "Definida") {
+
+        contenedorEspecial.style.display = "block";
+        contenedorManual.style.display = "none";
+        razaDefinidaInput.value = "";
+      } else {
+        contenedorEspecial.style.display = "none";
+        contenedorManual.style.display = "none";
+      }
+      verificarValidezFormulario();
+    });
+
+    document.getElementById("razaDefinidaSelect").addEventListener("change", function () {
+      const razaDefinidaInput = document.getElementById("razaDefinida");
+      const contenedorManual = document.getElementById("contenedorRazaManual");
+
+      if (this.value === "OTRA") {
+
+        contenedorManual.style.display = "block";
+        razaDefinidaInput.value = "";
+        razaDefinidaInput.setAttribute("required", "true");
+        razaDefinidaInput.style.display = "block";
+      } else if (this.value !== "") {
+
+        contenedorManual.style.display = "none";
+        razaDefinidaInput.value = this.value;
+        razaDefinidaInput.removeAttribute("required");
+      } else {
+        contenedorManual.style.display = "none";
+        razaDefinidaInput.value = "";
+      }
+      verificarValidezFormulario();
+    });
+
+    document.getElementById("antirrabica").addEventListener("change", function () {
+      const fechaVacuna = document.getElementById("fechaAntirrabica");
+      const fechaVacunaLabel = document.querySelector("label[for='fechaAntirrabica']");
+
+      const vacunarDiv = document.getElementById("vacunarDiv");
+      const vacunarAnimalSelect = document.getElementById("vacunarAnimal");
+
+      if (this.value === "Sí") {
+        fechaVacuna.style.display = "block";
+        fechaVacunaLabel.style.display = "block";
+        fechaVacuna.setAttribute("required", "true");
+
+        vacunarDiv.style.display = "none";
+        vacunarAnimalSelect.removeAttribute("required");
+        vacunarAnimalSelect.value = "";
+      } else if (this.value === "No") {
+        fechaVacuna.style.display = "none";
+        fechaVacunaLabel.style.display = "none";
+        fechaVacuna.removeAttribute("required");
+        fechaVacuna.value = "";
+
+        vacunarDiv.style.display = "block";
+        vacunarAnimalSelect.setAttribute("required", "true");
+
+      } else {
+
+        fechaVacuna.style.display = "none";
+        fechaVacunaLabel.style.display = "none";
+        fechaVacuna.removeAttribute("required");
+        fechaVacuna.value = "";
+
+        vacunarDiv.style.display = "none";
+        vacunarAnimalSelect.removeAttribute("required");
+        vacunarAnimalSelect.value = "";
+      }
+      verificarValidezFormulario();
+    });
+
+    document.getElementById("continueBtn").addEventListener("click", function () {
+      const documento = document.getElementById("documentoInput").value.trim();
+      const numeroDeOrden = document.getElementById("numeroOrdenInput").value.trim();
+
+      if (!documento || !numeroDeOrden) {
+        deshabilitarFormulario("⛔ Debe ingresar su Documento y el Número de Orden para continuar.");
+        return;
+      }
+
+      const continueBtn = document.getElementById("continueBtn");
+
+      const mensajeAdvertencia = document.getElementById("mensajeAdvertencia");
+      mensajeAdvertencia.style.display = "none";
+      const formContent = document.getElementById("formContent");
+
+      continueBtn.disabled = true;
+      continueBtn.textContent = 'Aguarde un instante...';
+
+      const url = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?documento="
+        + encodeURIComponent(documento)
+        + "&dni=" + encodeURIComponent(documento)
+        + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          // ─── CASO 1: Sin turno asignado → bloquear y mostrar modal rojo ───
+          if (data.sin_turno) {
+            const m = new bootstrap.Modal(document.getElementById('sinTurnoModal'));
+            m.show();
+          }
+          // ─── CASO 2: Turno ya utilizado → mostrar modal verde informativo ───
+          else if (data.turno_utilizado) {
+            document.getElementById('turnoUtilizadoMensaje').textContent =
+              `Su turno se verificó para el día ${data.fechaTurno} y está siendo utilizado.`;
+            const m = new bootstrap.Modal(document.getElementById('turnoUtilizadoModal'));
+            m.show();
+          }
+          else if (data.error_orden) {
+            deshabilitarFormulario(data.error_orden);
+          }
+          else if (data.error) {
+            deshabilitarFormulario(data.error);
+          } else {
+            // ─── CASO 3: Turno pendiente válido → guardar idTurno y continuar ───
+            idTurnoActual = data.idTurno || null;
+            fechaTurnoActual = data.fechaTurno || null;
+
+            document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
+            document.getElementById('documentoDisplayContainer').style.display = 'block';
+
+            const mensajeAlerta = "⚠️ **Importante:** Recuerde que este número de orden solamente puede ser utilizado una sola vez por día y que además es un animal por persona. Si usted posee un animal PPP - Perro Potencialmente Peligroso enmarcado dentro de la Ordenanza 22031, consulte por el trámite a través de www.mardelplata.gov.ar/ppp";
+            deshabilitarFormulario(mensajeAlerta, true)
+
+            continueBtn.style.display = "none";
+            formContent.style.display = "block";
+
+            const numOrden = document.getElementById("numeroOrdenInput");
+            if (numOrden) numOrden.classList.add("orden-activo");
+
+            const apellidoCampo = document.getElementById("apellidoInput");
+            const nombreCampo = document.getElementById("nombreInput");
+            const domicilioCampo = document.querySelector("input[name='domicilio']");
+            const telefonoCampo = document.querySelector("input[name='telefono']");
+
+            document.getElementById("heredaInput").value = data.hereda;
+
+            if (data.existe) {
+              document.getElementById("idPropietarioInput").value = data.id_propietario;
+              document.getElementById("idAnimalInput").value = "";
+
+              const nombreCompleto = data.datos[0] || "";
+              const partesNombre = nombreCompleto.split(/\s+/);
+
+              const nombre = partesNombre.length > 0 ? partesNombre.pop() : "";
+              const apellido = partesNombre.join(' ');
+
+              apellidoCampo.value = apellido;
+              apellidoCampo.readOnly = true;
+              apellidoCampo.classList.add("readonly-field");
+
+              nombreCampo.value = nombre;
+              nombreCampo.readOnly = true;
+              nombreCampo.classList.add("readonly-field");
+
+              domicilioCampo.value = data.datos[1] || "";
+              domicilioCampo.readOnly = true;
+              domicilioCampo.classList.add("readonly-field");
+
+              telefonoCampo.value = data.datos[2] || "";
+              telefonoCampo.readOnly = true;
+              telefonoCampo.classList.add("readonly-field");
+
+              ["especie", "edad", "raza", "razaDefinida", "pelajeInput", "antirrabica", "fechaAntirrabica", "email"].forEach(name => {
+                const campo = document.querySelector(`[name='${name}']`);
+                if (campo) {
+                  campo.value = "";
+                  campo.readOnly = false;
+                  campo.classList.remove("readonly-field");
+                }
+              });
+            } else {
+              document.getElementById("idPropietarioInput").value = "";
+              document.getElementById("idAnimalInput").value = "";
+
+              [apellidoCampo, nombreCampo, domicilioCampo, telefonoCampo].forEach(campo => {
+                campo.value = "";
+                campo.readOnly = false;
+                campo.classList.remove("readonly-field");
+              });
+            }
+
+            document.getElementById("fechaAntirrabica").style.display = "none";
+            document.querySelector("label[for='fechaAntirrabica']").style.display = "none";
+            document.getElementById("fechaAntirrabica").value = "";
+            document.getElementById("fechaAntirrabica").removeAttribute("required");
+
+            document.getElementById("vacunarDiv").style.display = "none";
+            document.getElementById("vacunarAnimal").removeAttribute("required");
+            document.getElementById("vacunarAnimal").value = "";
+
+          }
+        })
+        .catch(err => console.error("❌ Error al consultar documento:", err))
+        .finally(() => {
+
+          continueBtn.textContent = 'Continuar';
+          continueBtn.disabled = false;
+          verificarValidezFormulario();
+        });
+    });
+
+    document.getElementById("miForm").addEventListener("input", verificarValidezFormulario);
+
+    document.getElementById("btnAcepto").addEventListener("click", function () {
+      this.classList.add("btn-accepted");
+      verificarValidezFormulario();
+    });
+
+    document.getElementById("miForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      const documento = document.getElementById("documentoInput").value;
+      const numeroDeOrden = document.getElementById("numeroOrdenInput").value;
+
+      const apellidoInput = document.getElementById("apellidoInput");
+      const nombreInput = document.getElementById("nombreInput");
+      const propietarioInput = document.getElementById("propietarioInput");
+      const continueBtn = document.getElementById("continueBtn");
+      const btnAcepto = document.getElementById("btnAcepto");
+
+      btnAcepto.parentNode.style.display = "none";
+      btnAcepto.disabled = true;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verificando y enviando...';
+
+      const restaurarFormulario = () => {
+        console.log("Restaurando formulario...");
+        const form = document.getElementById("miForm");
+        if (form) form.reset();
+
+        document.getElementById('scannerButtonContainer').style.setProperty('display', 'grid', 'important');
+        document.getElementById('documentoDisplayContainer').style.display = 'none';
+
+        const camposAResetear = ["documentoInput", "numeroOrdenInput", "apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"];
+
+        camposAResetear.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+
+            if (id === "documentoInput") {
+              el.readOnly = true;
+              el.classList.add("readonly-field");
+            } else {
+              el.readOnly = false;
+              el.classList.remove("readonly-field");
+            }
+            el.classList.remove("orden-activo");
+            el.value = "";
+          }
+        });
+
+        const secciones = ["formContent", "razaDefinida", "fechaAntirrabica", "vacunarDiv"];
+        secciones.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = "none";
+        });
+
+        document.querySelectorAll("label[for='razaDefinida'], label[for='fechaAntirrabica']").forEach(l => l.style.display = "none");
+        document.getElementById("contenedorRazaManual").style.display = "none";
+
+        const btnAcepto = document.getElementById("btnAcepto");
+        if (btnAcepto) {
+          btnAcepto.classList.remove("btn-accepted");
+          btnAcepto.parentNode.style.display = "flex";
+        }
+
+        const submitBtn = document.getElementById("submitBtn");
+        if (submitBtn) {
+          submitBtn.textContent = 'Enviar datos';
+          submitBtn.disabled = true;
+        }
+
+        const continueBtn = document.getElementById("continueBtn");
+        if (continueBtn) {
+          continueBtn.style.display = "block";
+          continueBtn.disabled = false;
+        }
+
+        if (typeof verificarValidezFormulario === "function") {
+          verificarValidezFormulario();
+        }
+      };
+
+      const checkUrl = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?documento="
+        + encodeURIComponent(documento)
+        + "&dni=" + encodeURIComponent(documento)
+        + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
+
+      try {
+        const checkResponse = await fetch(checkUrl);
+        const checkData = await checkResponse.json();
+
+        if (checkData.error_orden || checkData.error) {
+          const errorMessage = checkData.error_orden || checkData.error;
+
+          deshabilitarFormulario(errorMessage);
+
+          btnAcepto.parentNode.style.display = "flex";
+          btnAcepto.disabled = false;
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar datos';
+          verificarValidezFormulario();
+          return;
+        }
+
+        const propietarioOriginal = `${apellidoInput.value.trim()} ${nombreInput.value.trim()}`;
+
+        const propietarioFormateado = propietarioOriginal
+          .toLowerCase()
+          .split(' ')
+          .map(word => {
+            if (word.length === 0) return '';
+
+            if (word.length <= 3 && word !== 'de' && word !== 'la' && word !== 'el') {
+              return word;
+            }
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          })
+          .join(' ');
+
+        propietarioInput.value = propietarioFormateado;
+        const propietario = propietarioFormateado;
+
+        const formData = new FormData(this);
+        // Enviar el idTurno para que el backend lo marque como utilizado
+        if (idTurnoActual) formData.append('id_turno', idTurnoActual);
+
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!sendResponse.ok) {
+          throw new Error(`Error de envío: ${sendResponse.statusText}`);
+        }
+
+        const sendData = await sendResponse.json();
+
+        if (sendData.error) {
+
+          deshabilitarFormulario(sendData.error);
+          return;
+        }
+
+        const modalMessage = document.getElementById("modal-message");
+        modalMessage.textContent = `Los datos de ${propietario} (DNI: ${documento}) fueron registrados satisfactoriamente. Recuerde los requisitos para la castración de su animal y esperar a ser llamado por el número de orden.`;
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+
+      } catch (error) {
+        console.error("❌ Error en la verificación o envío:", error);
+
+        deshabilitarFormulario("❌ Error grave al intentar enviar los datos. Intente nuevamente. (" + error.message + ")");
+
+      } finally {
+
+        restaurarFormulario();
+      }
+    });
+
+    function verificarAcceso() {
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?web_on_off=true";
+      fetch(urlAcceso)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "DESHABILITADO") {
+            deshabilitarPorAcceso("⛔ ACCESO DESHABILITADO");
+          } else if (data.status === "CUPO_AGOTADO") {
+            deshabilitarPorAcceso("⚠️ NO HAY CUPO DISPONIBLE");
+          }
+        })
+        .catch(err => console.error("❌ Error al verificar el acceso:", err));
+    }
+
+    window.onload = verificarAcceso;
+
+    let html5QrCode;
+
+    function detenerScanner() {
+      if (html5QrCode && (html5QrCode.getState() === 2 || html5QrCode.getState() === 3)) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+        }).catch(err => console.error("Error al detener cámara:", err));
+      }
+    }
+
+    document.getElementById('btnAbrirScanner').addEventListener('click', function () {
+      const modalElement = document.getElementById('scannerModal');
+      const scannerModal = new bootstrap.Modal(modalElement);
+      scannerModal.show();
+
+      html5QrCode = new Html5Qrcode("reader");
+
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 },
+        aspectRatio: 1.777778,
+
+        formatsToSupport: [Html5QrcodeSupportedFormats.PDF_417]
+      };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+
+          const partes = decodedText.split('@');
+          console.log("Datos brutos escaneados:", partes);
+
+          if (partes.length > 4) {
+
+            let dni = "";
+
+            if (/^\d{7,9}$/.test(partes[4].trim())) {
+              dni = partes[4].trim();
+            } else if (/^\d{7,9}$/.test(partes[1].trim())) {
+              dni = partes[1].trim();
+            } else {
+
+              dni = partes.find(p => /^\d{7,10}$/.test(p.trim())) || "";
+            }
+
+            const inputDoc = document.getElementById('documentoInput');
+
+            if (inputDoc && dni !== "") {
+              emitirBeepExito();
+              inputDoc.value = dni;
+
+              inputDoc.readOnly = true;
+              inputDoc.classList.add("readonly-field");
+
+              document.getElementById('scannerButtonContainer').style.setProperty('display', 'none', 'important');
+              document.getElementById('documentoDisplayContainer').style.display = 'block';
+
+              detenerScanner();
+              const modalInstance = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+              if (modalInstance) modalInstance.hide();
+
+              inputDoc.dispatchEvent(new Event('input'));
+            } else {
+              console.warn("No se encontró un número de DNI válido en el código escaneado.");
+            }
+          }
+        },
+        (errorMessage) => { }
+      ).catch((err) => {
+        console.error("Error al iniciar cámara: ", err);
+        alert("No se pudo acceder a la cámara. Verificá los permisos o consultar en Administración.");
+        scannerModal.hide();
+      });
+
+      modalElement.addEventListener('hidden.bs.modal', detenerScanner);
+    });
+
+  </script>
+
+  <div class="modal fade" id="scannerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Escaneá el código del DNI.</h5>
+          <button type="button" class="btn btn-primary btn-animado btn-lg" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="reader"></div>
+          <p class="mt-2 text-muted small">Apuntá al código de barras largo de tu DNI. Verifica tener buena luz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
