@@ -919,20 +919,29 @@
       const container = document.querySelector("#disponibilidadModal .list-group");
       container.innerHTML = "";
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // ✅ FILTRAR FECHAS ANTERIORES A HOY
+      const fechasFuturas = fechasObjs.filter(item => {
+        const [d, m, y] = item.fecha.split('/');
+        const itemDate = new Date(y, m - 1, d);
+        return itemDate >= today;
+      });
+
       // ✅ ORDENAR DE MENOR A MAYOR (CRONOLÓGICAMENTE)
-      fechasObjs.sort((a, b) => {
+      fechasFuturas.sort((a, b) => {
         const [da, ma, ya] = a.fecha.split('/');
         const [db, mb, yb] = b.fecha.split('/');
         return new Date(ya, ma - 1, da) - new Date(yb, mb - 1, db);
       });
 
-      fechasObjs.forEach(item => {
+      fechasFuturas.forEach(item => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "list-group-item list-group-item-action agenda-item d-flex justify-content-between align-items-center";
 
-        // Calcular porcentaje de disponibilidad
-        const cupoMax = item.cupoTotal || 15; // Valor por defecto de 15 si falla el servidor
+        const cupoMax = item.cupoTotal || 15;
         const porcentaje = (item.disponible / cupoMax) * 100;
         let badgeClass = "bg-success";
         let textoLabel = "Disponibles";
