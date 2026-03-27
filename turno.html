@@ -140,32 +140,31 @@
     }
 
     .form-container {
-      background-color: #fff;
+      background: rgba(255, 255, 255, 0.9);
       padding: 0;
-      /* Cambiado de 40px a 0 para que el header llegue a los bordes */
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
       width: 100%;
-      max-width: 600px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      max-width: 650px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
-      /* Para que el header respete los bordes redondeados */
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
     .form-content {
-      padding: 30px 40px 40px 40px;
+      padding: 40px 50px 50px 50px;
     }
 
     .header-container {
-      background-color: #1a3a5d;
-      /* Azul oscuro corporativo */
+      background: linear-gradient(135deg, #1a3a5d 0%, #2c5282 100%);
       color: white;
-      padding: 30px 40px;
+      padding: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Centrado */
       gap: 30px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     }
 
     .header-logo-section {
@@ -525,10 +524,52 @@
     .modal-error-header {
       background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
     }
+
+    /* Loader Overlay Stylings */
+    @keyframes spin3d {
+      0% {
+        transform: rotateY(0deg);
+      }
+
+      100% {
+        transform: rotateY(360deg);
+      }
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+      perspective: 1000px;
+      /* Añade profundidad */
+    }
+
+    .loader-rotating-icon {
+      width: 120px;
+      height: 120px;
+      animation: spin3d 2s linear infinite;
+      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.2));
+      transform-style: preserve-3d;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Capa de carga animada (Loader) -->
+  <div id="loadingOverlay">
+    <img src="mgp_icono.png" class="loader-rotating-icon" alt="Cargando...">
+    <p class="mt-3 fw-bold text-primary" id="loaderText">Procesando información...</p>
+  </div>
+
   <div class="form-container container mt-4">
     <div class="header-container">
       <div class="header-logo-section">
@@ -565,13 +606,9 @@
         <!-- Segundo paso: Resto de los campos (ocultos inicialmente) -->
         <div id="step2" style="display: none;">
           <div class="col-12 mb-3">
-            <label for="apellidoInput">Apellido:</label>
-            <input type="text" placeholder="Apellido del propietario" class="form-control" id="apellidoInput" required>
-          </div>
-
-          <div class="col-12 mb-3">
-            <label for="nombreInput">Nombre/s:</label>
-            <input type="text" placeholder="Nombre del propietario" class="form-control" id="nombreInput" required>
+            <label for="propietarioInput">Apellido y Nombre / Propietario:</label>
+            <input type="text" placeholder="Nombre completo del propietario" class="form-control" id="propietarioInput"
+              required>
           </div>
 
           <div class="col-12 mb-3">
@@ -779,8 +816,19 @@
       notificacionModal.show();
     }
 
+    // Helper para mostrar el loader overlay
+    function showLoader(txt = "Cargando...") {
+      document.getElementById("loaderText").innerText = txt;
+      document.getElementById("loadingOverlay").style.display = "flex";
+    }
+
+    // Helper para ocultar el loader overlay
+    function hideLoader() {
+      document.getElementById("loadingOverlay").style.display = "none";
+    }
+
     // --- URL DE TU APPS SCRIPT ---
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbw1oC0RR4P9ntS77Ah5gy2nTLCwz5ZY4SRku57QWyc78DnmGuddDipgR_J-PRCBW331oA/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwbfK1KUSRqEt0l0NPf3fEuSu7tvs7rEm2gujeVPTnO1Ti-8kgr36jBGcnU2fluOcL7Pw/exec";
 
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
@@ -792,7 +840,7 @@
 
       // Bloquear botón y mostrar estado de carga
       continueBtn.disabled = true;
-      continueBtn.textContent = "Verificando...";
+      showLoader("Verificando historial...");
 
       fetch(`${URL_APPS_SCRIPT}?dni=${dni}`)
         .then(res => res.json())
@@ -811,24 +859,27 @@
             // Si todo está OK (puede ser usuario nuevo o existente con más de 6 meses)
             if (data.existe && data.datos) {
               // Rellenamos los campos con los datos del sistema
-              document.getElementById("apellidoInput").value = data.datos.apellido || "";
-              document.getElementById("nombreInput").value = data.datos.nombre || "";
+              document.getElementById("propietarioInput").value = data.datos.propietario || (data.datos.apellido ? `${data.datos.apellido} ${data.datos.nombre || ""}`.trim() : "");
               document.getElementById("domicilioInput").value = data.datos.domicilio || "";
               document.getElementById("telefonoInput").value = data.datos.telefono || "";
 
               // Bloqueamos los campos para que no se editen ya que son datos maestros
-              ["apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"].forEach(id => {
+              ["propietarioInput", "domicilioInput", "telefonoInput"].forEach(id => {
                 const el = document.getElementById(id);
-                el.readOnly = true;
-                el.classList.add("readonly-field");
+                if (el) {
+                  el.readOnly = true;
+                  el.classList.add("readonly-field");
+                }
               });
             } else {
               // Si es usuario nuevo, limpiamos y habilitamos campos
-              ["apellidoInput", "nombreInput", "domicilioInput", "telefonoInput"].forEach(id => {
+              ["propietarioInput", "domicilioInput", "telefonoInput"].forEach(id => {
                 const el = document.getElementById(id);
-                el.value = "";
-                el.readOnly = false;
-                el.classList.remove("readonly-field");
+                if (el) {
+                  el.value = "";
+                  el.readOnly = false;
+                  el.classList.remove("readonly-field");
+                }
               });
             }
 
@@ -843,7 +894,7 @@
         })
         .finally(() => {
           continueBtn.disabled = false;
-          continueBtn.textContent = "Continuar";
+          hideLoader();
         });
     });
 
@@ -852,10 +903,10 @@
       const form = document.getElementById("miForm");
       const continueBtn = document.getElementById("continueBtn");
       const submitBtn = document.getElementById("submitBtn");
-      const documentoInput = document.getElementById("documentoInput");
+      const propietarioInput = document.getElementById("propietarioInput");
 
       // Validar botón Continuar (Paso 1)
-      if (documentoInput.checkValidity()) {
+      if (documentoInput.checkValidity() && documentoInput.value.length >= 7) {
         continueBtn.disabled = false;
         continueBtn.classList.add('btn-highlight');
       } else {
@@ -888,7 +939,7 @@
 
       const submitBtn = document.getElementById("submitBtn");
       submitBtn.disabled = true;
-      submitBtn.textContent = "Consultando fechas...";
+      showLoader("Consultando agenda...");
 
       // Llamada a GAS para obtener fechas reales (filtradas por habilitado y cupo > 0)
       fetch(`${URL_APPS_SCRIPT}?action=getDates`)
@@ -910,7 +961,7 @@
         })
         .finally(() => {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Consultar disponibilidad...";
+          hideLoader();
         });
     });
 
@@ -948,7 +999,7 @@
 
         if (porcentaje <= 20) {
           badgeClass = "bg-danger";
-          textoLabel = "¡Últimos cupos!";
+          textoLabel = "¡Últimos lugares!";
         } else if (porcentaje <= 50) {
           badgeClass = "bg-warning text-dark";
           textoLabel = "Disponibles";
@@ -986,42 +1037,52 @@
       const modalConfirm = bootstrap.Modal.getInstance(document.getElementById('confirmacionSeleccionModal'));
 
       confirmBtn.disabled = true;
-      confirmBtn.textContent = "Registrando turno...";
+      showLoader("Registrando su turno...");
 
-      // Recolección de datos para turnos_asignados_web
+      const fullNombre = document.getElementById('propietarioInput').value.trim();
+      const parts = fullNombre.split(" ");
+      const apellido = parts.length > 1 ? parts[0] : fullNombre;
+      const nombre = parts.length > 1 ? parts.slice(1).join(" ") : "";
+
       const payload = {
         action: "confirmTurno",
         id_fecha: idFechaSeleccionada,
         dni: document.getElementById('documentoInput').value,
-        apellido: document.getElementById('apellidoInput').value,
-        nombre: document.getElementById('nombreInput').value,
+        apellido: apellido,
+        nombre: nombre,
         domicilio: document.getElementById('domicilioInput').value,
         telefono: document.getElementById('telefonoInput').value,
         email: document.getElementById('emailInput').value || ""
       };
 
       try {
-        // Enviar datos al GAS mediante POST
-        await fetch(URL_APPS_SCRIPT, {
+        // Enviar datos al GAS mediante POST (sin no-cors para leer respuesta)
+        const response = await fetch(URL_APPS_SCRIPT, {
           method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' }, // GAS a veces prefiere text/plain si hay problemas con JSON
           body: JSON.stringify(payload)
         });
 
-        // Ocultar modales intermedios y mostrar el éxito
-        if (modalConfirm) modalConfirm.hide();
-        disponibilidadModal.hide();
+        const data = await response.json();
 
-        document.getElementById('finalDiaTexto').textContent = diaSeleccionado;
-        confirmacionFinalModal.show();
+        if (data.success) {
+          // ÉXITO: Ocultar modales intermedios y mostrar el éxito
+          if (modalConfirm) modalConfirm.hide();
+          disponibilidadModal.hide();
+
+          document.getElementById('finalDiaTexto').textContent = diaSeleccionado;
+          confirmacionFinalModal.show();
+        } else {
+          // ERROR DEL BACKEND (con el estilo de tus modales)
+          mostrarAviso("No se pudo registrar", data.error || data.mensaje || "Error desconocido", "error");
+        }
 
       } catch (error) {
         console.error("Error al registrar el turno:", error);
-        mostrarAviso("Error Grave", "No se pudo registrar su turno en nuestra base de datos. Intente nuevamente.", "error");
+        mostrarAviso("Error de Conexión", "No se pudo registrar su turno en nuestra base de datos. Intente nuevamente.", "error");
       } finally {
         confirmBtn.disabled = false;
-        confirmBtn.textContent = "Sí, estoy seguro";
+        hideLoader();
       }
     });
 
