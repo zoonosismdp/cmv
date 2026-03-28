@@ -181,6 +181,41 @@
     .modal-text-lg {
       font-size: 1.25rem;
     }
+
+    /* Loader Overlay Stylings */
+    @keyframes spin3d {
+      0% {
+        transform: rotateY(0deg);
+      }
+
+      100% {
+        transform: rotateY(360deg);
+      }
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+      perspective: 1000px;
+    }
+
+    .loader-rotating-icon {
+      width: 120px;
+      height: 120px;
+      animation: spin3d 2s linear infinite;
+      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.2));
+      transform-style: preserve-3d;
+    }
   </style>
 </head>
 
@@ -491,11 +526,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header text-white" style="background: linear-gradient(135deg, #198754 0%, #0d6832 100%);">
-          <h5 class="modal-title fw-bold">✅ Turno Verificado</h5>
+          <h5 class="modal-title fw-bold">✅ Turno Validado</h5>
         </div>
         <div class="modal-body text-center p-4">
           <div class="fs-1 mb-3">✅</div>
-          <p class="fs-5 fw-bold text-success">Su turno fue verificado.</p>
+          <p class="fs-5 fw-bold text-success">Su turno fue validado.</p>
           <p id="turnoUtilizadoMensaje" class="text-muted"></p>
         </div>
         <div class="modal-footer">
@@ -537,6 +572,18 @@
     const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const fechaFormateada = hoy.toLocaleDateString('es-ES', opciones);
     fechaElemento.textContent = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
+
+    function showLoader(txt = "Cargando...") {
+      const loaderTxt = document.getElementById("loaderText");
+      if (loaderTxt) loaderTxt.innerText = txt;
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.style.display = "flex";
+    }
+
+    function hideLoader() {
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.style.display = "none";
+    }
 
     function emitirBeepExito() {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -746,6 +793,7 @@
 
       continueBtn.disabled = true;
       continueBtn.textContent = 'Aguarde un instante...';
+      showLoader("Validando turno...");
 
       const url = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?documento="
         + encodeURIComponent(documento)
@@ -763,7 +811,7 @@
           // ─── CASO 2: Turno ya utilizado → mostrar modal verde informativo ───
           else if (data.turno_utilizado) {
             document.getElementById('turnoUtilizadoMensaje').textContent =
-              `Su turno se verificó para el día ${data.fechaTurno} y está siendo utilizado.`;
+              `Su turno se validó para el día ${data.fechaTurno} y está siendo utilizado.`;
             const m = new bootstrap.Modal(document.getElementById('turnoUtilizadoModal'));
             m.show();
           }
@@ -857,6 +905,7 @@
 
           continueBtn.textContent = 'Continuar';
           continueBtn.disabled = false;
+          hideLoader();
           verificarValidezFormulario();
         });
     });
@@ -885,7 +934,8 @@
       btnAcepto.disabled = true;
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Verificando y enviando...';
+      submitBtn.textContent = 'Validando y enviando...';
+      showLoader("Enviando datos...");
 
       const restaurarFormulario = () => {
         console.log("Restaurando formulario...");
@@ -933,6 +983,7 @@
           submitBtn.textContent = 'Enviar datos';
           submitBtn.disabled = true;
         }
+        hideLoader();
 
         const continueBtn = document.getElementById("continueBtn");
         if (continueBtn) {
@@ -1007,12 +1058,12 @@
         }
 
         const modalMessage = document.getElementById("modal-message");
-        modalMessage.textContent = `Los datos de ${propietario} (DNI: ${documento}) fueron registrados satisfactoriamente. Recuerde los requisitos para la castración de su animal y esperar a ser llamado por el número de orden.`;
+        modalMessage.textContent = `Los datos de ${propietario} (DNI: ${documento}) fueron validados y registrados satisfactoriamente. Recuerde los requisitos para la castración de su animal y esperar a ser llamado por el número de orden.`;
         const successModal = new bootstrap.Modal(document.getElementById('successModal'));
         successModal.show();
 
       } catch (error) {
-        console.error("❌ Error en la verificación o envío:", error);
+        console.error("❌ Error en la va o envío:", error);
 
         deshabilitarFormulario("❌ Error grave al intentar enviar los datos. Intente nuevamente. (" + error.message + ")");
 
@@ -1132,6 +1183,12 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Capa de carga animada (Loader) -->
+  <div id="loadingOverlay">
+    <img src="mgp_icono.png" class="loader-rotating-icon" alt="Cargando...">
+    <p class="mt-3 fw-bold text-primary" id="loaderText">Procesando información...</p>
   </div>
 </body>
 
