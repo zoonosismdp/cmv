@@ -747,7 +747,7 @@
       continueBtn.disabled = true;
       continueBtn.textContent = 'Aguarde un instante...';
 
-      const url = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?documento="
+      const url = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -945,7 +945,7 @@
         }
       };
 
-      const checkUrl = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?documento="
+      const checkUrl = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -989,7 +989,7 @@
         // Enviar el idTurno para que el backend lo marque como utilizado
         if (idTurnoActual) formData.append('id_turno', idTurnoActual);
 
-        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec", {
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec", {
           method: "POST",
           body: formData
         });
@@ -1023,7 +1023,7 @@
     });
 
     function verificarAcceso() {
-      const urlAcceso = "https://script.google.com/macros/s/AKfycbz7nuK4ME6851rX44saFApVl7Xb2iTzp2KkVf8eozxdi-g5UsXCBJsxi08hBRmCidh3IQ/exec?web_on_off=true";
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
         .then(data => {
