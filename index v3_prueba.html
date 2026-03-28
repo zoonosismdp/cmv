@@ -795,7 +795,7 @@
       continueBtn.textContent = 'Aguarde un instante...';
       showLoader("Validando turno...");
 
-      const url = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?documento="
+      const url = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -811,7 +811,7 @@
           // ─── CASO 2: Turno ya utilizado → mostrar modal verde informativo ───
           else if (data.turno_utilizado) {
             document.getElementById('turnoUtilizadoMensaje').textContent =
-              `Su turno se validó para el día ${data.fechaTurno} y está siendo utilizado.`;
+              `Su turno se validó para el día ${data.fechaTurno}.`;
             const m = new bootstrap.Modal(document.getElementById('turnoUtilizadoModal'));
             m.show();
           }
@@ -996,7 +996,7 @@
         }
       };
 
-      const checkUrl = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?documento="
+      const checkUrl = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -1040,7 +1040,7 @@
         // Enviar el idTurno para que el backend lo marque como utilizado
         if (idTurnoActual) formData.append('id_turno', idTurnoActual);
 
-        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec", {
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec", {
           method: "POST",
           body: formData
         });
@@ -1074,7 +1074,7 @@
     });
 
     function verificarAcceso() {
-      const urlAcceso = "https://script.google.com/macros/s/AKfycbwRnMz5uyYGStqW67VpOl8fi2TTt3hUnnoER9AVJ-VHnYuKjZ3WVHlUUw3sJuYsJLT0uA/exec?web_on_off=true";
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
         .then(data => {
