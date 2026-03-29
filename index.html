@@ -75,10 +75,12 @@
         transform: scale(1);
         box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
       }
+
       50% {
         transform: scale(1.02);
         box-shadow: 0 0 20px rgba(13, 110, 253, 0.7);
       }
+
       100% {
         transform: scale(1);
         box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
@@ -209,7 +211,7 @@
     /* Estilos para el botón de envío */
     button[type="submit"] {
 
-      
+
 
 
       background-color: #0d6efd;
@@ -367,7 +369,8 @@
       input[type="email"],
       select {
         padding: 14px 16px;
-        font-size: 16px; /* Previene zoom en iOS */
+        font-size: 16px;
+        /* Previene zoom en iOS */
       }
 
       button[type="submit"] {
@@ -421,10 +424,48 @@
       box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
     }
 
+    /* Loader Overlay Stylings */
+    @keyframes spin3d {
+      0% {
+        transform: rotateY(0deg);
+      }
+
+      100% {
+        transform: rotateY(360deg);
+      }
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+      perspective: 1000px;
+    }
+
+    .loader-rotating-icon {
+      width: 120px;
+      height: 120px;
+      animation: spin3d 2s linear infinite;
+      filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.2));
+      transform-style: preserve-3d;
+    }
   </style>
 </head>
 
 <body>
+  <div id="loadingOverlay">
+    <img src="mgp_icono.png" class="loader-rotating-icon" alt="Cargando...">
+    <p class="mt-3 fw-bold text-primary" id="loaderText">Procesando información...</p>
+  </div>
   <div class="form-container container mt-4">
     <p class="fecha-centrada">Fecha actual: <span id="fechaActual"></span></p>
     <h2 class="fw-bold">Registro CMV On Line</h2>
@@ -556,7 +597,9 @@
         </div>
 
         <div class="d-flex justify-content-center">
-          <button type="button" class="btn btn-accept" id="btnAcepto" disabled><span class="normal-weight">HAGA CLICK AQUI en este recuadro si acepta el Consentimiento Médico Veterinario.</span> <span class="highlight-text">VERIFIQUE QUE LOS DATOS ESTEN COMPLETOS.</span></button>
+          <button type="button" class="btn btn-accept" id="btnAcepto" disabled><span class="normal-weight">HAGA CLICK
+              AQUI en este recuadro si acepta el Consentimiento Médico Veterinario.</span> <span
+              class="highlight-text">VERIFIQUE QUE LOS DATOS ESTEN COMPLETOS.</span></button>
         </div>
 
         <div class="d-grid gap-2 mt-3">
@@ -675,6 +718,15 @@
     crossorigin="anonymous"></script>
 
   <script>
+    function showLoader(text) {
+      document.getElementById('loaderText').textContent = text || "Procesando...";
+      document.getElementById('loadingOverlay').style.display = "flex";
+    }
+
+    function hideLoader() {
+      document.getElementById('loadingOverlay').style.display = "none";
+    }
+
     // Configuración de la fecha actual
     const fechaElemento = document.getElementById("fechaActual");
     const hoy = new Date();
@@ -856,6 +908,7 @@
       // CAMBIOS DE ESTADO (AHORA ANTES DEL FETCH)
       continueBtn.disabled = true;
       continueBtn.textContent = 'Aguarde un instante...';
+      showLoader("Aguarde un instante...");
       // FIN CAMBIOS DE ESTADO
 
       const url = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?documento="
@@ -956,6 +1009,7 @@
         })
         .catch(err => console.error("❌ Error al consultar documento:", err))
         .finally(() => {
+          hideLoader();
           // Restaurar el texto original y la habilitación del botón
           continueBtn.textContent = 'Continuar'; // Restaurar el texto
           continueBtn.disabled = false;
@@ -993,9 +1047,11 @@
       submitBtn.disabled = true;
       submitBtn.classList.remove('btn-highlight');
       submitBtn.textContent = 'Verificando y enviando...';
+      showLoader("Verificando datos y registrando su ingreso...");
 
       // Función de restauración común
       const restaurarFormulario = () => {
+        hideLoader();
         this.reset();
         document.getElementById("formContent").style.display = "none";
         document.getElementById("razaDefinida").style.display = "none";
@@ -1038,6 +1094,7 @@
           deshabilitarFormulario(errorMessage);
 
           // Restaurar estado del formulario para que el usuario pueda corregir
+          hideLoader();
           btnAcepto.parentNode.style.display = "flex";
           btnAcepto.disabled = false;
           submitBtn.disabled = false;
@@ -1086,6 +1143,7 @@
         if (sendData.error) {
           // Error devuelto por doPost (Bloqueo): Duplicado de Orden o Documento.
           // ESTA ES LA CLAVE DE LA CORRECCIÓN: Si el servidor dice que hubo error, mostramos el modal de advertencia con el mensaje.
+          hideLoader();
           deshabilitarFormulario(sendData.error);
           return; // Detenemos el flujo para evitar el modal de éxito
         }
@@ -1111,6 +1169,7 @@
      * Verifica si el acceso está habilitado (Cupo o Deshabilitado) al cargar la página.
      */
     function verificarAcceso() {
+      showLoader("Verificando estado del sistema...");
       const urlAcceso = "https://script.google.com/macros/s/AKfycbyfoC0wqFcJkWy-UyvORX2OesdG5byJpVu0nzgpu_Li6zW5IlsitZmuZWUBqguIiKichw/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
@@ -1121,7 +1180,8 @@
             deshabilitarPorAcceso("⚠️ NO HAY CUPO DISPONIBLE");
           }
         })
-        .catch(err => console.error("❌ Error al verificar el acceso:", err));
+        .catch(err => console.error("❌ Error al verificar el acceso:", err))
+        .finally(() => hideLoader());
     }
 
     // Inicialización al cargar la ventana
