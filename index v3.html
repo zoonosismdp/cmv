@@ -795,7 +795,7 @@
       continueBtn.textContent = 'Aguarde un instante...';
       showLoader("Validando turno...");
 
-      const url = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?documento="
+      const url = "https://script.google.com/macros/s/AKfycbyS2FfAbyFSxal5PPpNM0byztLNRgbwBlC2ThGCFBsyuOZOAZpSFIxkzVuvsha5fJZrBg/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -814,6 +814,10 @@
               `Su turno se validó para el día ${data.fechaTurno}.`;
             const m = new bootstrap.Modal(document.getElementById('turnoUtilizadoModal'));
             m.show();
+          }
+          // ─── CASO 3: Turno para una fecha diferente ───
+          else if (data.mal_dia) {
+            deshabilitarFormulario(data.mensaje);
           }
           else if (data.error_orden) {
             deshabilitarFormulario(data.error_orden);
@@ -996,7 +1000,7 @@
         }
       };
 
-      const checkUrl = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?documento="
+      const checkUrl = "https://script.google.com/macros/s/AKfycbyS2FfAbyFSxal5PPpNM0byztLNRgbwBlC2ThGCFBsyuOZOAZpSFIxkzVuvsha5fJZrBg/exec?documento="
         + encodeURIComponent(documento)
         + "&dni=" + encodeURIComponent(documento)
         + "&numero_de_orden=" + encodeURIComponent(numeroDeOrden);
@@ -1005,8 +1009,8 @@
         const checkResponse = await fetch(checkUrl);
         const checkData = await checkResponse.json();
 
-        if (checkData.error_orden || checkData.error) {
-          const errorMessage = checkData.error_orden || checkData.error;
+        if (checkData.mal_dia || checkData.error_orden || checkData.error) {
+          const errorMessage = checkData.mensaje || checkData.error_orden || checkData.error;
 
           deshabilitarFormulario(errorMessage);
 
@@ -1040,7 +1044,7 @@
         // Enviar el idTurno para que el backend lo marque como utilizado
         if (idTurnoActual) formData.append('id_turno', idTurnoActual);
 
-        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec", {
+        const sendResponse = await fetch("https://script.google.com/macros/s/AKfycbyS2FfAbyFSxal5PPpNM0byztLNRgbwBlC2ThGCFBsyuOZOAZpSFIxkzVuvsha5fJZrBg/exec", {
           method: "POST",
           body: formData
         });
@@ -1074,7 +1078,7 @@
     });
 
     function verificarAcceso() {
-      const urlAcceso = "https://script.google.com/macros/s/AKfycbxADgaIJGObaErMVZ0gf3PtWzl_g-KRNp6hwa3NaN6tvhKTPSjl7-CYY0odMiafqQXDhw/exec?web_on_off=true";
+      const urlAcceso = "https://script.google.com/macros/s/AKfycbyS2FfAbyFSxal5PPpNM0byztLNRgbwBlC2ThGCFBsyuOZOAZpSFIxkzVuvsha5fJZrBg/exec?web_on_off=true";
       fetch(urlAcceso)
         .then(res => res.json())
         .then(data => {
