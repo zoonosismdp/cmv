@@ -973,11 +973,11 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // ✅ FILTRAR FECHAS ANTERIORES A HOY
+      // ✅ FILTRAR FECHAS DE HOY O ANTERIORES (comienza a mostrar desde mañana)
       const fechasFuturas = fechasObjs.filter(item => {
         const [d, m, y] = item.fecha.split('/');
         const itemDate = new Date(y, m - 1, d);
-        return itemDate >= today;
+        return itemDate > today;
       });
 
       // ✅ ORDENAR DE MENOR A MAYOR (CRONOLÓGICAMENTE)
