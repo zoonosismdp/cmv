@@ -815,6 +815,10 @@
             const m = new bootstrap.Modal(document.getElementById('turnoUtilizadoModal'));
             m.show();
           }
+          // ─── CASO 3: Turno para una fecha diferente ───
+          else if (data.mal_dia) {
+            deshabilitarFormulario(data.mensaje);
+          }
           else if (data.error_orden) {
             deshabilitarFormulario(data.error_orden);
           }
@@ -1005,8 +1009,8 @@
         const checkResponse = await fetch(checkUrl);
         const checkData = await checkResponse.json();
 
-        if (checkData.error_orden || checkData.error) {
-          const errorMessage = checkData.error_orden || checkData.error;
+        if (checkData.mal_dia || checkData.error_orden || checkData.error) {
+          const errorMessage = checkData.mensaje || checkData.error_orden || checkData.error;
 
           deshabilitarFormulario(errorMessage);
 
