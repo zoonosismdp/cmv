@@ -268,10 +268,58 @@
             border: 1px solid #a7f3d0;
         }
 
+        @keyframes parpadeoCupoLleno {
+            0% {
+                background-color: #fef2f2;
+                border-color: #fecaca;
+                color: #b91c1c;
+                box-shadow: none;
+            }
+
+            50% {
+                background-color: #fee2e2;
+                border-color: #ef4444;
+                color: #991b1b;
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            }
+
+            100% {
+                background-color: #fef2f2;
+                border-color: #fecaca;
+                color: #b91c1c;
+                box-shadow: none;
+            }
+        }
+
         .slots-full {
             background-color: #fef2f2;
             color: #b91c1c;
             border: 1px solid #fecaca;
+            animation: parpadeoCupoLleno 1.5s infinite ease-in-out;
+            font-weight: 800;
+        }
+
+        @keyframes parpadeoDiaLleno {
+            0% {
+                border-color: transparent;
+                box-shadow: none;
+            }
+
+            50% {
+                border-color: #ef4444;
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            }
+
+            100% {
+                border-color: transparent;
+                box-shadow: none;
+            }
+        }
+
+        .day-full {
+            border: 2px solid transparent !important;
+            animation: parpadeoDiaLleno 1.2s infinite ease-in-out;
+            z-index: 5;
         }
 
         .status-dot {
@@ -953,8 +1001,13 @@
 
                 const isToday = todayIso === dateIso;
 
+                let dayClass = `day ${config.enabled ? '' : 'disabled-date'}`;
+                if (config.enabled && isFull) {
+                    dayClass += ' day-full';
+                }
+
                 const dayDiv = document.createElement('div');
-                dayDiv.className = `day ${config.enabled ? '' : 'disabled-date'}`;
+                dayDiv.className = dayClass;
                 if (isToday) dayDiv.style.border = "3px solid var(--zoobase-teal)";
 
                 dayDiv.innerHTML = `
