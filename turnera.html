@@ -301,23 +301,19 @@
 
         @keyframes parpadeoDiaLleno {
             0% {
-                border-color: transparent;
-                box-shadow: none;
+                box-shadow: inset 0 0 0 0px transparent;
             }
 
             50% {
-                border-color: #ef4444;
-                box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+                box-shadow: inset 0 0 0 4px #ef4444, 0 0 20px rgba(239, 68, 68, 0.6);
             }
 
             100% {
-                border-color: transparent;
-                box-shadow: none;
+                box-shadow: inset 0 0 0 0px transparent;
             }
         }
 
         .day-full {
-            border: 2px solid transparent !important;
             animation: parpadeoDiaLleno 1.2s infinite ease-in-out;
             z-index: 5;
         }
