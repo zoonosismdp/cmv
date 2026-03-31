@@ -525,6 +525,10 @@
       background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
     }
 
+    .modal-success-header {
+      background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+    }
+
     /* Loader Overlay Stylings */
     @keyframes spin3d {
       0% {
@@ -695,9 +699,9 @@
           <div class="mb-3 fs-1 text-warning">⚠️</div>
           <p class="fs-5 mb-0">¿Está seguro de su selección?</p>
           <hr>
-          <p class="text-muted">En caso de anular el turno, deberá enviar un correo electrónico a
-            <strong>zoonosismdp@gmail.com</strong> y volver a solicitarlo. Su turno será validado al presentarse
-            personalmente el día asignado con su <strong>DNI físico.</strong>
+          <p class="text-muted">En caso de anular el turno, deberá volver a ingresar y cancelar. Su turno será validado
+            al presentarse
+            <strong>personalmente el día asignado con su DNI físico.</strong>
           </p>
         </div>
         <div class="modal-footer d-flex justify-content-center border-0 pb-4">
@@ -735,7 +739,8 @@
             <li class="mb-2">🔹 Animal con más de <strong>6 meses</strong> de edad.</li>
             <li class="mb-2">🔹 <strong>12 hs de ayuno sólido y líquido.</strong></li>
             <li class="mb-2">🔹 Gatos/as: En bolsa de red y dentro de un carrier.</li>
-            <li class="mb-2">🔹 No estar preñada ni amamantando (si parió, esperar +60 días).</li>
+            <li class="mb-2">🔹 No estar preñada ni amamantando (si parió, esperar +60 días en perras y +45 días en
+              gatas).</li>
             <li class="mb-2">🔹 Traer <strong>manta</strong>, rollo de papel cocina y bolsas plásticas.</li>
           </ul>
 
@@ -745,7 +750,73 @@
           </div>
         </div>
         <div class="modal-footer d-grid">
-          <button type="button" class="btn btn-primary btn-lg" data-bs-dismiss="modal">Entendido y Finalizar</button>
+          <button type="button" class="btn btn-primary btn-lg" data-bs-dismiss="modal">Finalizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Cancelación de Turno (NUEVO) -->
+  <div class="modal fade" id="cancelarTurnoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title fw-bold">Gestionar Turno</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <div class="mb-3 fs-1 text-danger">📅</div>
+          <p class="fs-5" id="txtTurnoPendiente"></p>
+          <hr>
+          <p class="text-danger fw-bold mb-0">¿Desea mantener o cancelar este turno?</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-center border-0 pb-4">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Mantener Turno</button>
+          <button type="button" class="btn btn-danger px-4" id="btnVerDetalles">Cancelar Turno</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal con los datos del turno encontrado (NUEVO) -->
+  <div class="modal fade" id="detallesTurnoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title fw-bold">Datos del Propietario</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-3">
+            <div class="fs-1 text-info">👤</div>
+            <p class="text-muted">Información registrada en su turno</p>
+          </div>
+          <div class="list-group list-group-flush border rounded">
+            <div class="list-group-item d-flex flex-column py-2">
+              <span class="text-muted small">Documento</span>
+              <span id="detDni" class="fw-bold"></span>
+            </div>
+            <div class="list-group-item d-flex flex-column py-2">
+              <span class="text-muted small">Propietario</span>
+              <span id="detPropietario" class="fw-bold"></span>
+            </div>
+            <div class="list-group-item d-flex flex-column py-2">
+              <span class="text-muted small">Domicilio</span>
+              <span id="detDomicilio" class="fw-bold"></span>
+            </div>
+            <div class="list-group-item d-flex flex-column py-2">
+              <span class="text-muted small">Teléfono</span>
+              <span id="detTelefono" class="fw-bold"></span>
+            </div>
+            <div class="list-group-item d-flex flex-column py-2">
+              <span class="text-muted small">Email</span>
+              <span id="detEmail" class="fw-bold"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-center border-0 pb-4">
+          <button type="button" class="btn btn-danger px-4" id="btnProcederACancelar">Cancelar este Turno</button>
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Volver</button>
         </div>
       </div>
     </div>
@@ -803,13 +874,16 @@
       document.getElementById('notificacionTitulo').textContent = titulo;
       document.getElementById('notificacionCuerpo').textContent = mensaje;
 
-      header.classList.remove('modal-warning-header', 'modal-error-header');
+      header.classList.remove('modal-warning-header', 'modal-error-header', 'modal-success-header');
       if (tipo === 'warning') {
         header.classList.add('modal-warning-header');
         icono.innerHTML = '⚠️';
       } else if (tipo === 'error') {
         header.classList.add('modal-error-header');
         icono.innerHTML = '🚫';
+      } else if (tipo === 'success') {
+        header.classList.add('modal-success-header');
+        icono.innerHTML = '✅';
       } else {
         icono.innerHTML = 'ℹ️';
       }
@@ -828,7 +902,7 @@
     }
 
     // --- URL DE TU APPS SCRIPT ---
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxpESasVCHni8PyruLI61xBFyC7YpifWLvY2uyOTHzIveYUbxwm3TqBo63BKykWOW0wxg/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxejhqe9MftJOIhdB2vLHx5hIggIuzqQbPgeZepSVpt0u9v2xXhDDg65Aj0FtWrgEteGQ/exec";
 
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
@@ -840,18 +914,42 @@
 
       // Bloquear botón y mostrar estado de carga
       continueBtn.disabled = true;
-      showLoader("Verificando historial...");
+      showLoader("Verificando, aguarde un instante...");
 
       fetch(`${URL_APPS_SCRIPT}?dni=${dni}`)
         .then(res => res.json())
         .then(data => {
+          console.log("Respuesta del servidor:", data);
+          if (data.debug_version) console.log("Versión detectada:", data.debug_version);
+
           if (data.turnoPendiente) {
-            // Ya tiene un turno solicitado en turnos_asignados_web
-            mostrarAviso(
-              "⚠️ Turno Ya Registrado",
-              `No puede solicitar un nuevo turno. Usted ya tiene un turno asignado para el día ${data.fechaTurno}. Si necesita cancelarlo, comuníquese a zoonosismdp@gmail.com.`,
-              "warning"
-            );
+            // Ya tiene un turno solicitado en turnos_asignados_web.
+            // Guardamos los datos para mostrarlos en el modal de detalles
+            const dt = data.datosTurno || {};
+            document.getElementById('detDni').textContent = dt.dni || dni;
+            document.getElementById('detPropietario').textContent = dt.propietario || "No registrado";
+            document.getElementById('detDomicilio').textContent = dt.domicilio || "No registrado";
+            document.getElementById('detTelefono').textContent = dt.telefono || "No registrado";
+            document.getElementById('detEmail').textContent = dt.email || "No registrado";
+
+            document.getElementById('txtTurnoPendiente').innerHTML = `Usted ya cuenta con un turno asignado para el día <strong>${data.fechaTurno}</strong>.`;
+
+            const modalGestion = new bootstrap.Modal(document.getElementById('cancelarTurnoModal'));
+            const modalDetalles = new bootstrap.Modal(document.getElementById('detallesTurnoModal'));
+
+            // Listener para el botón "Ver Detalles" del primer modal
+            document.getElementById('btnVerDetalles').onclick = () => {
+              modalGestion.hide();
+              modalDetalles.show();
+            };
+
+            // Listener para el botón "Cancelar" del segundo modal (el de detalles)
+            document.getElementById('btnProcederACancelar').onclick = () => {
+              modalDetalles.hide();
+              confirmarCancelacionDirecta(); // Función que antes era el listener directo
+            };
+
+            modalGestion.show();
           } else if (data.error) {
             // Si el backend retorna error de validación (ej: menos de 6 meses)
             mostrarAviso("Restricción de Turno", data.mensaje, "error");
@@ -1085,6 +1183,40 @@
         hideLoader();
       }
     });
+
+    // Función para ejecutar la cancelación (llamada desde el modal de detalles o de gestión)
+    async function confirmarCancelacionDirecta() {
+      const dni = document.getElementById('documentoInput').value.trim();
+      showLoader("Cancelando su turno...");
+
+      const payload = {
+        action: "cancelarTurno",
+        dni: dni
+      };
+
+      try {
+        const response = await fetch(URL_APPS_SCRIPT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          mostrarAviso("Turno Cancelado", "Su turno se ha cancelado correctamente y el lugar ha sido liberado.", "success");
+          document.getElementById("miForm").reset();
+          verificarValidezFormulario();
+        } else {
+          mostrarAviso("Error al Cancelar", data.error || data.mensaje || "Error desconocido", "error");
+        }
+      } catch (error) {
+        console.error("Error al cancelar el turno:", error);
+        mostrarAviso("Error de Conexión", "No se pudo cancelar el turno. Intente nuevamente.", "error");
+      } finally {
+        hideLoader();
+      }
+    }
 
     // Resetear formulario al cerrar el modal final
     document.getElementById('confirmacionFinalModal').addEventListener('hidden.bs.modal', function () {
