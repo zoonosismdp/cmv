@@ -1187,7 +1187,7 @@
     // Función para ejecutar la cancelación (llamada desde el modal de detalles o de gestión)
     async function confirmarCancelacionDirecta() {
       const dni = document.getElementById('documentoInput').value.trim();
-      showLoader("Cancelando su turno...");
+      showLoader("Cancelando turno, aguarde un instante...");
 
       const payload = {
         action: "cancelarTurno",

@@ -468,6 +468,30 @@
             color: white;
         }
 
+        @keyframes parpadeoBoton {
+            0% {
+                box-shadow: 0 0 0 0px rgba(29, 78, 216, 0.4);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 15px 5px rgba(29, 78, 216, 0.6);
+                transform: scale(1.05);
+                background-color: #1e40af;
+            }
+
+            100% {
+                box-shadow: 0 0 0 0px rgba(29, 78, 216, 0.4);
+                transform: scale(1);
+            }
+        }
+
+        .btn-parpadeo {
+            animation: parpadeoBoton 1.5s infinite ease-in-out;
+            z-index: 10;
+            border: 2px solid white !important;
+        }
+
         /* --- TABLA INSCRIPTOS --- */
         .table-inscriptos {
             margin-bottom: 0;
@@ -1115,7 +1139,15 @@
             document.getElementById('slotsContainer').style.display = config.enabled ? 'block' : 'none';
 
             // Habilitar/deshabilitar botón Ver Inscriptos según si el día tiene cupo
-            document.getElementById('btnVerInscriptos').disabled = !config.enabled;
+            const btnVer = document.getElementById('btnVerInscriptos');
+            btnVer.disabled = !config.enabled;
+
+            // Hacer parpadear si hay turnos ocupados
+            if (config.occupied > 0) {
+                btnVer.classList.add('btn-parpadeo');
+            } else {
+                btnVer.classList.remove('btn-parpadeo');
+            }
 
             editModal.show();
         }
@@ -1154,7 +1186,7 @@
                 }
             }
 
-            showLoader(enabled ? "Actualizando información, aguarde..." : "Deshabilitando día y borrando turnos...");
+            showLoader(enabled ? "Actualizando información, aguarde un instante..." : "Deshabilitando día y borrando turnos, aguarde un instante...");
 
             const payload = {
                 action: "saveDayConfig",
@@ -1179,7 +1211,6 @@
                 turnosConfig[isoDate] = { enabled, slots, occupied: finalOccupied };
                 localStorage.setItem('zoobase_turnos_config', JSON.stringify(turnosConfig));
 
-                hideLoader();
                 editModal.hide();
 
                 Swal.fire({
@@ -1196,7 +1227,6 @@
 
             } catch (error) {
                 console.error("Error al sincronizar:", error);
-                hideLoader();
 
                 Swal.fire({
                     icon: 'error',
@@ -1209,6 +1239,8 @@
                 turnosConfig[isoDate] = { enabled, slots, occupied };
                 localStorage.setItem('zoobase_turnos_config', JSON.stringify(turnosConfig));
                 renderCalendar();
+            } finally {
+                hideLoader();
             }
         }
 
@@ -1389,6 +1421,8 @@
 
             if (!confirm.isConfirmed) return;
 
+            showLoader("Cancelando turno, aguarde un instante...");
+
             try {
                 const res = await fetch(URL_APPS_SCRIPT, {
                     method: 'POST',
@@ -1429,7 +1463,10 @@
                     Swal.fire('Error', data.error || 'No se pudo cancelar el turno.', 'error');
                 }
             } catch (err) {
+                console.error("Error al cancelar turno:", err);
                 Swal.fire('Error de red', 'No se pudo conectar con el servidor.', 'error');
+            } finally {
+                hideLoader();
             }
         }
 
