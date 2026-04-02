@@ -1239,6 +1239,9 @@
             const todayIso = today.toISOString().split('T')[0];
             const config = turnosConfig[todayIso] || { enabled: false, slots: 0, occupied: 0 };
 
+            // Si el día no está habilitado, no mostramos el resumen (según pedido del usuario)
+            if (!config.enabled) return;
+
             const displayDate = today.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
             document.getElementById('modalTodayDate').innerText = displayDate.toUpperCase();
 
@@ -1251,10 +1254,7 @@
             document.getElementById('modalQuotaAvailable').innerText = available;
 
             const statusAlert = document.getElementById('modalStatusAlert');
-            if (!config.enabled) {
-                statusAlert.className = "mt-4 alert alert-danger d-flex align-items-center gap-2";
-                statusAlert.innerHTML = '<i class="fa-solid fa-ban fs-4"></i> <strong>ATENCIÓN:</strong> El sistema de turnos está CERRADO para el día de hoy.';
-            } else if (available === 0 && slots > 0) {
+            if (available === 0 && slots > 0) {
                 statusAlert.className = "mt-4 alert alert-warning d-flex align-items-center gap-2";
                 statusAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4"></i> <strong>CUPO LLENO:</strong> No quedan lugares disponibles para hoy.';
             } else {
