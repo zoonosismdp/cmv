@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zoobase - Gestor de Turnos</title>
-    <link rel="icon" href="zoobase icono.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -42,41 +41,68 @@
             color: #334155;
         }
 
-        /* --- ENCABEZADO --- */
-        .zoobase-header {
+        /* --- ENCABEZADO ESTILO TURNO.HTML --- */
+        .header-container {
             position: sticky;
             top: 0;
             z-index: 1020;
-            background: var(--zoobase-purple);
-            padding: 12px 30px;
+            background: linear-gradient(135deg, #1a3a5d 0%, #2c5282 100%);
+            color: white;
+            padding: 25px 40px;
+            /* Un poco más de aire */
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            color: white;
-            height: 75px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            justify-content: flex-start;
+            gap: 25px;
             border-bottom: 3px solid var(--zoobase-teal);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-height: 110px;
+            /* Asegura altura suficiente */
         }
 
-        .header-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-            color: #f8fafc;
+        .header-logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
         }
 
-        .header-subtitle {
-            font-size: 0.8rem;
+        #logoImg {
+            max-height: 70px;
+            width: auto;
+        }
+
+        .logo-underline {
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
+
+        .header-text-section h2 {
+            color: white !important;
+            margin: 0 !important;
+            text-align: left !important;
+            font-size: 1.8rem !important;
+            line-height: 1.05 !important;
+            font-weight: 700 !important;
+        }
+
+        .header-text-section .tag-maqueta {
+            font-size: 0.7rem;
             opacity: 0.8;
-            font-weight: 500;
             letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 500;
+            display: block;
+            margin-top: 5px;
         }
 
         /* --- SUB HEADER --- */
         .sub-header {
             position: sticky;
-            top: 75px;
+            top: 120px;
+            /* Ajustado por el nuevo min-height del header */
             z-index: 1010;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -426,6 +452,22 @@
             color: white;
         }
 
+        .btn-ver-turnos {
+            background: var(--zoobase-teal);
+            color: white;
+            font-weight: 700;
+            padding: 14px 24px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-ver-turnos:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+            color: white;
+        }
+
         /* --- TABLA INSCRIPTOS --- */
         .table-inscriptos {
             margin-bottom: 0;
@@ -715,17 +757,14 @@
         <p class="mt-3 fw-bold fs-5" id="loaderText" style="color: var(--zoobase-teal);">Actualizando calendario...</p>
     </div>
 
-    <header class="zoobase-header">
-        <div class="logo-container">
-            <div class="header-title">
-                <i class="fa-solid fa-calendar-check"></i> Zoobase - Gestor de Turnos
-            </div>
-            <div class="header-subtitle">
-                ** MAQUETA **
-            </div>
+    <header class="header-container">
+        <div class="header-logo-section">
+            <img src="mgp_icono.png" id="logoImg" alt="Logo MGP">
+            <div class="logo-underline"></div>
         </div>
-
-        <div class="d-flex align-items-center gap-3">
+        <div class="header-text-section">
+            <h2 class="fw-bold">Dirección de Zoonosis<br>y Bienestar Animal</h2>
+            <span class="tag-maqueta">** GESTOR DE TURNOS **</span>
         </div>
     </header>
 
@@ -863,17 +902,16 @@
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer border-0 d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-info px-4" id="btnVerInscriptos"
+                <div class="modal-footer border-0 d-flex flex-wrap justify-content-center gap-3 pb-4">
+                    <button type="button" class="btn btn-ver-turnos px-4" id="btnVerInscriptos"
                         onclick="verInscriptos()">
                         <i class="fa-solid fa-list-ul me-2"></i> Ver turnos asignados
                     </button>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-save px-4" onclick="saveDayConfig()">
-                            <i class="fa-solid fa-save me-2"></i> Guardar Cambios
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-save px-4" onclick="saveDayConfig()">
+                        <i class="fa-solid fa-save me-2"></i> Guardar Cambios
+                    </button>
+                    <button type="button" class="btn btn-secondary px-4 fw-bold"
+                        data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -929,6 +967,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 🚀 LOGO BASE64 (Sincronizado con turno.html)
+        const LOGO_BASE64 = "data:image/png;base64,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";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const logo = document.getElementById('logoImg');
+            if (logo) logo.src = LOGO_BASE64;
+        });
+
         // --- CONFIGURACIÓN Y ESTADO ---
         let currentDate = new Date();
         let turnosConfig = {};
@@ -1221,7 +1267,7 @@
         }
 
         async function loadConfig() {
-            showLoader("Cargando configuración desde el servidor...");
+            showLoader("Consultando datos, aguarde un instante...");
             try {
                 const response = await fetch(URL_APPS_SCRIPT);
                 const data = await response.json();
@@ -1307,14 +1353,14 @@
                             </div>
                         </div>
                         <div class="ms-3 flex-shrink-0">
-                            ${(p.utilizado === true || String(p.utilizado).toUpperCase() === "TRUE") 
-                                ? `<span class="badge bg-success-subtle text-success border border-success-subtle py-2 px-3 rounded-pill fw-bold animate__animated animate__fadeIn" style="font-size: 0.85rem; min-width: 110px; display: inline-flex; align-items: center; justify-content: center;">
+                            ${(p.utilizado === true || String(p.utilizado).toUpperCase() === "TRUE")
+                            ? `<span class="badge bg-success-subtle text-success border border-success-subtle py-2 px-3 rounded-pill fw-bold animate__animated animate__fadeIn" style="font-size: 0.85rem; min-width: 110px; display: inline-flex; align-items: center; justify-content: center;">
                                     <i class="fa-solid fa-circle-check me-2"></i> VALIDADO
                                    </span>`
-                                : `<button class="btn btn-outline-danger rounded-pill fw-bold" style="font-size: 0.85rem; padding: 0.4rem 1.2rem;" onclick="cancelarTurno('${p.idTurno}', '${p.propietario}')">
+                            : `<button class="btn btn-outline-danger rounded-pill fw-bold" style="font-size: 0.85rem; padding: 0.4rem 1.2rem;" onclick="cancelarTurno('${p.idTurno}', '${p.propietario}')">
                                     <i class="fa-solid fa-trash-can me-1"></i> Cancelar
                                    </button>`
-                            }
+                        }
                         </div>
                     `;
                     tbody.appendChild(tr);
