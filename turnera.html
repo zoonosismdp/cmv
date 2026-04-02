@@ -585,6 +585,13 @@
             perspective: 1000px;
         }
 
+        #loadingOverlay p {
+            text-align: center !important;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .loader-rotating-icon {
             width: 120px;
             height: 120px;
@@ -778,7 +785,7 @@
 
     <div id="loadingOverlay">
         <img src="mgp_icono.png" class="loader-rotating-icon" alt="Cargando...">
-        <p class="mt-3 fw-bold fs-5" id="loaderText" style="color: var(--zoobase-teal);">Actualizando calendario...</p>
+        <p class="mt-3 fw-bold fs-5 text-center" id="loaderText" style="color: var(--zoobase-teal);">Actualizando calendario...</p>
     </div>
 
     <header class="header-container">
@@ -959,7 +966,7 @@
                     <div id="inscriptosLoading" class="text-center py-5">
                         <img src="mgp_icono.png" class="loader-rotating-icon" alt="Cargando..."
                             style="width: 80px; height: 80px;">
-                        <p class="mt-3 text-muted fw-bold">Cargando turnos...</p>
+                        <p class="mt-3 text-muted fw-bold text-center">Cargando turnos...</p>
                     </div>
                     <div id="inscriptosContent" style="display:none;">
                         <div class="px-4 py-3 bg-light border-bottom d-flex justify-content-between align-items-center"
