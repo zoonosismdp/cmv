@@ -781,24 +781,36 @@
 
         /* Estilo para el botón de impresión en el modal */
         .btn-print-modal {
-            background-color: transparent;
-            color: var(--zoobase-teal);
-            border: 2px solid var(--zoobase-teal);
-            font-weight: 700;
-            padding: 12px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            background-color: var(--zoobase-teal);
+            color: white;
+            border: none;
+            font-weight: 800;
+            padding: 16px;
+            border-radius: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.2);
         }
 
-        .btn-print-modal:hover {
-            background-color: var(--zoobase-teal);
+        .btn-print-modal:hover:not(:disabled) {
+            background-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(29, 78, 216, 0.4);
             color: white;
+        }
+        
+        .btn-print-modal:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #94a3b8;
+            box-shadow: none;
         }
 
         /* Estilos para impresión */
@@ -896,23 +908,23 @@
                         <p class="text-muted" id="modalTodayDate"></p>
                         <hr>
                     </div>
-                    <div class="row g-3 text-center">
+                    <div class="row g-2 text-center">
                         <div class="col-4">
-                            <div class="p-3 border rounded bg-light">
-                                <small class="text-muted d-block mb-1">CUPO TOTAL</small>
-                                <h3 class="fw-bold mb-0 text-dark" id="modalQuotaTotal">0</h3>
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block mb-1" style="font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden;">CUPO TOTAL</small>
+                                <h3 class="fw-bold mb-0 text-dark fs-4" id="modalQuotaTotal">0</h3>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="p-3 border rounded bg-light">
-                                <small class="text-muted d-block mb-1">OCUPADOS</small>
-                                <h3 class="fw-bold mb-0 text-warning" id="modalQuotaOccupied">0</h3>
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block mb-1" style="font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden;">OCUPADOS</small>
+                                <h3 class="fw-bold mb-0 text-warning fs-4" id="modalQuotaOccupied">0</h3>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="p-3 border rounded bg-light">
-                                <small class="text-muted d-block mb-1">DISPONIBLES</small>
-                                <h3 class="fw-bold mb-0 text-success" id="modalQuotaAvailable">0</h3>
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block mb-1" style="font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden;">DISPONIBLES</small>
+                                <h3 class="fw-bold mb-0 text-success fs-4" id="modalQuotaAvailable">0</h3>
                             </div>
                         </div>
                     </div>
