@@ -922,7 +922,7 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0 d-flex flex-column p-4">
-                    <button type="button" class="btn-print-modal no-print" onclick="imprimirTurnosHoy()">
+                    <button id="btnPrintTodayModal" type="button" class="btn-print-modal no-print" onclick="imprimirTurnosHoy()">
                         <i class="fa-solid fa-print"></i> IMPRIMIR TURNOS DE HOY
                     </button>
                     <button type="button" class="btn btn-save w-100 py-3" data-bs-dismiss="modal">
@@ -1199,10 +1199,13 @@
             document.getElementById('occupiedInput').value = config.occupied || 0;
             document.getElementById('slotsContainer').style.display = config.enabled ? 'block' : 'none';
 
-            // Habilitar/deshabilitar botón Ver TURNOS según si el día tiene turnos ocupados
+            // Habilitar/deshabilitar botón Ver TURNOS e IMPRIMIR según si el día tiene turnos ocupados
             const btnVer = document.getElementById('btnVerInscriptos');
+            const btnPrint = document.getElementById('btnPrintDay');
             const hasOccupied = (config.occupied || 0) > 0;
+            
             btnVer.disabled = !config.enabled || !hasOccupied;
+            btnPrint.disabled = !config.enabled || !hasOccupied;
 
             // Hacer parpadear si hay turnos ocupados
             if (hasOccupied && config.enabled) {
@@ -1354,6 +1357,12 @@
             } else {
                 statusAlert.className = "mt-4 alert alert-success d-flex align-items-center gap-2";
                 statusAlert.innerHTML = `<i class="fa-solid fa-check-circle fs-4"></i> <strong>SISTEMA ACTIVO:</strong> Hay ${available} lugares disponibles.`;
+            }
+
+            // Habilitar/deshabilitar botón de impresión según turnos de hoy
+            const btnPrintToday = document.getElementById('btnPrintTodayModal');
+            if (btnPrintToday) {
+                btnPrintToday.disabled = occupied === 0;
             }
 
             const quotaModal = new bootstrap.Modal(document.getElementById('quotaTodayModal'));
