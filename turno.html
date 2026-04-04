@@ -901,7 +901,7 @@
     }
 
     // --- URL DE TU APPS SCRIPT ---
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycby3Gz_FbZ2OsD_X8k0HD-HwEXn4ZD3p6LvmtpecvYC7k68KqhWSih4DTZRkQC_VuDglww/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwSPhwK1bb7G_UUyJzyWEf85VO_LghpukohfDQa77MN_WbZ7H92zYg3S_GgtcbdJhA3ZA/exec";
 
     continueBtn.addEventListener('click', () => {
       const dni = documentoInput.value.trim();
@@ -1149,7 +1149,8 @@
         nombre: nombre,
         domicilio: document.getElementById('domicilioInput').value,
         telefono: document.getElementById('telefonoInput').value,
-        email: document.getElementById('emailInput').value || ""
+        email: document.getElementById('emailInput').value || "",
+        fecha_texto: diaSeleccionado
       };
 
       try {
@@ -1186,11 +1187,13 @@
     // Función para ejecutar la cancelación (llamada desde el modal de detalles o de gestión)
     async function confirmarCancelacionDirecta() {
       const dni = document.getElementById('documentoInput').value.trim();
+      const email = document.getElementById('detEmail').textContent.trim();
       showLoader("Cancelando turno, aguarde un instante...");
 
       const payload = {
         action: "cancelarTurno",
-        dni: dni
+        dni: dni,
+        email: email
       };
 
       try {
